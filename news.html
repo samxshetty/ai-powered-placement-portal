@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>News & Announcements — PlacementHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/news.css" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon">
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+<a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+  <main class="container news-page">
+    <div class="page-header">
+      <h2>News & Announcements</h2>
+      <p class="muted">Stay updated with the latest placement news and opportunities</p>
+    </div>
+
+    <div class="news-layout">
+      <!-- Left: News list -->
+      <section class="news-list-col">
+        <div class="controls">
+          <div class="filters" id="filtersContainer">
+            <!-- Filter buttons inserted here -->
+          </div>
+        </div>
+
+        <div id="newsFeed" class="news-feed">
+          <!-- dynamic news cards -->
+        </div>
+      </section>
+
+      <!-- Right: Sidebar -->
+      <aside class="sidebar-col">
+        <div class="card sidebar-card">
+          <h3>Trending</h3>
+          <ul id="trendingList" class="trending-list"></ul>
+        </div>
+
+        <div class="card sidebar-card">
+          <h3>Quick Links</h3>
+          <ul class="quick-links" id="quickLinks">
+            <!-- dynamic quick links (or static defaults) -->
+          </ul>
+        </div>
+
+        <div class="card sidebar-card">
+          <h3>Categories</h3>
+          <ul id="categoryList" class="category-list"></ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="js/news-data.js"></script>
+  <script src="js/news.js"></script>
+</body>
+</html>

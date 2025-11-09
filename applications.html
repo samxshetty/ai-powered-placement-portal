@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications — PlacementHub</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/applications.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon">
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+<a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+  <!-- Page Header -->
+  <main class="container applications-page">
+    <div class="page-header">
+      <h2>My Applications</h2>
+      <p class="muted">Track and manage your placement applications</p>
+    </div>
+
+    <section class="applications-section card">
+      <div class="section-header">
+        <h3>All Applications</h3>
+        <div class="filter-bar">
+          <button id="filterAll" class="filter-btn active">All</button>
+          <button id="filterActive" class="filter-btn">Active</button>
+          <button id="filterClosed" class="filter-btn">Closed</button>
+        </div>
+      </div>
+
+      <div id="applicationList" class="application-list"></div>
+    </section>
+  </main>
+
+  <!-- VIEW MODAL -->
+  <div id="viewModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeView">&times;</span>
+      <h3>Application Details</h3>
+      <div id="viewDetails"></div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW MODAL -->
+  <div id="withdrawModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeWithdraw">&times;</span>
+      <h3>Withdraw Application</h3>
+      <p id="withdrawText"></p>
+      <div class="modal-actions">
+        <button id="confirmWithdraw" class="btn-danger">Confirm Withdraw</button>
+        <button id="cancelWithdraw" class="btn-outline">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/applications.js"></script>
+  <script src="js/jobs-data.js"></script>
+  <script>
+  // Highlight active link automatically
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("activeUser");
+        window.location.href = "index.html"; // 👈 redirect to landing page
+      });
+    }
+  });
+</script>
+<script>
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+</script>
+
+
+</body>
+</html>

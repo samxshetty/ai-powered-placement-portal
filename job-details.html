@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Job Details — PlacementHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/job-details.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/jobs-data.js"></script>
+  <script src="js/jobs.js"></script>
+
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon">
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+<a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+  <main class="container">
+    <a href="jobs.html" class="back-link">← Back to Jobs</a>
+
+    <div class="main-grid">
+      <!-- LEFT: Job content -->
+      <div class="col-left">
+        <!-- Job header card -->
+        <section class="card job-header-card">
+          <div class="job-top">
+            <div>
+              <h2 id="jobRole">Software Engineer</h2>
+              <p class="muted small" id="jobCompany"><span id="jobCompanyName">Google</span></p>
+            </div>
+            <div style="text-align:right">
+              <span class="pill tag" id="jobType">Full-time</span>
+            </div>
+          </div>
+
+          <div class="job-meta">
+            <div class="meta-item">📍 <span id="jobLocation">Bangalore, India</span></div>
+            <div class="meta-item">💰 <span id="jobSalary">20–25 LPA</span></div>
+            <div class="meta-item">🕒 <span id="jobDeadline">Apply by: 2024-11-30</span></div>
+          </div>
+
+          <div id="jobStatusWrap" style="margin-top:12px">
+            <span id="jobStatus" class="status open">Open</span>
+            <div class="skills" id="jobSkills" style="margin-top:10px"></div>
+          </div>
+        </section>
+
+        <!-- Job Description -->
+        <section class="card">
+          <h3>Job Description</h3>
+          <p id="jobDescription">We are looking for talented software engineers to join our team. You will work on cutting-edge technologies and solve challenging problems at scale.</p>
+        </section>
+
+        <!-- Requirements -->
+        <section class="card">
+          <h3>Requirements</h3>
+          <ul id="jobRequirements" class="check-list">
+            <!-- filled by JS -->
+          </ul>
+        </section>
+
+        <!-- Responsibilities -->
+        <section class="card">
+          <h3>Responsibilities</h3>
+          <ul id="jobResponsibilities" class="check-list"></ul>
+        </section>
+
+        <!-- Benefits -->
+        <section class="card">
+          <h3>Benefits</h3>
+          <ul id="jobBenefits" class="check-list"></ul>
+        </section>
+      </div>
+
+      <!-- RIGHT: Apply + AI Panel -->
+      <aside class="col-right">
+        <section class="card">
+          <h3>Apply for this position</h3>
+          <p class="muted small" id="applyDeadline">Deadline: 2024-11-30</p>
+          <button id="applyBtn" class="view-btn">Submit Application</button>
+        </section>
+
+        <!-- AI Assistant panel (frontend only placeholder) -->
+        <section class="card">
+          <h3>AI Assistant</h3>
+          <p class="muted small">Ask the AI for help tailoring your application (frontend-only). We'll hook backend later.</p>
+
+          <textarea id="aiInput" placeholder="Ask: 'How should I tailor my resume for this role?'" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef7;margin-top:8px;"></textarea>
+          <button id="askAiBtn" class="btn-secondary" style="width:100%;margin-top:10px">Ask AI</button>
+
+          <div id="aiResponse" class="ai-response" style="margin-top:12px;display:none">
+            <h4>AI Suggestions</h4>
+            <div id="aiResponseText" style="color:#1f2937"></div>
+            <div style="margin-top:10px;font-size:13px;color:var(--muted)">Note: This is a frontend demo. Connect backend to enable live AI responses.</div>
+          </div>
+        </section>
+
+        <!-- Placeholder for application tips (kept as backup) -->
+        <section class="card">
+          <h3>Application Tips</h3>
+          <ul class="simple-list">
+            <li>Ensure your resume is up to date</li>
+            <li>Highlight relevant skills and projects</li>
+            <li>Prepare for technical interviews</li>
+            <li>Research about the company</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script src="js/job-details.js"></script>
+  <script src="js/jobs-data.js"></script>
+  <script>
+  // Highlight active link automatically
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+</script>
+
+</body>
+</html>

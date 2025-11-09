@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — PlacementHub</title>
+
+  <!-- Fonts + CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon" />
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+      <a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+
+
+  <main class="container">
+    <!-- Welcome -->
+    <section class="welcome">
+      <h2>Welcome back, <span id="userName">Student</span>!</h2>
+      <p class="muted">Here’s what’s happening with your placement journey.</p>
+    </section>
+
+    <!-- Stats cards -->
+    <section class="stats-grid">
+      <div class="stat-card" id="companiesCountCard">
+        <h3 id="companiesCount">0</h3>
+        <p>Companies to Register</p>
+      </div>
+      <div class="stat-card" id="appliedCountCard">
+        <h3 id="appliedCount">0</h3>
+        <p>Applied For</p>
+      </div>
+      <div class="stat-card" id="openCountCard">
+        <h3 id="openCount">0</h3>
+        <p>Open to Register</p>
+      </div>
+      <div class="stat-card" id="closedCountCard">
+        <h3 id="closedCount">0</h3>
+        <p>Closed Registrations</p>
+      </div>
+    </section>
+
+    <!-- Two-column layout -->
+    <div class="main-grid">
+      <!-- Left Column -->
+      <div class="col-left">
+        <!-- Upcoming Events -->
+        <section class="card">
+          <h3>Upcoming Events</h3>
+          <p class="muted">Your scheduled interviews and placement activities.</p>
+          <div id="upcomingEvents" class="event-list" style="margin-top:12px">
+            <!-- injected -->
+          </div>
+
+          <button class="btn-outline full" id="viewCalendarBtn">View Full Calendar</button>
+        </section>
+
+        <!-- Recent Applications -->
+        <section class="card">
+          <h3>Recent Applications</h3>
+          <p class="muted">Track your application status.</p>
+
+          <div id="recentApplications" style="margin-top:12px">
+            <!-- injected list -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-right">
+        <section class="card">
+          <h3>Quick Actions</h3>
+          <p class="muted">Manage your placement activities</p>
+
+          <div class="quick-links">
+            <button class="quick-btn active" onclick="window.location.href='jobs.html'">Browse Jobs</button>
+            <button class="quick-btn" onclick="window.location.href='profile.html'">Update Profile</button>
+            <button class="quick-btn" onclick="window.location.href='calendar.html'">View Calendar</button>
+            <button class="quick-btn" onclick="window.location.href='alumni.html'">Connect with Alumni</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/dashboard.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/jobs-data.js"></script>
+  <script>
+  // Highlight active link automatically
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("activeUser");
+        window.location.href = "index.html"; // 👈 redirect to landing page
+      });
+    }
+  });
+</script>
+<script>
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+</script>
+<!-- Load Supabase SDK -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- Initialize Supabase -->
+<script>
+  const SUPABASE_URL = "https://belkbgerurczsptvyxof.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlbGtiZ2VydXJjenNwdHZ5eG9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU5NjksImV4cCI6MjA3ODEwMTk2OX0.9WMqsMkXFzObFy0G4LimayqkjwydI4UwWnNtM40NqEQ";
+
+  // 👇 This creates the global supabase object
+  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+
+
+</body>
+</html>

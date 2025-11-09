@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard — PlacementHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="auth-body">
+
+  <div class="profile-container">
+    <div class="profile-card">
+      <h2>Admin — Student Records</h2>
+      <p class="subtext">View complete profiles of registered users</p>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div></div>
+        <button id="clearAll" class="btn-primary" style="background:#ef4444">Clear All Users</button>
+      </div>
+
+      <table class="table" id="userTable" style="width:100%;border-collapse:collapse;margin-top:10px">
+        <thead>
+          <tr style="background:#f1f5f9">
+            <th>Name</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal for viewing user signup details -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>User Account Details</h3>
+      <div id="userDetails"></div>
+    </div>
+  </div>
+
+  <!-- Modal for viewing full profile -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close closeProfile">&times;</span>
+      <h3>User Profile Information</h3>
+      <div id="profileDetails"></div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  
+</body>
+</html>

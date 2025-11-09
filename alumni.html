@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alumni Network — PlacementHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/alumni.css">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon" />
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+<a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Main Content -->
+  <main class="container alumni-page">
+    <div class="page-header">
+      <h2>Alumni Network</h2>
+      <p class="muted">Explore insights, experiences, and guidance shared by placed alumni.</p>
+    </div>
+
+    <!-- Filter/Search Bar -->
+    <div class="filter-bar">
+      <input type="text" id="searchCompany" placeholder="🔍 Search by company...">
+      <input type="text" id="searchRole" placeholder="🔍 Search by role...">
+    </div>
+
+    <!-- Alumni Cards -->
+    <section id="alumniGrid" class="alumni-grid"></section>
+  </main>
+
+  <script src="js/alumni.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("activeUser");
+        window.location.href = "index.html"; // 👈 redirect to landing page
+      });
+    }
+  });
+</script>
+<script>
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+</script>
+
+
+</body>
+</html>

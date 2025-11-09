@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apply</title><link rel="stylesheet" href="styles.css"></head>
+<body class="page-apply">
+  <header class="header"><div class="inner container">
+    <div class="brand"><div class="logo">H</div><div class="title">Hackloop — AI Placement Portal</div></div>
+    <nav><a href="index.html">Home</a><a href="apply.html">Apply</a><a href="dashboard.html">Dashboard</a><span class="hdr-user" style="margin-left:16px"></span></nav>
+  </div></header>
+
+  <main class="container" style="padding-top:20px">
+    <div class="card">
+      <h2>Job Listings</h2>
+      <p class="small">Filter and browse roles (demo)</p>
+      <div id="job-list" style="margin-top:12px"></div>
+    </div>
+  </main>
+
+  <footer class="footer">© Hackloop — Demo frontend</footer>
+  <script src="app.js"></script>
+  <script src="jobs-data.js" defer></script>   <!-- MUST be first if pages use jobs data -->
+  <script src="nav-loader.js" defer></script>  <!-- injects the navbar -->
+  <script src="main.js" defer></script>        <!-- or page-specific script (jobs.js, dashboard.js etc.) -->
+</body> 
+</body>
+</html>

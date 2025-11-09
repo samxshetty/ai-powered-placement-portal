@@ -1,0 +1,154 @@
+:root {
+  --primary: #0b63d8;
+  --primary-dark: #0b4fa8;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --radius: 12px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  margin: 0;
+  color: #1e293b;
+}
+
+/* Navbar */
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.nav-inner {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  font-size: 17px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.nav-links a {
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+.nav-links a:hover {
+  color: var(--primary);
+}
+.nav-links a.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+.logout-btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* Page Header */
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  padding-bottom: 50px;
+}
+.page-header {
+  margin-top: 28px;
+}
+.page-header h2 {
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+/* Filter Bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.filter-bar input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+}
+.filter-bar input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(11, 99, 216, 0.1);
+}
+
+/* Alumni Cards */
+.alumni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
+.alumni-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+.alumni-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.alumni-card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+.alumni-card p {
+  margin: 6px 0;
+  color: #475569;
+  font-size: 14px;
+}
+.connect-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+.connect-btn:hover {
+  background: var(--primary-dark);
+}

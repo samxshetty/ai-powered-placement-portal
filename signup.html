@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Create Account – PlacementHub</title>
+
+  <!-- Fonts + CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="auth-body">
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-icon">
+        <img src="Job.png" alt="PlacementHub" width="40" />
+      </div>
+
+      <h2>Create Account</h2>
+      <p class="subtext">Fill in your details to get started</p>
+
+      <form id="signupForm">
+        <label>Full Name
+          <input type="text" id="signupName" name="name" required />
+        </label>
+
+        <label>Roll Number
+          <input type="text" id="signupRoll" name="roll" required />
+        </label>
+
+        <label>Department
+          <select id="signupDept" name="department" required>
+            <option value="">Select Department</option>
+            <option value="CSE">Computer Science & Engineering</option>
+            <option value="ECE">Electronics & Communication</option>
+            <option value="ME">Mechanical Engineering</option>
+            <option value="CE">Civil Engineering</option>
+            <option value="EEE">Electrical & Electronics</option>
+          </select>
+        </label>
+
+        <label>Year
+          <select id="signupYear" name="year" required>
+            <option value="">Select Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+        </label>
+
+        <label>Email
+          <input type="email" id="signupEmail" name="email" required />
+        </label>
+
+        <label>Password
+          <input type="password" id="signupPassword" name="password" required />
+        </label>
+
+        <button type="submit" class="btn-primary full">Sign Up</button>
+      </form>
+
+      <p class="bottom-text">
+        Already have an account? <a href="login.html">Login</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/signup.js"></script>
+<!-- Supabase JS SDK -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://belkbgerurczsptvyxof.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlbGtiZ2VydXJjenNwdHZ5eG9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU5NjksImV4cCI6MjA3ODEwMTk2OX0.9WMqsMkXFzObFy0G4LimayqkjwydI4UwWnNtM40NqEQ";
+
+  // ✅ create a global Supabase client (for frontend)
+  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+
+
+</body>
+</html>

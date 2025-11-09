@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>My Profile — PlacementHub</title>
+  <link rel="stylesheet" href="css/profile.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <img src="Job.png" alt="Logo" class="logo-icon">
+      <span class="brand">PlacementHub</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
+      <a href="jobs.html" class="nav-link">Jobs</a>
+      <a href="applications.html" class="nav-link">Applications</a>
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="alumni.html" class="nav-link">Alumni</a>
+<a href="news.html" class="nav-link">News</a>
+      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+  <main class="container">
+    <h2 class="page-title">My Profile</h2>
+    <p class="subtext">Review, update, and manage your placement information</p>
+
+    <div class="profile-layout">
+      <!-- Sidebar -->
+<aside class="profile-sidebar card">
+  <div class="profile-avatar">
+    <img src="images/icons/icon-placeholder.svg" alt="Profile" id="profilePic" title="Click to change photo">
+    <input type="file" id="picUpload" accept="image/*" style="display:none;">
+  </div>
+  <h3 id="profileName">Student Name</h3>
+  <p id="profileEmail" class="muted">email@example.com</p>
+  <p><strong id="profileDept">ISE</strong></p>
+  <p><strong id="profileYear">Year: 1</strong></p>
+  <p><strong id="profileRoll">Roll No: NU25XXX</strong></p>
+</aside>
+
+
+      <!-- Main Profile -->
+      <section class="profile-main">
+
+        <!-- Personal Info -->
+        <div class="card section">
+          <div class="section-header">
+            <h3>Personal Information</h3>
+            <button id="editBtn" class="btn ghost">Edit Profile</button>
+          </div>
+          <div class="section-body">
+            <label>Full Name</label>
+            <input type="text" id="fullName" disabled>
+
+            <label>Email</label>
+            <input type="email" id="email" disabled>
+
+            <label>Phone Number</label>
+            <input type="text" id="phone" placeholder="+91 1234567890" disabled>
+
+            <label>LinkedIn Profile</label>
+            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username" disabled>
+
+            <label>GitHub Profile</label>
+            <input type="url" id="github" placeholder="https://github.com/username" disabled>
+
+            <label>Portfolio / Website</label>
+            <input type="url" id="portfolio" placeholder="https://yourportfolio.com" disabled>
+          </div>
+        </div>
+
+        <!-- Academic Details -->
+        <div class="card section">
+          <h3>Academic Details</h3>
+
+          <label>Roll Number</label>
+          <input type="text" id="rollNumber" disabled>
+
+          <label>Department</label>
+          <input type="text" id="department" disabled>
+
+          <label>Year</label>
+          <input type="text" id="year" disabled>
+
+          <label>CGPA</label>
+          <input type="text" id="cgpa" disabled>
+
+          <label>Active Backlogs</label>
+          <input type="text" id="backlogs" disabled>
+
+          <label>10th Percentage</label>
+          <input type="text" id="tenth" disabled>
+
+          <label>12th Percentage</label>
+          <input type="text" id="twelfth" disabled>
+        </div>
+
+        <!-- Skills -->
+        <div class="card section">
+          <h3>Skills & Interests</h3>
+          <label>Technical Skills</label>
+          <input type="text" id="skills" placeholder="Java, Python, React" disabled>
+
+          <label>Career Interests</label>
+          <textarea id="interests" placeholder="Software Development, Data Science..." disabled></textarea>
+
+          <label>Achievements / Certifications</label>
+          <textarea id="achievements" placeholder="Hackathon wins, certifications..." disabled></textarea>
+        </div>
+
+        <!-- Resume -->
+        <div class="card section">
+          <h3>Resume</h3>
+          <div class="resume-box" id="resumeBox">
+            <p id="resumeStatus" class="muted">No resume uploaded</p>
+            <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" style="display:none;">
+            <button id="uploadBtn" class="btn ghost">Upload Resume</button>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="section" style="text-align:right;">
+          <button id="saveBtn" class="btn primary">Save Changes</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/profile.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("activeUser");
+        window.location.href = "index.html"; // 👈 redirect to landing page
+      });
+    }
+  });
+</script>
+<script>
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

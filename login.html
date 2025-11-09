@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login — PlacementHub</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-icon">
+        <img src="Job.png" alt="PlacementHub Logo" width="60">
+      </div>
+      <h2>Welcome Back 👋</h2>
+      <p class="subtext">Login to your PlacementHub account</p>
+
+      <form id="loginForm">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+        <button type="submit" class="btn-primary full">Login</button>
+
+        <p class="bottom-text">
+          Don’t have an account?
+          <a href="signup.html">Sign up</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase JS SDK -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://belkbgerurczsptvyxof.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlbGtiZ2VydXJjenNwdHZ5eG9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU5NjksImV4cCI6MjA3ODEwMTk2OX0.9WMqsMkXFzObFy0G4LimayqkjwydI4UwWnNtM40NqEQ";
+
+  // ✅ create a global Supabase client (for frontend)
+  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+<script src="js/login.js"></script>
+
+</body>
+</html>
