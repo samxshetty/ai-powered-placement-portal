@@ -30,9 +30,9 @@ async function uploadToCloudinary(file) {
 // -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const fieldIds = [
-    "fullName","email","phone","linkedin","github","portfolio",
-    "rollNumber","department","year","cgpa","backlogs",
-    "tenth","twelfth","skills","interests","achievements"
+    "fullName", "email", "phone", "linkedin", "github", "portfolio",
+    "rollNumber", "department", "year", "cgpa", "backlogs",
+    "tenth", "twelfth", "skills", "interests", "achievements"
   ];
 
   const editBtn = document.getElementById("editBtn");
@@ -54,7 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let storedProfile = {};
   let isEditing = false;
 
-  // Enable/disable helper
+  // -----------------------------
+  // Enable/disable editing
+  // -----------------------------
   function setEditingMode(state) {
     isEditing = state;
     fieldIds.forEach(id => {
@@ -66,21 +68,40 @@ document.addEventListener("DOMContentLoaded", () => {
     editBtn.textContent = state ? "Cancel Edit" : "Edit Profile";
   }
 
-  // Fill UI from storedProfile
+  // -----------------------------
+  // Fill all profile fields
+  // -----------------------------
   function fillFields() {
     fieldIds.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = storedProfile[id] || "";
     });
+
     sidebarName.textContent = storedProfile.fullName || "Student Name";
     sidebarEmail.textContent = storedProfile.email || "email@example.com";
     sidebarDept.textContent = storedProfile.department || "Department";
     sidebarYear.textContent = "Year: " + (storedProfile.year || "1st Year");
     sidebarRoll.textContent = "Roll No: " + (storedProfile.rollNumber || "NU25XXX");
+
+    // ✅ Show saved profile picture
+    if (storedProfile.profilePicURL) {
+      profilePic.src = storedProfile.profilePicURL;
+    }
+
+    // ✅ Show saved resume
+    if (storedProfile.resumeURL) {
+      resumeStatus.innerHTML = `
+        <a href="${storedProfile.resumeURL}" target="_blank" style="color:green;text-decoration:underline;">
+          View Uploaded Resume
+        </a>
+      `;
+    } else {
+      resumeStatus.textContent = "No resume uploaded";
+    }
   }
 
   // -----------------------------
-  // Auth listener
+  // Firebase Auth listener
   // -----------------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -88,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
       return;
     }
+
     userUID = user.uid;
 
     try {
@@ -97,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (snap.exists()) {
         storedProfile = snap.data();
       } else {
-        // Fallback from users collection
+        // If profile doesn’t exist yet, initialize it from users collection or auth
         const userSnap = await getDoc(doc(db, "users", userUID));
         if (userSnap.exists()) {
           const u = userSnap.data();
@@ -115,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // normalize naming
+      // Normalize field names
       storedProfile.fullName = storedProfile.fullName || storedProfile.full_name || "";
       storedProfile.rollNumber = storedProfile.rollNumber || storedProfile.roll_no || "";
       storedProfile.backlogs = storedProfile.backlogs || "None";
@@ -128,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // Edit/save handlers
+  // Edit / Save button handlers
   // -----------------------------
   editBtn.addEventListener("click", () => setEditingMode(!isEditing));
 
@@ -150,38 +172,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // Uploads
+  // Cloudinary Upload Handlers
   // -----------------------------
   profilePic.addEventListener("click", () => picUpload.click());
+
   picUpload.addEventListener("change", async e => {
     const file = e.target.files[0];
     if (!file || !userUID) return;
+
     try {
       const data = await uploadToCloudinary(file);
       storedProfile.profilePicURL = data.secure_url;
       profilePic.src = data.secure_url;
-      await setDoc(doc(db, "profiles", userUID),
-        { profilePicURL: data.secure_url }, { merge: true });
-      alert("✅ Photo uploaded!");
-    } catch (err) { console.error(err); alert("Upload failed"); }
+      await setDoc(doc(db, "profiles", userUID), { profilePicURL: data.secure_url }, { merge: true });
+      alert("✅ Profile photo uploaded!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Upload failed.");
+    }
   });
 
   uploadBtn.addEventListener("click", () => resumeUpload.click());
+
   resumeUpload.addEventListener("change", async e => {
     const file = e.target.files[0];
     if (!file || !userUID) return;
+
     try {
       const data = await uploadToCloudinary(file);
       storedProfile.resumeURL = data.secure_url;
-      resumeStatus.textContent = `${file.name} ✅ Uploaded`;
-      resumeStatus.style.color = "green";
-      await setDoc(doc(db, "profiles", userUID),
-        { resumeURL: data.secure_url }, { merge: true });
-    } catch (err) { console.error(err); alert("Upload failed"); }
+      resumeStatus.innerHTML = `
+        <a href="${data.secure_url}" target="_blank" style="color:green;text-decoration:underline;">
+          View Uploaded Resume
+        </a>
+      `;
+      await setDoc(doc(db, "profiles", userUID), { resumeURL: data.secure_url }, { merge: true });
+      alert("✅ Resume uploaded!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Upload failed.");
+    }
   });
 
   // -----------------------------
-  // Logout
+  // Logout handler
   // -----------------------------
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
