@@ -106,47 +106,36 @@
     </div>
   </main>
 
-  <script src="js/dashboard.js"></script>
+  <script src="js/dashboard.js" type="module"></script>
   <script src="js/data.js"></script>
   <script src="js/jobs-data.js"></script>
-  <script>
-  // Highlight active link automatically
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
-  });
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
-      });
-    }
-  });
-</script>
-<script>
-  if (!localStorage.getItem("activeUser")) {
-    window.location.href = "index.html";
-  }
-</script>
-<!-- Load Supabase SDK -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-<!-- Initialize Supabase -->
-<script>
-  const SUPABASE_URL = "https://belkbgerurczsptvyxof.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlbGtiZ2VydXJjenNwdHZ5eG9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU5NjksImV4cCI6MjA3ODEwMTk2OX0.9WMqsMkXFzObFy0G4LimayqkjwydI4UwWnNtM40NqEQ";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+  import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-  // 👇 This creates the global supabase object
-  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
+    authDomain: "ai-powered-placement-portal.firebaseapp.com",
+    projectId: "ai-powered-placement-portal",
+    storageBucket: "ai-powered-placement-portal.firebasestorage.app",
+    messagingSenderId: "814349983103",
+    appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
+    measurementId: "G-RG8P2P71H7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+
+  window.db = db;
+  window.auth = auth;
+  window.storage = storage;
 </script>
+
 
 
 

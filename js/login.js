@@ -1,55 +1,63 @@
-// js/login.js — Supabase Login for PlacementHub
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getFirestore, getDoc, doc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
+  authDomain: "ai-powered-placement-portal.firebaseapp.com",
+  projectId: "ai-powered-placement-portal",
+storageBucket: "ai-powered-placement-portal.appspot.com",
+  messagingSenderId: "814349983103",
+  appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
+  measurementId: "G-RG8P2P71H7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
-
-  if (!form) {
-    console.error("⚠️ loginForm not found. Check your form ID.");
-    return;
-  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Get credentials
-    const email = document.getElementById("loginEmail")?.value.trim().toLowerCase();
-    const password = document.getElementById("loginPassword")?.value.trim();
+    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const password = document.getElementById("loginPassword").value.trim();
 
     if (!email || !password) {
       alert("⚠️ Please enter both email and password.");
       return;
     }
 
-    // 🔍 Check for matching user in Supabase
-    const { data: userData, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .eq("password", password)
-      .limit(1);
+    try {
+      // Firebase sign-in
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    if (error) {
-      console.error("Database error:", error);
-      alert("❌ Unable to connect to the database. Please try again later.");
-      return;
+      // Fetch user details from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
+
+      // Store session data
+      localStorage.setItem("activeUser", email);
+      localStorage.setItem("activeUserId", user.uid);
+      localStorage.setItem("activeUserName", userData.full_name || "");
+      localStorage.setItem("activeUserDept", userData.department || "");
+      localStorage.setItem("activeUserYear", userData.year || "");
+      localStorage.setItem("activeUserRoll", userData.roll_no || "");
+
+      alert(`✅ Welcome back, ${userData.full_name || "Student"}!`);
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error.code === "auth/user-not-found") {
+        alert("❌ No account found. Please sign up first.");
+      } else if (error.code === "auth/wrong-password") {
+        alert("❌ Incorrect password. Try again.");
+      } else {
+        alert("⚠️ Login failed. Check console for details.");
+      }
     }
-
-    if (!userData || userData.length === 0) {
-      alert("❌ Invalid email or password. Please try again.");
-      return;
-    }
-
-    const user = userData[0];
-    console.log("✅ Logged in user:", user);
-
-    // 🧠 Save active session locally
-    localStorage.setItem("activeUser", user.email);
-    localStorage.setItem("activeUserId", user.id);
-    localStorage.setItem("activeUserName", user.full_name);
-    localStorage.setItem("activeUserDept", user.department);
-    localStorage.setItem("activeUserYear", user.year);
-    localStorage.setItem("activeUserRoll", user.roll_no);
-
-    alert(`✅ Welcome back, ${user.full_name || "Student"}!`);
-    window.location.href = "dashboard.html";
   });
 });

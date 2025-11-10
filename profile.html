@@ -4,33 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>My Profile — PlacementHub</title>
-  <link rel="stylesheet" href="css/profile.css" />
-    <link rel="stylesheet" href="css/styles.css" />
 
+  <link rel="stylesheet" href="css/profile.css" />
+  <link rel="stylesheet" href="css/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<!-- Navbar -->
-<nav class="navbar">
-  <div class="nav-inner">
-    <div class="nav-left">
-      <img src="Job.png" alt="Logo" class="logo-icon">
-      <span class="brand">PlacementHub</span>
-    </div>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <img src="Job.png" alt="Logo" class="logo-icon">
+        <span class="brand">PlacementHub</span>
+      </div>
 
-    <div class="nav-right">
-      <a href="dashboard.html" class="nav-link">Dashboard</a>
-      <a href="jobs.html" class="nav-link">Jobs</a>
-      <a href="applications.html" class="nav-link">Applications</a>
-      <a href="profile.html" class="nav-link">Profile</a>
-      <a href="calendar.html" class="nav-link">Calendar</a>
-      <a href="alumni.html" class="nav-link">Alumni</a>
-<a href="news.html" class="nav-link">News</a>
-      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+      <div class="nav-right">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="jobs.html" class="nav-link">Jobs</a>
+        <a href="applications.html" class="nav-link">Applications</a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+        <a href="calendar.html" class="nav-link">Calendar</a>
+        <a href="alumni.html" class="nav-link">Alumni</a>
+        <a href="news.html" class="nav-link">News</a>
+        <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+      </div>
     </div>
-  </div>
-</nav>
-
+  </nav>
 
   <main class="container">
     <h2 class="page-title">My Profile</h2>
@@ -38,34 +38,34 @@
 
     <div class="profile-layout">
       <!-- Sidebar -->
-<aside class="profile-sidebar card">
-  <div class="profile-avatar">
-    <img src="images/icons/icon-placeholder.svg" alt="Profile" id="profilePic" title="Click to change photo">
-    <input type="file" id="picUpload" accept="image/*" style="display:none;">
-  </div>
-  <h3 id="profileName">Student Name</h3>
-  <p id="profileEmail" class="muted">email@example.com</p>
-  <p><strong id="profileDept">ISE</strong></p>
-  <p><strong id="profileYear">Year: 1</strong></p>
-  <p><strong id="profileRoll">Roll No: NU25XXX</strong></p>
-</aside>
-
+      <aside class="profile-sidebar card">
+        <div class="profile-avatar">
+          <img src="images/icons/icon-placeholder.svg" alt="Profile" id="profilePic" title="Click to change photo">
+          <input type="file" id="picUpload" accept="image/*" style="display:none;">
+        </div>
+        <button class="btn ghost" id="viewPhotoBtn">View Photo</button>
+        <h3 id="profileName">Student Name</h3>
+        <p id="profileEmail" class="muted">email@example.com</p>
+        <p><strong id="profileDept">ISE</strong></p>
+        <p><strong id="profileYear">Year: 1</strong></p>
+        <p><strong id="profileRoll">Roll No: NU25XXX</strong></p>
+      </aside>
 
       <!-- Main Profile -->
       <section class="profile-main">
-
         <!-- Personal Info -->
         <div class="card section">
           <div class="section-header">
             <h3>Personal Information</h3>
             <button id="editBtn" class="btn ghost">Edit Profile</button>
           </div>
+
           <div class="section-body">
             <label>Full Name</label>
-            <input type="text" id="fullName" disabled>
+            <input type="text" id="fullName" placeholder="Enter your name" disabled>
 
             <label>Email</label>
-            <input type="email" id="email" disabled>
+            <input type="email" id="email" placeholder="Enter your email" disabled>
 
             <label>Phone Number</label>
             <input type="text" id="phone" placeholder="+91 1234567890" disabled>
@@ -86,38 +86,39 @@
           <h3>Academic Details</h3>
 
           <label>Roll Number</label>
-          <input type="text" id="rollNumber" disabled>
+          <input type="text" id="rollNumber" placeholder="NU25XXX" disabled>
 
           <label>Department</label>
-          <input type="text" id="department" disabled>
+          <input type="text" id="department" placeholder="CSE" disabled>
 
           <label>Year</label>
-          <input type="text" id="year" disabled>
+          <input type="text" id="year" placeholder="1st Year" disabled>
 
           <label>CGPA</label>
-          <input type="text" id="cgpa" disabled>
+          <input type="text" id="cgpa" placeholder="9.0" disabled>
 
           <label>Active Backlogs</label>
-          <input type="text" id="backlogs" disabled>
+          <input type="text" id="backlogs" placeholder="None" disabled>
 
           <label>10th Percentage</label>
-          <input type="text" id="tenth" disabled>
+          <input type="text" id="tenth" placeholder="90%" disabled>
 
           <label>12th Percentage</label>
-          <input type="text" id="twelfth" disabled>
+          <input type="text" id="twelfth" placeholder="85%" disabled>
         </div>
 
         <!-- Skills -->
         <div class="card section">
           <h3>Skills & Interests</h3>
+
           <label>Technical Skills</label>
-          <input type="text" id="skills" placeholder="Java, Python, React" disabled>
+          <input type="text" id="skills" placeholder="Python, HTML, CSS, JS" disabled>
 
           <label>Career Interests</label>
-          <textarea id="interests" placeholder="Software Development, Data Science..." disabled></textarea>
+          <textarea id="interests" placeholder="Software Development, AI, Data Science..." disabled></textarea>
 
           <label>Achievements / Certifications</label>
-          <textarea id="achievements" placeholder="Hackathon wins, certifications..." disabled></textarea>
+          <textarea id="achievements" placeholder="Hackathons, Certifications..." disabled></textarea>
         </div>
 
         <!-- Resume -->
@@ -127,6 +128,7 @@
             <p id="resumeStatus" class="muted">No resume uploaded</p>
             <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" style="display:none;">
             <button id="uploadBtn" class="btn ghost">Upload Resume</button>
+            <a id="viewResumeBtn" href="#" target="_blank" style="display:none; margin-top:10px;" class="btn-outline">View Resume</a>
           </div>
         </div>
 
@@ -138,23 +140,36 @@
     </div>
   </main>
 
-  <script src="js/profile.js"></script>
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
-      });
-    }
-  });
+<!-- Firebase setup FIRST -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+  import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
+    authDomain: "ai-powered-placement-portal.firebaseapp.com",
+    projectId: "ai-powered-placement-portal",
+    storageBucket: "ai-powered-placement-portal.firebasestorage.app",
+    messagingSenderId: "814349983103",
+    appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
+    measurementId: "G-RG8P2P71H7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+
+  // expose globally
+  window.db = db;
+  window.auth = auth;
+  window.storage = storage;
 </script>
-<script>
-  if (!localStorage.getItem("activeUser")) {
-    window.location.href = "index.html";
-  }
-</script>
+
+<!-- THEN load your main logic -->
+<script src="js/profile.js" type="module"></script>
 
 </body>
 </html>
