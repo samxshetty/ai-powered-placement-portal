@@ -1,0 +1,172 @@
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  background: linear-gradient(180deg, #fff, #f9fafb);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08);
+}
+
+.event-info h3 {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.event-meta {
+  color: #475569;
+  font-size: 14px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.badge {
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(37,99,235,0.08);
+}
+
+/* Modal styling reused from alumni */
+.modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  font-family: 'Inter', sans-serif;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.modal-header .close {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748b;
+  transition: 0.2s;
+}
+.modal-header .close:hover {
+  color: #1e40af;
+}
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.event-form .row {
+  display: flex;
+  gap: 14px;
+}
+.event-form label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 500;
+}
+.event-form input,
+.event-form textarea,
+.event-form select {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+.event-form input:focus,
+.event-form textarea:focus,
+.event-form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+.btn-ghost {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+}
+.btn-gradient {
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+.btn-gradient:hover {
+  background: #1e40af;
+}
+.hidden {
+  display: none !important;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+}
+

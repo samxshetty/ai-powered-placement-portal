@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PlacementHub — Student Management</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="student.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Sidebar -->
+<aside class="sidebar">
+  <div>
+    <div class="brand">
+      <div class="logo">PlacementHub</div>
+      <div class="tag">Admin Panel</div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="admin-jobs.html" class="nav-link"><span class="icon">💼</span> Jobs</a>
+      <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
+      <a href="admin-events.html" class="nav-link"><span class="icon">📅</span> Events</a>
+      <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
+      <a href="student.html" class="nav-link active"><span class="icon">🎓</span> Students</a>
+    </nav>
+  </div>
+
+  <div class="profile">
+    <div class="avatar">AD</div>
+    <div class="pinfo">
+      <div class="name">Admin User</div>
+      <div class="email">admin@nmamit.in</div>
+    </div>
+  </div>
+</aside>
+
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <h1 class="page-title">Student Management</h1>
+      <button class="btn btn-outline">📤 Export Data</button>
+    </header>
+
+    <p class="subtitle">View and manage student records</p>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="card stat">
+        <div class="stat-head">
+          <span>Total Students</span>
+        </div>
+        <div class="stat-value" id="totalStudents">0</div>
+      </div>
+
+      <div class="card stat">
+        <div class="stat-head"><span>Placed Students</span></div>
+        <div class="stat-value" id="placedStudents">0</div>
+      </div>
+
+      <div class="card stat">
+        <div class="stat-head"><span>Active Students</span></div>
+        <div class="stat-value" id="activeStudents">0</div>
+      </div>
+
+      <div class="card stat">
+        <div class="stat-head"><span>Avg CGPA</span></div>
+        <div class="stat-value" id="avgCGPA">0.00</div>
+      </div>
+    </div>
+
+    <!-- Search + Filters -->
+    <div class="filter-bar">
+      <input type="text" id="studentSearch" placeholder="Search by name or USN..." />
+      <select id="branchFilter">
+        <option value="All">All Branches</option>
+        <option value="CSE">Computer Science</option>
+        <option value="ISE">Information Science</option>
+        <option value="ECE">Electronics</option>
+        <option value="ME">Mechanical</option>
+        <option value="CV">Civil</option>
+      </select>
+      <select id="statusFilter">
+        <option value="All">All Status</option>
+        <option value="Placed">Placed</option>
+        <option value="Active">Active</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card table-wrap">
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>USN</th>
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Semester</th>
+            <th>CGPA</th>
+            <th>Backlogs</th>
+            <th>Status</th>
+            <th>Company</th>
+            <th>Applications</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Student Profile Modal -->
+<div id="studentModal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-body" id="studentDetails"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="studentModal">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="student.js"></script>
+<script>
+  // Highlight active nav link dynamically
+  document.querySelectorAll(".nav-link").forEach(link => {
+    const current = window.location.pathname.split("/").pop();
+    if (link.getAttribute("href") === current) {
+      link.classList.add("active");
+    }
+  });
+</script>
+</body>
+</html>

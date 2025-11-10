@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PlacementHub — News & Announcements</title>
+
+  <!-- Fonts + Core Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="admin-news.css">
+</head>
+<body>
+
+<div class="wrap">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+  <div>
+    <div class="brand">
+      <div class="logo">PlacementHub</div>
+      <div class="tag">Admin Panel</div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="admin-jobs.html" class="nav-link"><span class="icon">💼</span> Jobs</a>
+      <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
+      <a href="admin-events.html" class="nav-link"><span class="icon">📅</span> Events</a>
+      <a href="admin-news.html" class="nav-link active><span class="icon">📰</span> News</a>
+      <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
+    </nav>
+  </div>
+
+  <div class="profile">
+    <div class="avatar">AD</div>
+    <div class="pinfo">
+      <div class="name">Admin User</div>
+      <div class="email">admin@nmamit.in</div>
+    </div>
+  </div>
+</aside>
+
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <input id="newsSearch" class="search" placeholder="Search news by title or category..." />
+      <div class="top-actions">
+        <button class="btn btn-ghost">🔔</button>
+        <button id="openAddNews" class="btn btn-gradient">+ Add News</button>
+      </div>
+    </header>
+
+    <section>
+      <h1 class="page-title">News & Announcements</h1>
+      <p class="subtitle">Publish updates and announcements for students.</p>
+
+      <div class="card news-wrap">
+        <div class="news-list" id="newsList"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="newsModal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add News Article</h3>
+      <!-- Removed ❌ close button -->
+    </div>
+    <div class="modal-body">
+      <form id="newsForm" class="news-form">
+        <input type="hidden" name="id" />
+
+        <label>Headline <input name="title" required></label>
+        <div class="row">
+          <label>Category
+            <select name="category" required>
+              <option value="Achievement">Achievement</option>
+              <option value="Announcement">Announcement</option>
+              <option value="Event">Event</option>
+              <option value="Placement">Placement</option>
+              <option value="Scholarship">Scholarship</option>
+            </select>
+          </label>
+          <label>Date <input name="date" type="date" required></label>
+        </div>
+
+        <label>Author <input name="author" placeholder="By Admin or Placement Cell..."></label>
+        <label>Content <textarea name="content" rows="4" required></textarea></label>
+        <label>Banner Image URL (Optional)
+          <input name="banner" type="url" placeholder="https://example.com/banner.jpg" />
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="newsModal">Cancel</button>
+          <button type="submit" class="btn btn-gradient" id="saveNewsBtn">Save News</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="admin-news.js"></script>
+<script>
+  // Highlight active nav link dynamically
+  document.querySelectorAll(".nav-link").forEach(link => {
+    const current = window.location.pathname.split("/").pop();
+    if (link.getAttribute("href") === current) {
+      link.classList.add("active");
+    }
+  });
+</script>
+</body>
+</html>
