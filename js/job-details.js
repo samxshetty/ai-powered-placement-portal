@@ -65,9 +65,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   el("jobSalary").textContent = job.package || "Not specified";
   el("jobDeadline").textContent = "Apply by: " + (job.applyBy || "-");
   el("jobDescription").textContent = job.jobDescription || "No description available.";
-  el("jobSkills").innerHTML = (job.skills || [])
-    .map((s) => `<span class='skill'>${s}</span>`)
-    .join("");
+  // ✅ Render skills safely (works with both array or comma-separated string)
+  let skillsArray = [];
+
+  if (Array.isArray(job.skills)) {
+    skillsArray = job.skills; 
+  } else if (typeof job.skills === "string") {
+    skillsArray = job.skills.split(",").map((s) => s.trim());
+  }
+
+  el("jobSkills").innerHTML = skillsArray.length
+  ? skillsArray.map((s) => `<span class='skill'>${s}</span>`).join("")
+  : "<span>No skills specified.</span>";
+
 
   const applyBtn = el("applyBtn");
 
