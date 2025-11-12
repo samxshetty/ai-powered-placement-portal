@@ -1,120 +1,120 @@
-// js/job-details.js — FINAL fixed version
-document.addEventListener("DOMContentLoaded", () => {
-  // Wait until job data is ready
-  function waitForJobsData(callback) {
-    if (window.__PLACEMENTHUB_JOBS && window.__PLACEMENTHUB_JOBS.length > 0) {
-      callback(window.__PLACEMENTHUB_JOBS);
-    } else {
-      setTimeout(() => waitForJobsData(callback), 100);
+// job-details.js — Student Job Details & Application via Firestore
+
+// ✅ Import initialized Firebase app instead of reinitializing it
+import { db } from "./firebase-init.js";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  setDoc,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("id");
+
+  if (!jobId) {
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Invalid job ID.</h2>";
+    return;
+  }
+
+  const jobRef = doc(db, "jobs", jobId);
+  let snap;
+  try {
+    snap = await getDoc(jobRef);
+  } catch (err) {
+    console.error("Error fetching job details:", err);
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Failed to load job details.</h2>";
+    return;
+  }
+
+  if (!snap.exists()) {
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Job not found.</h2>";
+    return;
+  }
+
+  const job = snap.data();
+  const el = (id) => document.getElementById(id);
+
+  // ✅ Check all required DOM elements before accessing
+  const ids = [
+    "jobRole",
+    "jobCompanyName",
+    "jobType",
+    "jobLocation",
+    "jobSalary",
+    "jobDeadline",
+    "jobDescription",
+    "jobSkills",
+    "applyBtn",
+  ];
+
+  for (const id of ids) {
+    if (!el(id)) {
+      console.error(`Element with ID "${id}" not found in HTML.`);
+      return;
     }
   }
 
-  waitForJobsData((jobs) => {
-    const params = new URLSearchParams(window.location.search);
-    const jobId = params.get("id");
-    const appId = params.get("appId");
+  // ✅ Populate job details
+  el("jobRole").textContent = job.role || "Not specified";
+  el("jobCompanyName").textContent = job.company || "Not specified";
+  el("jobType").textContent = job.type || "Not specified";
+  el("jobLocation").textContent = job.location || "Not specified";
+  el("jobSalary").textContent = job.package || "Not specified";
+  el("jobDeadline").textContent = "Apply by: " + (job.applyBy || "-");
+  el("jobDescription").textContent = job.jobDescription || "No description available.";
+  el("jobSkills").innerHTML = (job.skills || [])
+    .map((s) => `<span class='skill'>${s}</span>`)
+    .join("");
 
-    const job = jobs.find(j => String(j.id) === String(jobId));
+  const applyBtn = el("applyBtn");
 
-    if (!job) {
-      document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Job not found.</h2>";
-      return;
-    }
+  // ✅ Get student info from localStorage (ensure proper format)
+  const studentId = localStorage.getItem("activeUserId");
+  const studentName = localStorage.getItem("activeUserName");
+  const studentDept = localStorage.getItem("activeUserDept");
+  const studentRoll = localStorage.getItem("activeUserRoll");
+  const studentEmail = localStorage.getItem("activeUser");
+  const studentYear = localStorage.getItem("activeUserYear");
 
-    const el = id => document.getElementById(id);
-    const activeUser = localStorage.getItem("activeUser") || "guest";
-    const key = "applications_" + activeUser;
+  if (!studentId || !studentName) {
+    applyBtn.textContent = "Profile Not Found";
+    applyBtn.disabled = true;
+    applyBtn.style.opacity = "0.6";
+    return;
+  }
 
-    const readApplications = () => JSON.parse(localStorage.getItem(key) || "[]");
-    const saveApplications = arr => {
-      localStorage.setItem(key, JSON.stringify(arr));
-      localStorage.setItem(key + "_updated_at", new Date().toISOString());
-    };
+  // ✅ Handle Apply Button Click
+  applyBtn.addEventListener("click", async () => {
+    try {
+      // Add student to applicants list (if not already)
+      await updateDoc(jobRef, { applicants: arrayUnion(studentId) });
 
-    const applications = readApplications();
-
-    // 🔍 Find application record robustly
-    const application = applications.find(a =>
-      String(a.applicationId) === String(appId) ||
-      String(a.id) === String(appId) ||
-      String(a.jobId) === String(jobId) ||
-      String(a.eventId) === String(jobId)
-    );
-
-    // 🧱 Fill job details
-    el("jobRole").textContent = job.role;
-    el("jobCompanyName").textContent = job.company;
-    el("jobType").textContent = job.type;
-    el("jobLocation").textContent = job.location;
-    el("jobSalary").textContent = job.salary;
-    el("jobDeadline").textContent = "Apply by: " + job.deadline;
-    el("applyDeadline").textContent = "Deadline: " + job.deadline;
-    el("jobDescription").textContent = job.description || "No description available.";
-    el("jobSkills").innerHTML = (job.skills || []).map(s => `<span class="skill">${s}</span>`).join("");
-    el("jobRequirements").innerHTML = (job.requirements || []).map(r => `<li><span class='check-icon'>✓</span>${r}</li>`).join("");
-    el("jobResponsibilities").innerHTML = (job.responsibilities || []).map(r => `<li><span class='check-icon'>✓</span>${r}</li>`).join("");
-    el("jobBenefits").innerHTML = (job.benefits || []).map(b => `<li><span class='check-icon'>✓</span>${b}</li>`).join("");
-
-    const applyBtn = el("applyBtn");
-
-    function updateApplyButton() {
-      const alreadyApplied = applications.some(a => String(a.jobId) === String(job.id));
-      if (alreadyApplied) {
-        applyBtn.textContent = "Applied";
-        applyBtn.disabled = true;
-        applyBtn.style.opacity = "0.6";
-      } else {
-        applyBtn.textContent = "Submit Application";
-        applyBtn.disabled = false;
-        applyBtn.style.opacity = "1";
-      }
-    }
-
-    // 🧩 Handle Apply
-    applyBtn.addEventListener("click", () => {
-      const alreadyApplied = applications.some(a => String(a.jobId) === String(job.id));
-      if (alreadyApplied) return alert("You have already applied for this job.");
-
-      const record = {
-        applicationId: "app_" + Date.now(),
-        jobId: job.id,
-        company: job.company,
-        role: job.role,
+      // Create an application record
+      await setDoc(doc(db, "applications", `${studentId}_${jobId}`), {
+        jobId,
+        studentId,
+        studentName,
+        studentEmail,
+        dept: studentDept,
+        rollNo: studentRoll,
+        year: studentYear,
         appliedAt: new Date().toISOString(),
-        status: "Applied"
-      };
+        status: "Applied",
+        jobRole: job.role,
+        jobCompany: job.company,
+      });
 
-      applications.push(record);
-      saveApplications(applications);
-      updateApplyButton();
+      // ✅ Update UI
       alert("✅ Application submitted successfully!");
-    });
-
-    updateApplyButton();
-
-    // ✅ Show "Information You Submitted" if opened via Applications
-    if (application) {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.id === activeUser) || {};
-
-      const infoCard = document.createElement("section");
-      infoCard.className = "card";
-      infoCard.innerHTML = `
-        <h3>Information You Submitted</h3>
-        <ul class="check-list">
-          <li><strong>Name:</strong> ${user.name || "N/A"}</li>
-          <li><strong>Email:</strong> ${user.email || "email@example.com"}</li>
-          <li><strong>Resume:</strong> ${user.resume || "Not provided"}</li>
-          <li><strong>Department:</strong> ${user.dept || "N/A"}</li>
-          <li><strong>CGPA:</strong> ${user.cgpa || "N/A"}</li>
-          <li><strong>Applied On:</strong> ${new Date(application.appliedAt).toLocaleString()}</li>
-        </ul>
-      `;
-
-      const benefitsSection = document.getElementById("jobBenefits")?.closest(".card");
-      benefitsSection?.insertAdjacentElement("afterend", infoCard);
-    } else if (appId) {
-      alert("⚠️ Job details not found for this application.");
+      applyBtn.textContent = "Applied";
+      applyBtn.disabled = true;
+      applyBtn.style.opacity = "0.6";
+    } catch (err) {
+      console.error("Error submitting application:", err);
+      alert("❌ Failed to apply. Please try again later.");
     }
   });
 });

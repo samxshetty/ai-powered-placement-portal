@@ -23,92 +23,69 @@
       <a href="jobs.html" class="nav-link">Jobs</a>
       <a href="applications.html" class="nav-link">Applications</a>
       <a href="profile.html" class="nav-link">Profile</a>
-      <a href="calendar.html" class="nav-link">Calendar</a>
+      <a href="calendar.html" class="nav-link active">Calendar</a>
       <a href="alumni.html" class="nav-link">Alumni</a>
-<a href="news.html" class="nav-link">News</a>
+      <a href="news.html" class="nav-link">News</a>
       <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
     </div>
   </div>
 </nav>
 
+<!-- Main Content -->
+<main class="container calendar-page">
+  <div class="page-header">
+    <h2>Placement Calendar</h2>
+    <p class="muted">Stay updated with all your placement activities</p>
+  </div>
 
-
-  <!-- Main Content -->
-  <main class="container calendar-page">
-    <div class="page-header">
-      <h2>Placement Calendar</h2>
-      <p class="muted">Stay updated with all your placement activities</p>
-    </div>
-
-    <div class="calendar-layout">
-      <!-- Left Column: Events -->
-      <section class="events-section card">
-        <div class="section-header">
-          <h3>Upcoming Events</h3>
-          <div class="filter-bar">
-            <button id="filterAll" class="filter-btn active">All Events</button>
-            <button id="filterMine" class="filter-btn">My Events</button>
-          </div>
+  <div class="calendar-layout">
+    <!-- Left Column: Events -->
+    <section class="events-section card">
+      <div class="section-header">
+        <h3>Upcoming Events</h3>
+        <div class="filter-bar">
+          <button id="filterAll" class="filter-btn active">All Events</button>
+          <button id="filterMine" class="filter-btn">My Events</button>
         </div>
+      </div>
 
-        <div id="eventList" class="event-list"></div>
-      </section>
+      <div id="eventList" class="event-list"></div>
+    </section>
 
-      <!-- Right Column: Types and Stats -->
-      <aside class="sidebar">
-        <div class="card">
-          <h3>Event Types</h3>
-          <ul class="event-types">
-            <li><span class="badge interview">Interview</span> Interviews</li>
-            <li><span class="badge ppt">PPT</span> Pre-Placement Talks</li>
-            <li><span class="badge test">Test</span> Assessment Tests</li>
-            <li><span class="badge drive">Drive</span> Campus Drives</li>
-          </ul>
-        </div>
+    <!-- Right Column: Event Types Only -->
+    <aside class="sidebar">
+      <div class="card">
+        <h3>Event Types</h3>
+        <ul class="event-types">
+          <li><span class="badge interview">Interview</span> Interviews</li>
+          <li><span class="badge ppt">PPT</span> Pre-Placement Talks</li>
+          <li><span class="badge test">Test</span> Assessment Tests</li>
+          <li><span class="badge drive">Drive</span> Campus Drives</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
 
-        <div class="card">
-          <h3>Quick Stats</h3>
-          <ul class="stats-list">
-            <li>This Week <strong>3 events</strong></li>
-            <li>This Month <strong>12 events</strong></li>
-            <li>Next Interview <strong>Nov 15</strong></li>
-          </ul>
-        </div>
-      </aside>
-    </div>
-  </main>
+<!-- Firebase & Script -->
+<script type="module" src="../js/firebase-init.js"></script>
+<script type="module" src="js/calendar.js"></script>
 
-  <script src="js/calendar.js"></script>
-  <script src="js/data.js"></script>
-  <script>
-  // Highlight active link automatically
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
-  });
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
-      });
-    }
-  });
-</script>
+<!-- Auth redirect & logout -->
 <script>
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }
+  document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+      });
+    }
+  });
 </script>
-
-
 
 </body>
 </html>

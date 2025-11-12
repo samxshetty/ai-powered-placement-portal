@@ -7,8 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/job-details.css" />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/jobs-data.js"></script>
-  <script src="js/jobs.js"></script>
+<script type="module" src="js/jobs.js"></script>
 
 </head>
 <body>
@@ -128,9 +127,10 @@
     </div>
   </main>
 
-  <script src="js/job-details.js"></script>
-  <script src="js/jobs-data.js"></script>
-  <script>
+<script type="module" src="./js/firebase-init.js"></script>
+<script type="module" src="./js/job-details.js"></script>
+
+<script>
   // Highlight active link automatically
   const currentPage = window.location.pathname.split("/").pop();
   document.querySelectorAll(".nav-links a").forEach(link => {
@@ -141,6 +141,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>

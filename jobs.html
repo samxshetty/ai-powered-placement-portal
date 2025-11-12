@@ -4,82 +4,86 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Job Opportunities — PlacementHub</title>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/jobs.css" />
-  <script src="js/jobs-data.js"></script>
 </head>
+
 <body>
-<!-- Navbar -->
-<nav class="navbar">
-  <div class="nav-inner">
-    <div class="nav-left">
-      <img src="Job.png" alt="Logo" class="logo-icon">
-      <span class="brand">PlacementHub</span>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <img src="Job.png" alt="Logo" class="logo-icon" />
+        <span class="brand">PlacementHub</span>
+      </div>
+
+      <div class="nav-right nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="jobs.html" class="nav-link active">Jobs</a>
+        <a href="applications.html" class="nav-link">Applications</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+        <a href="calendar.html" class="nav-link">Calendar</a>
+        <a href="alumni.html" class="nav-link">Alumni</a>
+        <a href="news.html" class="nav-link">News</a>
+        <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+      </div>
     </div>
+  </nav>
 
-    <div class="nav-right">
-      <a href="dashboard.html" class="nav-link">Dashboard</a>
-      <a href="jobs.html" class="nav-link">Jobs</a>
-      <a href="applications.html" class="nav-link">Applications</a>
-      <a href="profile.html" class="nav-link">Profile</a>
-      <a href="calendar.html" class="nav-link">Calendar</a>
-      <a href="alumni.html" class="nav-link">Alumni</a>
-<a href="news.html" class="nav-link">News</a>
-      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
-    </div>
-  </div>
-</nav>
-
-
-
+  <!-- Main Content -->
   <main class="container">
     <h2 class="page-title">Job Opportunities</h2>
     <p class="subtext">Find your perfect placement match</p>
 
     <!-- Search & Filter -->
     <div class="filter-bar">
-      <input type="text" id="searchInput" placeholder="🔍 Search by company, position, or skills..." />
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search by company, position, or skills..."
+      />
       <select id="statusFilter">
         <option value="all">All</option>
-        <option value="upcoming">Upcoming</option>
         <option value="open">Open</option>
         <option value="closed">Closed</option>
       </select>
     </div>
 
-    <!-- Job Grid -->
+    <!-- ✅ Jobs Grid -->
     <section id="jobsGrid" class="jobs-grid"></section>
   </main>
 
-  <script src="js/jobs.js"></script>
+  <!-- Auto Highlight Active Nav -->
   <script>
-  // Highlight active link automatically
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
-  });
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentPage = window.location.pathname.split("/").pop();
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === currentPage);
       });
-    }
-  });
-</script>
-<script>
-  if (!localStorage.getItem("activeUser")) {
-    window.location.href = "index.html";
-  }
-</script>
 
+      // 🔹 Logout Button
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.clear();
+          window.location.href = "index.html";
+        });
+      }
+
+      // 🔹 Auth Check
+      if (!localStorage.getItem("activeUser")) {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+
+  <!-- Firebase & Jobs Logic -->
+  <script type="module" src="./js/firebase-init.js"></script>
+  <script type="module" src="./js/jobs.js"></script>
 </body>
 </html>

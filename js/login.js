@@ -1,23 +1,20 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { getFirestore, getDoc, doc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
-  authDomain: "ai-powered-placement-portal.firebaseapp.com",
-  projectId: "ai-powered-placement-portal",
-storageBucket: "ai-powered-placement-portal.appspot.com",
-  messagingSenderId: "814349983103",
-  appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
-  measurementId: "G-RG8P2P71H7"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// ✅ login.js — Restricted Login (Only @nmamit.in emails)
+import { db, auth } from "./firebase-init.js";
+import {
+  signInWithEmailAndPassword,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getDoc,
+  doc,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
+
+  if (!form) {
+    console.error("❌ loginForm not found in DOM.");
+    return;
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -30,16 +27,27 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // ✅ Restrict login to nmamit.in emails only
+    if (!email.endsWith("@nmamit.in")) {
+      alert("❌ Only NMAMIT email addresses (@nmamit.in) can log in.");
+      return;
+    }
+
     try {
-      // Firebase sign-in
+      // 🔹 Firebase Auth sign-in
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      console.log("✅ User logged in:", user.uid);
 
-      // Fetch user details from Firestore
+      // 🔹 Fetch user details from Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userData = userDoc.exists() ? userDoc.data() : {};
 
-      // Store session data
+      if (!userDoc.exists()) {
+        alert("⚠️ Account found but no profile data exists in Firestore. Please contact admin.");
+      }
+
+      // 🔹 Save session locally
       localStorage.setItem("activeUser", email);
       localStorage.setItem("activeUserId", user.uid);
       localStorage.setItem("activeUserName", userData.full_name || "");
@@ -51,12 +59,15 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "dashboard.html";
     } catch (error) {
       console.error("Login error:", error);
+
       if (error.code === "auth/user-not-found") {
         alert("❌ No account found. Please sign up first.");
       } else if (error.code === "auth/wrong-password") {
         alert("❌ Incorrect password. Try again.");
+      } else if (error.code === "auth/network-request-failed") {
+        alert("⚠️ Network issue — please check your internet connection.");
       } else {
-        alert("⚠️ Login failed. Check console for details.");
+        alert("⚠️ Login failed: " + error.message);
       }
     }
   });

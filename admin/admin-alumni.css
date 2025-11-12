@@ -315,3 +315,115 @@
 .btn-gradient:hover {
   background: #1e40af;
 }
+
+/* ---------- Alumni Cards ---------- */
+.alumni-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alumni-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Header section */
+.alumni-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Avatar / Photo */
+.alumni-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 600;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Make uploaded photo fit nicely */
+.alumni-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Info beside avatar */
+.alumni-info h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.alumni-info p {
+  margin: 2px 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Rest of the card details */
+.alumni-company {
+  font-weight: 600;
+  color: #0b63d8;
+  margin-top: 4px;
+}
+
+.alumni-meta {
+  font-size: 13px;
+  color: #475569;
+}
+
+.alumni-advice {
+  font-style: italic;
+  color: #475569;
+  font-size: 13px;
+}
+
+/* Action buttons (LinkedIn, edit, delete) */
+.alumni-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.linkedin-btn {
+  background: #0a66c2;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 8px;
+  color: #475569;
+}
+
+.icon-btn:hover {
+  color: #dc2626;
+}

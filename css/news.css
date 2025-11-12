@@ -137,3 +137,10 @@
   .news-layout { grid-template-columns: 1fr; }
   .sidebar-col { order:2; }
 }
+.news-banner {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}

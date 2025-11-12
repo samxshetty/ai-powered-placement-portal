@@ -1,27 +1,15 @@
-// js/dashboard.js — Firebase + PlacementHub Dashboard Integration
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
-  authDomain: "ai-powered-placement-portal.firebaseapp.com",
-  projectId: "ai-powered-placement-portal",
-storageBucket: "ai-powered-placement-portal.appspot.com",
-  messagingSenderId: "814349983103",
-  appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
-  measurementId: "G-RG8P2P71H7"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// dashboard.js — Live Firebase Dashboard (Firestore + Auth + Real-time Stats)
+import { db, auth } from "../js/firebase-init.js";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const jobs = window.__PLACEMENTHUB_JOBS || [];
-
-  // Elements
+  // DOM elements
   const userNameEl = document.getElementById("userName");
   const companiesCountEl = document.getElementById("companiesCount");
   const appliedCountEl = document.getElementById("appliedCount");
@@ -31,167 +19,156 @@ document.addEventListener("DOMContentLoaded", () => {
   const recentApplicationsEl = document.getElementById("recentApplications");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // 🧠 Load current Firebase user
+  // Auth listener
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      alert("⚠️ Please login first.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
       return;
     }
 
-    try {
-      const docRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(docRef);
-      const userData = userSnap.exists() ? userSnap.data() : {};
+    const studentId = user.uid;
+    const studentEmail = user.email || "student";
+    userNameEl.textContent = studentEmail.split("@")[0];
 
-      userNameEl.textContent = userData.full_name || "Student";
-      console.log("✅ Logged in user:", userData.full_name || user.email);
+    // store locally for other pages
+    localStorage.setItem("activeUser", studentEmail);
+    localStorage.setItem("activeUserId", studentId);
 
-      // Store session for local app logic
-      localStorage.setItem("activeUser", user.email);
-      localStorage.setItem("activeUserId", user.uid);
-      localStorage.setItem("activeUserName", userData.full_name || "");
-      localStorage.setItem("activeUserDept", userData.department || "");
-      localStorage.setItem("activeUserYear", userData.year || "");
-      localStorage.setItem("activeUserRoll", userData.roll_no || "");
-
-      renderAll(); // render dashboard data after loading user
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
+    // render dashboard
+    await renderDashboard(studentId);
   });
 
-  // Logout function
-  logoutBtn.addEventListener("click", async () => {
+  // Logout
+  logoutBtn?.addEventListener("click", async () => {
     try {
       await signOut(auth);
       localStorage.clear();
-      alert("👋 Logged out successfully!");
-      window.location.href = "login.html";
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("❌ Error logging out. Try again.");
+      window.location.href = "index.html";
+    } catch (err) {
+      console.error("Logout failed", err);
     }
   });
 
-  // ========== Existing Logic ==========
-  function getActiveUserId() {
-    return localStorage.getItem("activeUserId") || "guest";
-  }
-  function getApplications() {
-    const key = "applications_" + getActiveUserId();
-    return JSON.parse(localStorage.getItem(key) || "[]");
-  }
+  // Main renderer
+  async function renderDashboard(studentId) {
+    const today = new Date();
 
-  function updateStats() {
-    const apps = getApplications();
-    const openJobs = jobs.filter((j) => j.status === "open").length;
-    const closedJobs = jobs.filter((j) => j.status === "closed").length;
-    const upcomingJobs = jobs.filter((j) => j.status === "upcoming").length;
+    try {
+      // Fetch jobs
+      const jobsSnap = await getDocs(collection(db, "jobs"));
+      const jobs = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    companiesCountEl.textContent = upcomingJobs;
-    appliedCountEl.textContent = apps.length;
-    openCountEl.textContent = openJobs;
-    closedCountEl.textContent = closedJobs;
-  }
+      // counts
+      const openJobs = jobs.filter(j => (j.status || "").toLowerCase() === "open").length;
+      const closedJobs = jobs.filter(j => (j.status || "").toLowerCase() === "closed").length;
+      const upcomingJobs = jobs.filter(j => {
+        const dl = j.deadline ? new Date(j.deadline) : null;
+        return dl && dl > today;
+      }).length;
+      const expiredJobs = jobs.filter(j => {
+        const dl = j.deadline ? new Date(j.deadline) : null;
+        return dl && dl < today;
+      }).length;
 
-  function renderUpcomingEvents() {
-    if (!upcomingEventsEl) return;
-    upcomingEventsEl.innerHTML = "";
+      companiesCountEl.textContent = upcomingJobs;
+      openCountEl.textContent = openJobs;
+      closedCountEl.textContent = expiredJobs;
 
-    const upcoming = jobs
-      .filter((j) => j.status === "upcoming")
-      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      // Fetch student's applications
+      const appsQ = query(collection(db, "applications"), where("studentId", "==", studentId));
+      const appsSnap = await getDocs(appsQ);
+      const applications = appsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    if (upcoming.length === 0) {
-      upcomingEventsEl.innerHTML = `
-        <div class="event-box">
-          <div><h4>No upcoming events</h4>
-          <p class="muted">You have no upcoming interviews or talks.</p></div>
-        </div>`;
-      return;
-    }
+      appliedCountEl.textContent = applications.length;
 
-    upcoming.forEach((job) => {
-      const div = document.createElement("div");
-      div.className = "event-box";
-      div.innerHTML = `
-        <div>
-          <h4>${job.company} — ${job.role}</h4>
-          <p class="muted">${job.deadline} • ${job.location}</p>
-        </div>
-        <button class="btn-small" data-id="${job.id}">View</button>`;
-      div
-        .querySelector("button")
-        ?.addEventListener("click", () => {
-          window.location.href = `job-details.html?id=${job.id}`;
-        });
-      upcomingEventsEl.appendChild(div);
-    });
-  }
-
-  function renderRecentApplications() {
-    if (!recentApplicationsEl) return;
-    recentApplicationsEl.innerHTML = "";
-
-    const apps = getApplications().slice().reverse();
-
-    if (apps.length === 0) {
-      recentApplicationsEl.innerHTML = `
-        <div class="app-box">
-          <div>
+      // Recent Applications (top 5 newest)
+      recentApplicationsEl.innerHTML = "";
+      if (applications.length === 0) {
+        recentApplicationsEl.innerHTML = `
+          <div class="app-box">
             <h4>No applications yet</h4>
-            <p class="muted">Apply to jobs from the Jobs page to see them here.</p>
-          </div>
-        </div>`;
-      return;
-    }
+            <p class="muted">Apply to jobs to see them here.</p>
+          </div>`;
+      } else {
+        const recent = applications
+          .slice()
+          .sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt))
+          .slice(0, 5);
 
-    apps.slice(0, 5).forEach((app) => {
-      const job =
-        jobs.find((j) => String(j.id) === String(app.jobId || app.eventId)) ||
-        null;
-      const company = job?.company || app.company || "Unknown";
-      const role = job?.role || app.role || "N/A";
-      const location = job?.location || app.location || "N/A";
-      const appliedDate = app.appliedAt
-        ? new Date(app.appliedAt).toLocaleString()
-        : "N/A";
+        recent.forEach(app => {
+          const div = document.createElement("div");
+          div.className = "app-box";
+          const appliedOn = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "-";
+          // create elements safely (avoid nested template pitfalls)
+          const left = document.createElement("div");
+          left.innerHTML = `<h4>${escapeHtml(app.jobCompany || "Unknown Company")}</h4>
+                            <p class="muted">${escapeHtml(app.jobRole || "N/A")}</p>
+                            <p class="muted" style="font-size:12px;margin-top:4px;">Applied on ${escapeHtml(appliedOn)}</p>`;
 
-      const div = document.createElement("div");
-      div.className = "app-box";
-      div.innerHTML = `
-        <div>
-          <h4>${company}</h4>
-          <p class="muted">${role} • ${location}</p>
-          <p class="muted" style="font-size:12px;margin-top:6px;">Applied on: ${appliedDate}</p>
-        </div>
-        <button class="btn-small view-app" data-job="${job?.id || app.jobId || app.eventId}" data-app="${app.applicationId || app.id}">View</button>
-      `;
-      recentApplicationsEl.appendChild(div);
-    });
+          const btn = document.createElement("button");
+          btn.className = "btn-small";
+          btn.textContent = "View";
+          btn.dataset.id = app.jobId || "";
+          btn.addEventListener("click", () => {
+            if (btn.dataset.id) {
+              window.location.href = "job-details.html?id=" + encodeURIComponent(btn.dataset.id);
+            }
+          });
 
-    recentApplicationsEl.querySelectorAll(".view-app").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const jobId = e.target.dataset.job;
-        const appId = e.target.dataset.app;
-        if (!jobId) {
-          alert("⚠️ Job details not found for this application.");
-          return;
+          div.appendChild(left);
+          div.appendChild(btn);
+          recentApplicationsEl.appendChild(div);
+        });
+      }
+
+      // Upcoming Events (top 3)
+      if (upcomingEventsEl) {
+        upcomingEventsEl.innerHTML = "";
+        const eventsSnap = await getDocs(collection(db, "events"));
+        const events = eventsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const upcoming = events
+          .filter(e => e.date && new Date(e.date) >= today)
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .slice(0, 3);
+
+        if (upcoming.length === 0) {
+          upcomingEventsEl.innerHTML = `
+            <div class="event-box">
+              <h4>No upcoming events</h4>
+              <p class="muted">You have no scheduled interviews or activities.</p>
+            </div>`;
+        } else {
+          upcoming.forEach(ev => {
+            const div = document.createElement("div");
+            div.className = "event-box";
+            const left = document.createElement("div");
+            left.innerHTML = `<h4>${escapeHtml(ev.title || "Placement Event")}</h4>
+                              <p class="muted">${escapeHtml(ev.date || "")} • ${escapeHtml(ev.location || "TBD")}</p>`;
+            const btn = document.createElement("button");
+            btn.className = "btn-small";
+            btn.textContent = "View";
+            btn.addEventListener("click", () => { window.location.href = "calendar.html"; });
+
+            div.appendChild(left);
+            div.appendChild(btn);
+            upcomingEventsEl.appendChild(div);
+          });
         }
-        window.location.href = `job-details.html?id=${jobId}&appId=${appId}`;
-      });
-    });
+      }
+
+    } catch (err) {
+      console.error("Error rendering dashboard:", err);
+    }
   }
 
-  function renderAll() {
-    updateStats();
-    renderUpcomingEvents();
-    renderRecentApplications();
+  // small helper to avoid HTML injection in innerHTML usage
+  function escapeHtml(str) {
+    if (!str && str !== 0) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
-
-  window.addEventListener("storage", (e) => {
-    if (e.key && e.key.startsWith("applications_")) renderAll();
-  });
-  window.addEventListener("focus", renderAll);
 });

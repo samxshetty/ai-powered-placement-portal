@@ -143,7 +143,7 @@
 <!-- Firebase setup FIRST -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
   import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
   import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
@@ -162,11 +162,57 @@
   const auth = getAuth(app);
   const storage = getStorage(app);
 
-  // expose globally
+  // expose globally (optional)
   window.db = db;
   window.auth = auth;
   window.storage = storage;
+
+  // ✅ Add profile save functionality (Firestore + localStorage)
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim();
+    const userId = email ? email.split("@")[0] : "guest";
+
+    const userData = {
+      id: userId,
+      name: document.getElementById("fullName").value.trim(),
+      email,
+      phone: document.getElementById("phone").value.trim(),
+      linkedin: document.getElementById("linkedin").value.trim(),
+      github: document.getElementById("github").value.trim(),
+      portfolio: document.getElementById("portfolio").value.trim(),
+      rollNumber: document.getElementById("rollNumber").value.trim(),
+      dept: document.getElementById("department").value.trim(),
+      year: document.getElementById("year").value.trim(),
+      cgpa: document.getElementById("cgpa").value.trim(),
+      backlogs: document.getElementById("backlogs").value.trim(),
+      tenth: document.getElementById("tenth").value.trim(),
+      twelfth: document.getElementById("twelfth").value.trim(),
+      skills: document.getElementById("skills").value.trim(),
+      interests: document.getElementById("interests").value.trim(),
+      achievements: document.getElementById("achievements").value.trim(),
+      resume: document.getElementById("viewResumeBtn").href || "",
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      // 🔹 Save to Firestore (students collection)
+      await setDoc(doc(db, "students", userId), userData);
+
+      // 🔹 Save to localStorage for use in job-details page
+      localStorage.setItem("activeUser", userData.id);
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      users = users.filter((u) => u.id !== userData.id);
+      users.push(userData);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("✅ Profile saved successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("❌ Error saving profile. Please try again.");
+    }
+  });
 </script>
+
 
 <!-- THEN load your main logic -->
 <script src="js/profile.js" type="module"></script>

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PlacementHub — Job Management</title>
 
-  <!-- Fonts & Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin-jobs.css" />
 </head>
@@ -14,31 +13,30 @@
 <div class="wrap">
   <!-- Sidebar -->
   <aside class="sidebar">
-  <div>
-    <div class="brand">
-      <div class="logo">PlacementHub</div>
-      <div class="tag">Admin Panel</div>
+    <div>
+      <div class="brand">
+        <div class="logo">PlacementHub</div>
+        <div class="tag">Admin Panel</div>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-jobs.html" class="nav-link active"><span class="icon">💼</span> Jobs</a>
+        <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
+        <a href="admin-events.html" class="nav-link"><span class="icon">📅</span> Events</a>
+        <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
+        <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
+      </nav>
     </div>
 
-    <nav class="nav">
-      <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
-      <a href="admin-jobs.html" class="nav-link active"><span class="icon">💼</span> Jobs</a>
-      <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
-      <a href="admin-events.html" class="nav-link"><span class="icon">📅</span> Events</a>
-      <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
-      <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
-    </nav>
-  </div>
-
-  <div class="profile">
-    <div class="avatar">AD</div>
-    <div class="pinfo">
-      <div class="name">Admin User</div>
-      <div class="email">admin@nmamit.in</div>
+    <div class="profile">
+      <div class="avatar">AD</div>
+      <div class="pinfo">
+        <div class="name">Admin User</div>
+        <div class="email">admin@nmamit.in</div>
+      </div>
     </div>
-  </div>
-</aside>
-
+  </aside>
 
   <!-- Main Content -->
   <main class="main">
@@ -134,7 +132,7 @@
   </div>
 </div>
 
-<!-- Edit Job Modal -->
+<!-- Edit Modal -->
 <div id="editModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-header">
@@ -145,28 +143,23 @@
       <form id="editJobForm" class="job-form">
         <input type="hidden" name="jobId" />
         <div class="row">
-          <label>Company Name<input name="company" required></label>
-          <label>Role / Position<input name="role" required></label>
+          <label>Company<input name="company"></label>
+          <label>Role<input name="role"></label>
         </div>
         <div class="row">
           <label>Location<input name="location"></label>
-          <label>Package (LPA)<input name="package"></label>
+          <label>Package<input name="package"></label>
         </div>
         <div class="row">
-          <label>Job Type<select name="type"><option>Full-time</option><option>Internship</option><option>PPO</option></select></label>
+          <label>Type<select name="type"><option>Full-time</option><option>Internship</option><option>PPO</option></select></label>
           <label>Category<select name="category"><option>Regular</option><option>Dream</option><option>Super Dream</option></select></label>
         </div>
-        <div class="row">
-          <label>Deadline<input type="date" name="deadline"></label>
-          <label>Job Link<input type="url" name="link"></label>
-        </div>
-        <label>Required Skills<input name="skills"></label>
+        <label>Deadline<input type="date" name="deadline"></label>
+        <label>Skills<input name="skills"></label>
         <label>Eligibility<textarea name="eligibility"></textarea></label>
         <label>Description<textarea name="description"></textarea></label>
-        <div class="row">
-          <label>Requirements<textarea name="requirements"></textarea></label>
-          <label>Benefits<textarea name="benefits"></textarea></label>
-        </div>
+        <label>Requirements<textarea name="requirements"></textarea></label>
+        <label>Benefits<textarea name="benefits"></textarea></label>
 
         <div class="rounds-section">
           <div class="rounds-head">
@@ -178,41 +171,35 @@
 
         <div class="modal-actions">
           <button type="button" class="btn btn-ghost" data-close="editModal">Cancel</button>
-          <button class="btn btn-gradient" type="submit">Update Job</button>
+          <button class="btn btn-gradient" type="submit">Save</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- View Job Modal -->
+<!-- View Modal -->
 <div id="viewModal" class="modal-backdrop hidden">
   <div class="modal wide">
     <div class="modal-header">
       <h3>Job Details</h3>
-      <div style="display:flex;gap:10px">
-        <button id="viewBack" class="back-btn">← Back</button>
-        <button class="close" data-close="viewModal">✕</button>
-      </div>
+      <button class="close" data-close="viewModal">✕</button>
     </div>
     <div class="modal-body">
       <div id="jobDetails"></div>
-      <div class="modal-actions">
-        <button data-close="viewModal" class="btn btn-ghost">Close</button>
-      </div>
     </div>
   </div>
 </div>
 
-<script src="admin-jobs.js"></script>
+<script type="module" src="./admin-jobs.js"></script>
+
+
+
 <script>
-  // Highlight active nav link dynamically
-  document.querySelectorAll(".nav-link").forEach(link => {
-    const current = window.location.pathname.split("/").pop();
-    if (link.getAttribute("href") === current) {
-      link.classList.add("active");
-    }
-  });
+document.querySelectorAll(".nav-link").forEach(link => {
+  const current = window.location.pathname.split("/").pop();
+  if (link.getAttribute("href") === current) link.classList.add("active");
+});
 </script>
 </body>
 </html>

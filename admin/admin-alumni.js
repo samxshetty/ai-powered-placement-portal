@@ -1,3 +1,15 @@
+// admin-alumni.js — Firebase CRUD for Alumni Management
+
+import { db } from "../js/firebase-init.js";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const alumniListEl = document.getElementById("alumniList");
   const modal = document.getElementById("alumniModal");
@@ -8,49 +20,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editId = null;
 
-  // ---- Dummy Data ----
-  let alumniData = JSON.parse(localStorage.getItem("alumniData")) || [
-    {
-      id: 1,
-      name: "Rajesh Kumar",
-      batch: "2020",
-      role: "Senior Software Engineer",
-      company: "Microsoft",
-      cgpa: "8.9",
-      exp: "3",
-      linkedin: "https://linkedin.com/in/rajeshkumar",
-      advice: "Focus on problem-solving and never stop learning.",
-      photo: "",
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      batch: "2019",
-      role: "Product Manager",
-      company: "Google",
-      cgpa: "9.2",
-      exp: "4",
-      linkedin: "",
-      advice: "Build strong communication skills alongside technical expertise.",
-      photo: "",
-    },
-  ];
+  // 🔹 Real-time Fetch Alumni from Firestore
+  onSnapshot(collection(db, "alumni"), (snapshot) => {
+    const alumni = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    renderAlumni(alumni);
+  });
 
-  // ---- Render Alumni Cards ----
-  function renderAlumni() {
+  onSnapshot(collection(db, "alumni"), (snapshot) => {
+  console.log("🔥 Firestore snapshot received:", snapshot.size);
+  snapshot.docs.forEach((d) => console.log("Doc data:", d.data()));
+
+  const alumni = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  renderAlumni(alumni);
+});
+
+  // 🔹 Render Alumni Cards
+  function renderAlumni(alumniList) {
     alumniListEl.innerHTML = "";
 
-    if (alumniData.length === 0) {
+    if (!alumniList.length) {
       alumniListEl.innerHTML = `<p class="empty">No alumni records found.</p>`;
       return;
     }
 
-    alumniData.forEach((a) => {
+    alumniList.forEach((a) => {
       const card = document.createElement("div");
       card.className = "alumni-card";
       card.innerHTML = `
         <div class="alumni-header">
-          <div class="alumni-avatar">${a.name[0]}${a.name.split(" ")[1]?.[0] || ""}</div>
+          <div class="alumni-avatar">
+            ${a.photo
+              ? `<img src="${a.photo}" alt="${a.name}" />`
+              : `${a.name[0]}${a.name.split(" ")[1]?.[0] || ""}`}
+          </div>
           <div class="alumni-info">
             <h3>${a.name}</h3>
             <p>Batch ${a.batch}</p>
@@ -58,44 +60,44 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="alumni-company">${a.role}</div>
-        <div class="alumni-meta">${a.company}<br>CGPA: ${a.cgpa} • ${a.exp} years exp</div>
-        <div class="alumni-advice">"${a.advice}"</div>
+        <div class="alumni-meta">${a.company}<br>CGPA: ${a.cgpa || "-"} • ${a.exp || 0} yrs exp</div>
+        <div class="alumni-advice">"${a.advice || ""}"</div>
 
         <div class="alumni-actions">
-          <button class="linkedin-btn" onclick="window.open('${a.linkedin}', '_blank')">
-            <i data-lucide="linkedin"></i> LinkedIn
-          </button>
+          ${a.linkedin ? `<button class="linkedin-btn" onclick="window.open('${a.linkedin}','_blank')">🔗 LinkedIn</button>` : ""}
           <div>
-            <button class="icon-btn edit-btn" data-id="${a.id}" title="Edit"><i data-lucide="edit-2"></i></button>
-            <button class="icon-btn delete-btn" data-id="${a.id}" title="Delete"><i data-lucide="trash-2"></i></button>
+            <button class="icon-btn edit-btn" data-id="${a.id}" title="Edit">✏️</button>
+            <button class="icon-btn delete-btn" data-id="${a.id}" title="Delete">🗑️</button>
           </div>
         </div>
       `;
       alumniListEl.appendChild(card);
     });
 
-    lucide.createIcons(); 
-    attachDynamicEvents(); 
+    attachDynamicEvents(alumniList);
   }
 
-  // ---- Attach Dynamic Edit/Delete ----
-  function attachDynamicEvents() {
-    document.querySelectorAll(".edit-btn").forEach((btn) => {
+  // 🔹 Attach Edit/Delete Listeners
+  function attachDynamicEvents(alumniList) {
+    document.querySelectorAll(".edit-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
-        const id = parseInt(btn.dataset.id);
-        editAlumni(id);
-      });
-    });
+        const id = btn.dataset.id;
+        const alum = alumniList.find((x) => x.id === id);
+        if (alum) editAlumni(alum);
+      })
+    );
 
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = parseInt(btn.dataset.id);
-        deleteAlumni(id);
-      });
-    });
+    document.querySelectorAll(".delete-btn").forEach((btn) =>
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        if (confirm("Delete this alumni?")) {
+          await deleteDoc(doc(db, "alumni", id));
+        }
+      })
+    );
   }
 
-  // ---- Modal Controls ----
+  // 🔹 Modal Controls
   function openModal(isEdit = false) {
     modal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
@@ -113,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     b.addEventListener("click", closeModal)
   );
 
-  // ---- Add New Alumni ----
   addBtn.addEventListener("click", () => {
     saveBtn.textContent = "Add Alumni";
     form.reset();
@@ -121,29 +122,28 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal();
   });
 
-  // ---- Submit (Add or Update) ----
-  form.addEventListener("submit", (e) => {
+  // 🔹 Submit Add/Update
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(form));
 
-    if (editId) {
-      const idx = alumniData.findIndex((a) => a.id === editId);
-      alumniData[idx] = { id: editId, ...formData };
-    } else {
-      alumniData.push({ id: Date.now(), ...formData });
+    try {
+      if (editId) {
+        await updateDoc(doc(db, "alumni", editId), formData);
+        alert("✅ Alumni updated successfully!");
+      } else {
+        await addDoc(collection(db, "alumni"), formData);
+        alert("✅ Alumni added successfully!");
+      }
+      closeModal();
+    } catch (err) {
+      console.error("Error saving alumni:", err);
+      alert("❌ Failed to save alumni.");
     }
-
-    localStorage.setItem("alumniData", JSON.stringify(alumniData));
-    renderAlumni();
-    closeModal();
   });
 
-  // ---- Edit Alumni ----
-  function editAlumni(id) {
-    const a = alumniData.find((x) => x.id === id);
-    if (!a) return;
-
-    // Fill all inputs manually to ensure proper mapping
+  // 🔹 Edit Alumni Prefill
+  function editAlumni(a) {
     form.name.value = a.name || "";
     form.batch.value = a.batch || "";
     form.role.value = a.role || "";
@@ -154,20 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
     form.advice.value = a.advice || "";
     form.photo.value = a.photo || "";
 
-    editId = id;
+    editId = a.id;
     saveBtn.textContent = "Update Alumni";
     openModal(true);
   }
-
-  // ---- Delete Alumni ----
-  function deleteAlumni(id) {
-    if (confirm("Are you sure you want to delete this alumni?")) {
-      alumniData = alumniData.filter((a) => a.id !== id);
-      localStorage.setItem("alumniData", JSON.stringify(alumniData));
-      renderAlumni();
-    }
-  }
-
-  // ---- INIT ----
-  renderAlumni();
 });

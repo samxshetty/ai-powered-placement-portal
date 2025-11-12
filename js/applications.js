@@ -1,85 +1,97 @@
-// js/applications.js — updated for job-details navigation
-document.addEventListener("DOMContentLoaded", () => {
-  const activeUser = localStorage.getItem("activeUser") || "guest";
-  const allJobs = window.__PLACEMENTHUB_JOBS || [];
+// applications.js — Live Applications Dashboard (Firestore-connected)
 
+import { db } from "../js/firebase-init.js";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  deleteDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+document.addEventListener("DOMContentLoaded", () => {
   const appList = document.getElementById("applicationList");
   const filterAll = document.getElementById("filterAll");
   const filterActive = document.getElementById("filterActive");
   const filterClosed = document.getElementById("filterClosed");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   const withdrawModal = document.getElementById("withdrawModal");
   const withdrawText = document.getElementById("withdrawText");
+  const confirmWithdraw = document.getElementById("confirmWithdraw");
   const closeWithdraw = document.getElementById("closeWithdraw");
   const cancelWithdraw = document.getElementById("cancelWithdraw");
-  const confirmWithdraw = document.getElementById("confirmWithdraw");
 
+  const studentId = localStorage.getItem("activeUserId");
+  if (!studentId) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  let allApplications = [];
+  let currentFilter = "All";
   let selectedApp = null;
 
-  // LocalStorage helpers
-  const getApplications = () =>
-    JSON.parse(localStorage.getItem("applications_" + activeUser) || "[]");
-  const saveApplications = (arr) =>
-    localStorage.setItem("applications_" + activeUser, JSON.stringify(arr));
-
-  const getJobFromApp = (app) => {
-  if (!app || !window.__PLACEMENTHUB_JOBS) return null;
-  const jobId = String(app.jobId || app.eventId || app.id || "").trim();
-  return window.__PLACEMENTHUB_JOBS.find((j) => String(j.id) === jobId) || null;
-};
-
-
-  // Render
+  // 🔹 Render applications to UI
   function renderApplications(list) {
     appList.innerHTML = "";
-    if (!list.length) {
+    if (list.length === 0) {
       appList.innerHTML = `<p class="muted" style="text-align:center;margin:20px;">No applications found.</p>`;
       return;
     }
 
     list.forEach((app) => {
-      const job = getJobFromApp(app);
-      const company = job?.company || app.company || "Unknown";
-      const role = job?.role || app.role || "N/A";
-      const location = job?.location || app.location || "N/A";
-
-      const appId =
-        app.applicationId || app.id || app.eventId || app.jobId || Date.now();
-
       const div = document.createElement("div");
       div.className = "application-card";
+      const appliedDate = app.appliedAt
+        ? new Date(app.appliedAt).toLocaleDateString()
+        : "N/A";
+      const statusColor =
+        app.status === "Applied"
+          ? "#2563eb"
+          : app.status === "Shortlisted"
+          ? "#10b981"
+          : app.status === "Rejected"
+          ? "#dc2626"
+          : app.status === "Selected"
+          ? "#16a34a"
+          : "#64748b";
+
       div.innerHTML = `
         <div class="app-info">
-          <h4>${company}</h4>
-          <p>${role} • ${location}</p>
+          <h4>${app.jobCompany || "Unknown Company"}</h4>
+          <p>${app.jobRole || "N/A"}</p>
           <p class="muted" style="font-size:12px;margin-top:4px;">
-            Applied on ${app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A"}
+            Applied on ${appliedDate}
+          </p>
+          <p style="margin-top:6px;font-weight:600;color:${statusColor}">
+            ${app.status}
           </p>
         </div>
         <div class="action-buttons">
-          <button class="btn-small view-btn" data-id="${appId}">View</button>
-          <button class="btn-small withdraw-btn" data-id="${appId}">Withdraw</button>
+          <button class="btn-small view-btn" data-id="${app.jobId}">View</button>
+          <button class="btn-small withdraw-btn" data-id="${app.id}">Withdraw</button>
         </div>
       `;
       appList.appendChild(div);
     });
   }
 
-  // Filters
-  function filterApplications(type = "All") {
-    const apps = getApplications();
+  // 🔹 Filter function
+  function filterApplications(type) {
+    currentFilter = type;
     let filtered = [];
 
     if (type === "Active")
-      filtered = apps.filter((a) =>
+      filtered = allApplications.filter((a) =>
         ["Applied", "Shortlisted", "Interview"].includes(a.status)
       );
     else if (type === "Closed")
-      filtered = apps.filter((a) =>
+      filtered = allApplications.filter((a) =>
         ["Rejected", "Selected"].includes(a.status)
       );
-    else filtered = apps;
+    else filtered = allApplications;
 
     [filterAll, filterActive, filterClosed].forEach((b) =>
       b.classList.remove("active")
@@ -91,55 +103,52 @@ document.addEventListener("DOMContentLoaded", () => {
     renderApplications(filtered);
   }
 
-  // Handle clicks
-  appList.addEventListener("click", (e) => {
+  // 🔹 Firestore Realtime Listener
+  const q = query(collection(db, "applications"), where("studentId", "==", studentId));
+
+  onSnapshot(q, (snapshot) => {
+    allApplications = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    filterApplications(currentFilter);
+  });
+
+  // 🔹 Click events
+  appList.addEventListener("click", async (e) => {
     const target = e.target;
-    const appId = target.dataset.id;
-    const apps = getApplications();
-    const app = apps.find(
-      (a) =>
-        String(a.applicationId) === String(appId) ||
-        String(a.jobId) === String(appId) ||
-        String(a.eventId) === String(appId)
-    );
-    const job = getJobFromApp(app);
 
-    // ✅ VIEW → go to job-details.html
+    // VIEW job details
     if (target.classList.contains("view-btn")) {
-    if (job) {
-    const appId = app.applicationId || app.id || app.jobId || app.eventId;
-    const jobId = job.id || app.jobId || app.eventId;
-    window.location.href = `job-details.html?id=${jobId}&appId=${appId}`;
-    } else {
-    alert("⚠️ Job details not found for this application.");
-    }
-    return;
+      const jobId = target.dataset.id;
+      if (jobId) {
+        window.location.href = `job-details.html?id=${jobId}`;
+      }
     }
 
-
-    // WITHDRAW
+    // WITHDRAW application
     if (target.classList.contains("withdraw-btn")) {
-      selectedApp = app;
-      const displayName = job?.company || app.company || "this job";
-      withdrawText.textContent = `Are you sure you want to withdraw your application for "${displayName}"?`;
+      const appId = target.dataset.id;
+      selectedApp = allApplications.find((a) => a.id === appId);
+      if (!selectedApp) return alert("Application not found.");
+
+      withdrawText.textContent = `Are you sure you want to withdraw your application for "${selectedApp.jobCompany}"?`;
       withdrawModal.style.display = "flex";
     }
   });
 
-  // Withdraw confirm
-  confirmWithdraw.addEventListener("click", () => {
+  // 🔹 Withdraw confirm
+  confirmWithdraw.addEventListener("click", async () => {
     if (!selectedApp) return;
-    const apps = getApplications();
-    const updated = apps.filter(
-      (a) =>
-        a.applicationId !== selectedApp.applicationId &&
-        a.jobId !== selectedApp.jobId
-    );
-    saveApplications(updated);
-    withdrawModal.style.display = "none";
-    selectedApp = null;
-    alert("✅ Application withdrawn successfully.");
-    filterApplications("All");
+
+    try {
+      await deleteDoc(doc(db, "applications", selectedApp.id));
+      withdrawModal.style.display = "none";
+      alert("✅ Application withdrawn successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to withdraw application.");
+    }
   });
 
   [closeWithdraw, cancelWithdraw].forEach((btn) =>
@@ -149,14 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   );
 
-  logoutBtn?.addEventListener("click", () => {
-    localStorage.removeItem("activeUser");
-    window.location.href = "login.html";
-  });
-
+  // 🔹 Filter Buttons
   filterAll.addEventListener("click", () => filterApplications("All"));
   filterActive.addEventListener("click", () => filterApplications("Active"));
   filterClosed.addEventListener("click", () => filterApplications("Closed"));
-
-  filterApplications("All");
 });

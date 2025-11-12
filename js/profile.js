@@ -119,28 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (snap.exists()) {
         storedProfile = snap.data();
       } else {
-        // If profile doesn’t exist yet, initialize it from users collection or auth
-        const userSnap = await getDoc(doc(db, "users", userUID));
-        if (userSnap.exists()) {
-          const u = userSnap.data();
-          storedProfile = {
-            fullName: u.full_name || u.name || "",
-            email: u.email || user.email,
-            department: u.department || "",
-            year: u.year || "",
-            rollNumber: u.roll_no || u.roll || ""
-          };
-          await setDoc(ref, storedProfile);
-        } else {
-          storedProfile = { email: user.email };
-          await setDoc(ref, storedProfile);
-        }
+        storedProfile = { email: user.email };
+        await setDoc(ref, storedProfile);
       }
-
-      // Normalize field names
-      storedProfile.fullName = storedProfile.fullName || storedProfile.full_name || "";
-      storedProfile.rollNumber = storedProfile.rollNumber || storedProfile.roll_no || "";
-      storedProfile.backlogs = storedProfile.backlogs || "None";
 
       fillFields();
       setEditingMode(false);
@@ -161,13 +142,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     try {
+      // 🔹 Save profile (for student view)
       await setDoc(doc(db, "profiles", userUID), storedProfile, { merge: true });
-      alert("✅ Profile saved!");
+
+      // 🔹 Also sync essential info to "students" (for admin dashboard)
+      const studentData = {
+        name: storedProfile.fullName || "",
+        email: storedProfile.email || "",
+        phone: storedProfile.phone || "",
+        usn: storedProfile.rollNumber || "",
+        branch: storedProfile.department || "",
+        sem: storedProfile.year || "",
+        cgpa: Number(storedProfile.cgpa) || 0,
+        backlog: Number(storedProfile.backlogs) || 0,
+        status: "Active",
+        company: "-",
+        applied: 0,
+        attended: 0,
+        address: storedProfile.address || "",
+        skills: storedProfile.skills
+          ? storedProfile.skills.split(",").map(s => s.trim()).filter(Boolean)
+          : [],
+        profilePicURL: storedProfile.profilePicURL || "",
+        resumeURL: storedProfile.resumeURL || "",
+        updatedAt: new Date().toISOString(),
+      };
+
+      await setDoc(doc(db, "students", userUID), studentData, { merge: true });
+
+      alert("✅ Profile saved & synced to admin dashboard!");
       fillFields();
       setEditingMode(false);
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to save.");
+      alert("❌ Failed to save profile.");
     }
   });
 
@@ -185,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       storedProfile.profilePicURL = data.secure_url;
       profilePic.src = data.secure_url;
       await setDoc(doc(db, "profiles", userUID), { profilePicURL: data.secure_url }, { merge: true });
+      await setDoc(doc(db, "students", userUID), { profilePicURL: data.secure_url }, { merge: true });
       alert("✅ Profile photo uploaded!");
     } catch (err) {
       console.error(err);
@@ -207,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       `;
       await setDoc(doc(db, "profiles", userUID), { resumeURL: data.secure_url }, { merge: true });
+      await setDoc(doc(db, "students", userUID), { resumeURL: data.secure_url }, { merge: true });
       alert("✅ Resume uploaded!");
     } catch (err) {
       console.error(err);

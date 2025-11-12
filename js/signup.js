@@ -1,24 +1,21 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+// ✅ signup.js — NMAMIT Restricted Signup (redirects to profile.html)
+import { db, auth } from "./firebase-init.js";
+import {
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  setDoc,
+  doc,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
-  authDomain: "ai-powered-placement-portal.firebaseapp.com",
-  projectId: "ai-powered-placement-portal",
-storageBucket: "ai-powered-placement-portal.appspot.com",
-  messagingSenderId: "814349983103",
-  appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
-  measurementId: "G-RG8P2P71H7"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Signup form logic
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("signupForm");
+
+  if (!form) {
+    console.error("❌ signupForm not found in DOM.");
+    return;
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -30,27 +27,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("signupEmail").value.trim().toLowerCase();
     const password = document.getElementById("signupPassword").value.trim();
 
+    // ✅ Basic validation
     if (!name || !roll || !department || !year || !email || !password) {
-      alert("⚠️ Please fill all fields before proceeding.");
+      alert("⚠️ Please fill in all fields before proceeding.");
+      return;
+    }
+
+    // ✅ Restrict signup to nmamit.in emails only
+    if (!email.endsWith("@nmamit.in")) {
+      alert("❌ Only NMAMIT email addresses (@nmamit.in) are allowed to sign up.");
       return;
     }
 
     try {
-      // Create user with Firebase Auth
+      // 🔍 Step 1: Check if email already registered
+      const existingMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (existingMethods.length > 0) {
+        alert("⚠️ This email is already registered. Please log in instead.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 🔹 Step 2: Create Auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      console.log("✅ Auth user created:", user.uid);
 
-      // Save user data in Firestore
+      // 🔹 Step 3: Add user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
         full_name: name,
         roll_no: roll,
         department,
         year,
         email,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
+        profileCompleted: false, // ✅ flag to track profile setup
       });
+      console.log("✅ Firestore profile created successfully.");
 
-      // Save session
+      // 🔹 Step 4: Save session locally
       localStorage.setItem("activeUser", email);
       localStorage.setItem("activeUserId", user.uid);
       localStorage.setItem("activeUserName", name);
@@ -58,14 +73,19 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("activeUserYear", year);
       localStorage.setItem("activeUserRoll", roll);
 
-      alert("✅ Account created successfully! Redirecting to Dashboard...");
-      window.location.href = "dashboard.html";
+      // 🔹 Step 5: Redirect to profile setup page
+      alert("✅ Account created successfully! Please complete your profile next.");
+      window.location.href = "profile.html"; // 👈 redirect here
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {
         alert("⚠️ Email already registered. Please log in instead.");
+      } else if (error.code === "auth/network-request-failed") {
+        alert("⚠️ Network issue — check your internet connection.");
+      } else if (error.code === "auth/invalid-api-key") {
+        alert("❌ Invalid Firebase configuration. Check firebase-init.js.");
       } else {
-        alert("❌ Failed to create account. Check console for details.");
+        alert("❌ Signup failed: " + error.message);
       }
     }
   });

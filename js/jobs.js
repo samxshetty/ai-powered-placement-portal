@@ -1,97 +1,118 @@
-// js/jobs.js — updated with "Applied" filter & dynamic button
-document.addEventListener("DOMContentLoaded", () => {
-  const jobs = window.__PLACEMENTHUB_JOBS || [];
-  const activeUser = localStorage.getItem("activeUser") || "guest";
-  const apps = JSON.parse(localStorage.getItem("applications_" + activeUser) || "[]");
+// jobs.js — Student Job Listing with Firestore Sync (LIVE + Applied Status)
 
+import { db } from "./firebase-init.js";
+import {
+  collection,
+  onSnapshot,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("jobsGrid");
   const searchInput = document.getElementById("searchInput");
   const statusFilter = document.getElementById("statusFilter");
+  const studentId = localStorage.getItem("activeUserId");
 
-  // Add new filter option dynamically
-  if (statusFilter && ![...statusFilter.options].some(o => o.value === "applied")) {
-    const opt = document.createElement("option");
-    opt.value = "applied";
-    opt.textContent = "Applied";
-    statusFilter.appendChild(opt);
+  if (!grid) {
+    console.error("❌ jobsGrid element not found in HTML.");
+    return;
   }
 
-  function hasApplied(jobId) {
-    return apps.some(a => a.jobId === jobId || a.eventId === jobId);
-  }
-
-  function renderJobs(filterText = "", status = "all") {
+  // 🔹 Render Jobs
+  function renderJobs(jobs, filter = "", status = "all") {
     grid.innerHTML = "";
 
-    const filtered = jobs.filter(job => {
-      const matchesText =
-        job.company.toLowerCase().includes(filterText.toLowerCase()) ||
-        job.role.toLowerCase().includes(filterText.toLowerCase()) ||
-        (job.skills || []).some(s => s.toLowerCase().includes(filterText.toLowerCase()));
-
-      if (status === "applied") return hasApplied(job.id);
-      const matchesStatus = status === "all" || job.status === status;
-      return matchesText && matchesStatus;
+    const filtered = jobs.filter((j) => {
+      const text = (j.company + j.role + (j.skills || "")).toLowerCase();
+      const matchesSearch = text.includes(filter.toLowerCase());
+      const matchesStatus =
+        status === "all" ||
+        (status === "open" && (j.status || "").toLowerCase() === "open") ||
+        (status === "closed" && (j.status || "").toLowerCase() === "closed");
+      return matchesSearch && matchesStatus;
     });
 
-    if (!filtered.length) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#64748b;background:#fff;padding:24px;border:1px solid #e2e8f0;border-radius:10px;">
-        No matching jobs found.
-      </div>`;
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="no-jobs" style="grid-column:1/-1;text-align:center;color:#64748b;background:#fff;padding:24px;border:1px solid #e2e8f0;border-radius:10px;">
+          No matching jobs found.
+        </div>`;
       return;
     }
 
-    filtered.forEach(job => {
-      const applied = hasApplied(job.id);
+    filtered.forEach((job) => {
       const card = document.createElement("div");
       card.className = "job-card";
+      const deadline = job.deadline || "-";
+      const category = job.category || "";
+      const appliedText = job.alreadyApplied ? "✅ Applied" : "View Details";
+      const appliedClass = job.alreadyApplied ? "btn-disabled" : "btn-primary";
+
       card.innerHTML = `
         <div class="job-header">
           <h3>${job.company}</h3>
-          <span class="tag">${job.type}</span>
+          <span class="tag">${job.type || "N/A"}</span>
         </div>
         <div class="role-line">
-          ${job.role}
-          <span class="tier ${job.tier}">
-            ${job.tier === "super" ? "Super Dream" : job.tier === "dream" ? "Dream" : "Mass"}
-          </span>
+          ${job.role || "Role not specified"}
+          <span class="tier">${category}</span>
         </div>
         <div class="job-details">
-          <span>📍 ${job.location}</span><br>
-          <span>💰 ${job.salary}</span><br>
-          <span>🕒 Apply by: ${job.deadline}</span>
-        </div>
-        <span class="status ${job.status}">
-          ${job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-        </span>
-        <div class="skills">
-          ${(job.skills || []).map(s => `<span class="skill">${s}</span>`).join("")}
+          <span>📍 ${job.location || "N/A"}</span><br>
+          <span>💰 ${job.package || "Not disclosed"}</span><br>
+          <span>🕒 Apply by: ${deadline}</span>
         </div>
         <div style="margin-top:12px;">
-          ${
-            applied
-              ? `<button class="view-btn btn-primary" style="background:#94a3b8;cursor:not-allowed;" disabled>Already Applied</button>`
-              : `<button class="view-btn btn-primary" data-id="${job.id}">View More</button>`
-          }
+          <button class="view-btn ${appliedClass}" data-id="${job.id}" ${job.alreadyApplied ? "disabled" : ""}>
+            ${appliedText}
+          </button>
         </div>
       `;
       grid.appendChild(card);
+    });
 
-      if (!applied) {
-        card.querySelector(".view-btn").addEventListener("click", () => {
-          window.location.href = `job-details.html?id=${job.id}`;
-        });
-      }
+    // Add event listeners for "View Details"
+    document.querySelectorAll(".view-btn.btn-primary").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const id = e.target.getAttribute("data-id");
+        window.location.href = `job-details.html?id=${id}`;
+      });
     });
   }
 
-  searchInput?.addEventListener("input", () =>
-    renderJobs(searchInput.value, statusFilter.value)
-  );
+  // 🔹 Real-time listener for jobs
+  onSnapshot(collection(db, "jobs"), async (snapshot) => {
+    let jobs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  statusFilter?.addEventListener("change", () =>
-    renderJobs(searchInput.value, statusFilter.value)
-  );
+    // Fetch student's applied jobs
+    let appliedIds = [];
+    if (studentId) {
+      const appSnap = await getDocs(collection(db, "applications"));
+      appliedIds = appSnap.docs
+        .filter((d) => d.data().studentId === studentId)
+        .map((d) => d.data().jobId);
+    }
 
-  renderJobs();
+    // Mark applied jobs
+    jobs = jobs.map((j) => ({
+      ...j,
+      alreadyApplied: appliedIds.includes(j.id)
+    }));
+
+    // Render jobs
+    renderJobs(jobs);
+
+    // Attach search & filter listeners (once)
+    if (!window._jobListenersAttached) {
+      window._jobListenersAttached = true;
+
+      searchInput?.addEventListener("input", () =>
+        renderJobs(jobs, searchInput.value, statusFilter?.value || "all")
+      );
+
+      statusFilter?.addEventListener("change", () =>
+        renderJobs(jobs, searchInput?.value || "", statusFilter.value)
+      );
+    }
+  });
 });
