@@ -15,13 +15,17 @@ const firebaseConfig = {
   measurementId: "G-RG8P2P71H7",
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// ✅ Initialize Services
+// Initialize Services
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// ✅ Export for all scripts
+// ⭐ MAKE THEM GLOBAL FOR NON-MODULE FILES
+window.db = db;
+window.auth = auth;
+window.storage = storage;
+
+// Export for module scripts
 export { app, db, auth, storage };

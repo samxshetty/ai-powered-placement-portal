@@ -37,13 +37,16 @@
     <p class="subtext">Review, update, and manage your placement information</p>
 
     <div class="profile-layout">
+
       <!-- Sidebar -->
       <aside class="profile-sidebar card">
         <div class="profile-avatar">
           <img src="images/icons/icon-placeholder.svg" alt="Profile" id="profilePic" title="Click to change photo">
           <input type="file" id="picUpload" accept="image/*" style="display:none;">
         </div>
+
         <button class="btn ghost" id="viewPhotoBtn">View Photo</button>
+
         <h3 id="profileName">Student Name</h3>
         <p id="profileEmail" class="muted">email@example.com</p>
         <p><strong id="profileDept">ISE</strong></p>
@@ -53,6 +56,7 @@
 
       <!-- Main Profile -->
       <section class="profile-main">
+
         <!-- Personal Info -->
         <div class="card section">
           <div class="section-header">
@@ -62,22 +66,22 @@
 
           <div class="section-body">
             <label>Full Name</label>
-            <input type="text" id="fullName" placeholder="Enter your name" disabled>
+            <input type="text" id="fullName" disabled>
 
             <label>Email</label>
-            <input type="email" id="email" placeholder="Enter your email" disabled>
+            <input type="email" id="email" disabled>
 
             <label>Phone Number</label>
-            <input type="text" id="phone" placeholder="+91 1234567890" disabled>
+            <input type="text" id="phone" disabled>
 
             <label>LinkedIn Profile</label>
-            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username" disabled>
+            <input type="url" id="linkedin" disabled>
 
             <label>GitHub Profile</label>
-            <input type="url" id="github" placeholder="https://github.com/username" disabled>
+            <input type="url" id="github" disabled>
 
             <label>Portfolio / Website</label>
-            <input type="url" id="portfolio" placeholder="https://yourportfolio.com" disabled>
+            <input type="url" id="portfolio" disabled>
           </div>
         </div>
 
@@ -86,25 +90,25 @@
           <h3>Academic Details</h3>
 
           <label>Roll Number</label>
-          <input type="text" id="rollNumber" placeholder="NU25XXX" disabled>
+          <input type="text" id="rollNumber" disabled>
 
           <label>Department</label>
-          <input type="text" id="department" placeholder="CSE" disabled>
+          <input type="text" id="department" disabled>
 
           <label>Year</label>
-          <input type="text" id="year" placeholder="1st Year" disabled>
+          <input type="text" id="year" disabled>
 
           <label>CGPA</label>
-          <input type="text" id="cgpa" placeholder="9.0" disabled>
+          <input type="text" id="cgpa" disabled>
 
           <label>Active Backlogs</label>
-          <input type="text" id="backlogs" placeholder="None" disabled>
+          <input type="text" id="backlogs" disabled>
 
           <label>10th Percentage</label>
-          <input type="text" id="tenth" placeholder="90%" disabled>
+          <input type="text" id="tenth" disabled>
 
           <label>12th Percentage</label>
-          <input type="text" id="twelfth" placeholder="85%" disabled>
+          <input type="text" id="twelfth" disabled>
         </div>
 
         <!-- Skills -->
@@ -112,13 +116,13 @@
           <h3>Skills & Interests</h3>
 
           <label>Technical Skills</label>
-          <input type="text" id="skills" placeholder="Python, HTML, CSS, JS" disabled>
+          <input type="text" id="skills" disabled>
 
           <label>Career Interests</label>
-          <textarea id="interests" placeholder="Software Development, AI, Data Science..." disabled></textarea>
+          <textarea id="interests" disabled></textarea>
 
           <label>Achievements / Certifications</label>
-          <textarea id="achievements" placeholder="Hackathons, Certifications..." disabled></textarea>
+          <textarea id="achievements" disabled></textarea>
         </div>
 
         <!-- Resume -->
@@ -140,82 +144,16 @@
     </div>
   </main>
 
-<!-- Firebase setup FIRST -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-  import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
-    authDomain: "ai-powered-placement-portal.firebaseapp.com",
-    projectId: "ai-powered-placement-portal",
-    storageBucket: "ai-powered-placement-portal.appspot.com",
-    messagingSenderId: "814349983103",
-    appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
-    measurementId: "G-RG8P2P71H7"
-  };
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-init.js"></script>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
+<!-- Firebase -->
+<script type="module" src="js/firebase-init.js"></script>
 
-  // expose globally (optional)
-  window.db = db;
-  window.auth = auth;
-  window.storage = storage;
-
-  // ✅ Add profile save functionality (Firestore + localStorage)
-  document.getElementById("saveBtn").addEventListener("click", async () => {
-    const email = document.getElementById("email").value.trim();
-    const userId = email ? email.split("@")[0] : "guest";
-
-    const userData = {
-      id: userId,
-      name: document.getElementById("fullName").value.trim(),
-      email,
-      phone: document.getElementById("phone").value.trim(),
-      linkedin: document.getElementById("linkedin").value.trim(),
-      github: document.getElementById("github").value.trim(),
-      portfolio: document.getElementById("portfolio").value.trim(),
-      rollNumber: document.getElementById("rollNumber").value.trim(),
-      dept: document.getElementById("department").value.trim(),
-      year: document.getElementById("year").value.trim(),
-      cgpa: document.getElementById("cgpa").value.trim(),
-      backlogs: document.getElementById("backlogs").value.trim(),
-      tenth: document.getElementById("tenth").value.trim(),
-      twelfth: document.getElementById("twelfth").value.trim(),
-      skills: document.getElementById("skills").value.trim(),
-      interests: document.getElementById("interests").value.trim(),
-      achievements: document.getElementById("achievements").value.trim(),
-      resume: document.getElementById("viewResumeBtn").href || "",
-      updatedAt: new Date().toISOString()
-    };
-
-    try {
-      // 🔹 Save to Firestore (students collection)
-      await setDoc(doc(db, "students", userId), userData);
-
-      // 🔹 Save to localStorage for use in job-details page
-      localStorage.setItem("activeUser", userData.id);
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
-      users = users.filter((u) => u.id !== userData.id);
-      users.push(userData);
-      localStorage.setItem("users", JSON.stringify(users));
-
-      alert("✅ Profile saved successfully!");
-    } catch (error) {
-      console.error("Error saving profile:", error);
-      alert("❌ Error saving profile. Please try again.");
-    }
-  });
-</script>
-
-
-<!-- THEN load your main logic -->
-<script src="js/profile.js" type="module"></script>
+<!-- Profile Logic (LAST) -->
+<script type="module" src="js/profile.js"></script>
 
 </body>
 </html>

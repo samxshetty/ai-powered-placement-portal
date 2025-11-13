@@ -1,34 +1,56 @@
-import {
-  getFirestore, doc, getDoc, setDoc
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
 const db = window.db;
 const auth = window.auth;
 
-// -----------------------------
-// Cloudinary helper
-// -----------------------------
-async function uploadToCloudinary(file) {
-  const cloudName = "dkrjezt3a";
-  const uploadPreset = "placementportal_unsigned";
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
+// Firestore modular functions
+import {
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-  const form = new FormData();
-  form.append("file", file);
-  form.append("upload_preset", uploadPreset);
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-  const res = await fetch(url, { method: "POST", body: form });
-  if (!res.ok) throw new Error("Cloudinary upload failed");
-  return await res.json();
+// SUPABASE
+const supabase = window.supabaseClient;
+const BUCKET_PICS = window.bucketProfilePics;
+const BUCKET_RESUMES = window.bucketResumes;
+
+// -----------------------------
+// Upload file to Supabase
+// -----------------------------
+async function uploadToSupabase(bucket, file, userUID) {
+  try {
+    const filePath = `${userUID}/${Date.now()}-${file.name}`;
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    const { data: publicData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    return publicData.publicUrl;
+
+  } catch (err) {
+    console.error("❌ Supabase upload failed:", err);
+    throw err;
+  }
 }
 
 // -----------------------------
 // Main logic
 // -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
+
   const fieldIds = [
     "fullName", "email", "phone", "linkedin", "github", "portfolio",
     "rollNumber", "department", "year", "cgpa", "backlogs",
@@ -59,17 +81,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   function setEditingMode(state) {
     isEditing = state;
+
     fieldIds.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.disabled = !state;
     });
+
     uploadBtn.disabled = !state;
     saveBtn.disabled = !state;
+
     editBtn.textContent = state ? "Cancel Edit" : "Edit Profile";
   }
 
   // -----------------------------
-  // Fill all profile fields
+  // Fill profile fields
   // -----------------------------
   function fillFields() {
     fieldIds.forEach(id => {
@@ -83,12 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebarYear.textContent = "Year: " + (storedProfile.year || "1st Year");
     sidebarRoll.textContent = "Roll No: " + (storedProfile.rollNumber || "NU25XXX");
 
-    // ✅ Show saved profile picture
-    if (storedProfile.profilePicURL) {
-      profilePic.src = storedProfile.profilePicURL;
-    }
+    if (storedProfile.profilePicURL) profilePic.src = storedProfile.profilePicURL;
 
-    // ✅ Show saved resume
     if (storedProfile.resumeURL) {
       resumeStatus.innerHTML = `
         <a href="${storedProfile.resumeURL}" target="_blank" style="color:green;text-decoration:underline;">
@@ -99,6 +120,20 @@ document.addEventListener("DOMContentLoaded", () => {
       resumeStatus.textContent = "No resume uploaded";
     }
   }
+
+  // -----------------------------
+  // ⛔ FIX: ADD THIS CLICK HANDLER
+  // -----------------------------
+  editBtn.addEventListener("click", () => {
+    console.log("Edit button clicked"); // debug
+
+    if (!isEditing) {
+      setEditingMode(true);
+    } else {
+      setEditingMode(false);
+      fillFields();
+    }
+  });
 
   // -----------------------------
   // Firebase Auth listener
@@ -125,16 +160,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       fillFields();
       setEditingMode(false);
+
     } catch (err) {
-      console.error("Firestore fetch error:", err);
+      console.error("❌ Firestore fetch error:", err);
     }
   });
 
   // -----------------------------
-  // Edit / Save button handlers
+  // SAVE PROFILE
   // -----------------------------
-  editBtn.addEventListener("click", () => setEditingMode(!isEditing));
-
   saveBtn.addEventListener("click", async () => {
     fieldIds.forEach(id => {
       const el = document.getElementById(id);
@@ -142,37 +176,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     try {
-      // 🔹 Save profile (for student view)
       await setDoc(doc(db, "profiles", userUID), storedProfile, { merge: true });
 
-      // 🔹 Also sync essential info to "students" (for admin dashboard)
       const studentData = {
-        name: storedProfile.fullName || "",
-        email: storedProfile.email || "",
-        phone: storedProfile.phone || "",
-        usn: storedProfile.rollNumber || "",
-        branch: storedProfile.department || "",
-        sem: storedProfile.year || "",
+        name: storedProfile.fullName,
+        email: storedProfile.email,
+        phone: storedProfile.phone,
+        usn: storedProfile.rollNumber,
+        branch: storedProfile.department,
+        sem: storedProfile.year,
         cgpa: Number(storedProfile.cgpa) || 0,
         backlog: Number(storedProfile.backlogs) || 0,
-        status: "Active",
-        company: "-",
-        applied: 0,
-        attended: 0,
-        address: storedProfile.address || "",
-        skills: storedProfile.skills
-          ? storedProfile.skills.split(",").map(s => s.trim()).filter(Boolean)
-          : [],
+        skills: storedProfile.skills?.split(",").map(s => s.trim()) || [],
         profilePicURL: storedProfile.profilePicURL || "",
         resumeURL: storedProfile.resumeURL || "",
-        updatedAt: new Date().toISOString(),
+        status: "Active",
+        updatedAt: new Date().toISOString()
       };
 
       await setDoc(doc(db, "students", userUID), studentData, { merge: true });
 
-      alert("✅ Profile saved & synced to admin dashboard!");
-      fillFields();
+      alert("✅ Profile updated successfully!");
       setEditingMode(false);
+
     } catch (err) {
       console.error(err);
       alert("❌ Failed to save profile.");
@@ -180,52 +206,62 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // Cloudinary Upload Handlers
+  // Upload Profile Picture
   // -----------------------------
   profilePic.addEventListener("click", () => picUpload.click());
 
   picUpload.addEventListener("change", async e => {
     const file = e.target.files[0];
-    if (!file || !userUID) return;
+    if (!file) return;
 
     try {
-      const data = await uploadToCloudinary(file);
-      storedProfile.profilePicURL = data.secure_url;
-      profilePic.src = data.secure_url;
-      await setDoc(doc(db, "profiles", userUID), { profilePicURL: data.secure_url }, { merge: true });
-      await setDoc(doc(db, "students", userUID), { profilePicURL: data.secure_url }, { merge: true });
-      alert("✅ Profile photo uploaded!");
+      const url = await uploadToSupabase(BUCKET_PICS, file, userUID);
+
+      storedProfile.profilePicURL = url;
+      profilePic.src = url;
+
+      await setDoc(doc(db, "profiles", userUID), { profilePicURL: url }, { merge: true });
+      await setDoc(doc(db, "students", userUID), { profilePicURL: url }, { merge: true });
+
+      alert("✅ Profile photo updated!");
+
     } catch (err) {
-      console.error(err);
-      alert("❌ Upload failed.");
-    }
-  });
-
-  uploadBtn.addEventListener("click", () => resumeUpload.click());
-
-  resumeUpload.addEventListener("change", async e => {
-    const file = e.target.files[0];
-    if (!file || !userUID) return;
-
-    try {
-      const data = await uploadToCloudinary(file);
-      storedProfile.resumeURL = data.secure_url;
-      resumeStatus.innerHTML = `
-        <a href="${data.secure_url}" target="_blank" style="color:green;text-decoration:underline;">
-          View Uploaded Resume
-        </a>
-      `;
-      await setDoc(doc(db, "profiles", userUID), { resumeURL: data.secure_url }, { merge: true });
-      await setDoc(doc(db, "students", userUID), { resumeURL: data.secure_url }, { merge: true });
-      alert("✅ Resume uploaded!");
-    } catch (err) {
-      console.error(err);
-      alert("❌ Upload failed.");
+      alert("❌ Failed to upload profile photo.");
     }
   });
 
   // -----------------------------
-  // Logout handler
+  // Upload Resume
+  // -----------------------------
+  uploadBtn.addEventListener("click", () => resumeUpload.click());
+
+  resumeUpload.addEventListener("change", async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const url = await uploadToSupabase(BUCKET_RESUMES, file, userUID);
+
+      storedProfile.resumeURL = url;
+
+      resumeStatus.innerHTML = `
+        <a href="${url}" target="_blank" style="color:green;text-decoration:underline;">
+          View Uploaded Resume
+        </a>
+      `;
+
+      await setDoc(doc(db, "profiles", userUID), { resumeURL: url }, { merge: true });
+      await setDoc(doc(db, "students", userUID), { resumeURL: url }, { merge: true });
+
+      alert("✅ Resume uploaded!");
+
+    } catch (err) {
+      alert("❌ Failed to upload resume.");
+    }
+  });
+
+  // -----------------------------
+  // Logout
   // -----------------------------
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
@@ -233,5 +269,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login.html";
   });
 
-  setEditingMode(false);
 });

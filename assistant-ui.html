@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Placement Assistant</title>
+
+<!-- Google Font: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: "Inter", sans-serif;
+        background: #f5f7fb;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 32px;
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    p {
+        margin-top: -10px;
+        color: #64748b;
+        font-size: 16px;
+    }
+
+    .assistant-card {
+        width: 650px;
+        background: #fff;
+        border-radius: 12px;
+        margin-top: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .assistant-header {
+        background: #2563eb;
+        padding: 14px 18px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        font-size: 18px;
+        opacity: 0.9;
+    }
+
+    .assistant-chat {
+        padding: 18px;
+        height: 260px;
+        overflow-y: auto;
+        background: #ffffff;
+    }
+
+    .assistant-message {
+        background: #f1f5f9;
+        padding: 12px 14px;
+        border-radius: 14px;
+        font-size: 14px;
+        max-width: 90%;
+        line-height: 1.5;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 0;
+    }
+
+    .assistant-options {
+        padding: 14px;
+        background: #fff;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .assistant-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 18px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .assistant-btn:hover {
+        background: #1e40af;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>AI Powered Placement Portal</h1>
+<p>Get personalized job analysis, preparation plans, and profile enhancement suggestions</p>
+
+<div class="assistant-card">
+
+    <div class="assistant-header">
+        📘 Placement Assistant
+        <span class="close-btn" onclick="document.querySelector('.assistant-card').style.display='none'">×</span>
+    </div>
+
+    <div class="assistant-chat" id="assistantChat">
+        <div class="assistant-message">
+            👋 Hi Samridh! I'm your Placement Assistant. What would you like to do today?
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="assistant-options">
+        <button class="assistant-btn" onclick="askAI('analyse')">📄 Analyse Job Profile</button>
+        <button class="assistant-btn" onclick="askAI('fit')">🎯 Do I Fit This Role?</button>
+        <button class="assistant-btn" onclick="askAI('lack')">⚙️ What Do I Lack?</button>
+        <button class="assistant-btn" onclick="askAI('plan')">📚 Preparation Plan</button>
+        <button class="assistant-btn" onclick="askAI('enhance')">🚀 Enhance My Profile</button>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
+
+<script>AIzaSyCpvWjeqzQfwDm3PNgn7HF051pIfhul-_8
+/* --------------------------------------
+   🔥 1. FIREBASE CONFIG 
+-------------------------------------- */
+const firebaseConfig = {
+    apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
+    authDomain: "ai-powered-placement-portal.firebaseapp.com",
+    projectId: "ai-powered-placement-portal",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+firebase.auth().signInAnonymously();
+
+
+/* --------------------------------------
+   🤖 2. GEMINI API KEY
+-------------------------------------- */
+const GEMINI_KEY = "AIzaSyCpvWjeqzQfwDm3PNgn7HF051pIfhul-_8";
+
+/* --------------------------------------
+   🧠 3. AI ACTION HANDLER
+-------------------------------------- */
+async function askAI(action) {
+    const chat = document.getElementById("assistantChat");
+
+    const loading = document.createElement("div");
+    loading.className = "assistant-message";
+    loading.innerText = "🤖 Thinking...";
+    chat.appendChild(loading);
+    chat.scrollTop = chat.scrollHeight;
+
+    // fetch user data
+    const userId = firebase.auth().currentUser.uid;
+    const userDoc = await db.collection("users").doc(userId).get();
+    const userProfile = userDoc.exists ? userDoc.data() : { skills: [], projects: [] };
+
+    // job details (you can replace this with real job data)
+    const jobDescription = `
+Solutions Architect at Nvidia.
+Skills: AWS, Python, Cloud, DevOps
+Role: Build cloud architecture, manage deployments.
+`;
+
+    let userPrompt = "";
+
+    if (action === "analyse") userPrompt = "Analyse the job profile in detail.";
+    if (action === "fit") userPrompt = "Do I fit this role based on my profile and resume?";
+    if (action === "lack") userPrompt = "What do I lack for this role?";
+    if (action === "plan") userPrompt = "Give me a full preparation plan for this role.";
+    if (action === "enhance") userPrompt = "How can I enhance my overall profile?";
+
+    const prompt = `
+You are a Placement Assistant AI.
+JOB DESCRIPTION:
+${jobDescription}
+
+USER PROFILE:
+${JSON.stringify(userProfile, null, 2)}
+
+ACTION REQUESTED:
+"${userPrompt}"
+
+Give a clear, structured, helpful answer.
+`;
+
+    const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        }
+    );
+
+    const data = await res.json();
+    loading.remove();
+
+    let output = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response.";
+
+    const msg = document.createElement("div");
+    msg.className = "assistant-message";
+    msg.innerText = output;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>

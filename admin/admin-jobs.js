@@ -1,4 +1,5 @@
-import { db } from "../js/firebase-init.js";  // ✅ correct import for your structure
+import { db } from "../js/firebase-init.js"; // correct global import
+
 import {
   collection,
   addDoc,
@@ -9,25 +10,34 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// ✅ Firestore collection reference
+// Firestore reference
 const jobsRef = collection(db, "jobs");
 
-// Helper for unique IDs (used for rounds)
+// Helpers
 function id() { return 'j_' + Math.random().toString(36).slice(2, 9); }
 function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
 
 let jobs = [];
 
-// 🔹 Real-time listener (auto refresh jobs list)
-onSnapshot(jobsRef, (snapshot) => {
-  jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  renderJobs();
-});
+// REAL-TIME LISTENER (with error handler)
+onSnapshot(
+  jobsRef,
+  (snapshot) => {
+    console.log("Jobs snapshot received:", snapshot.size);
+    jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderJobs();
+  },
+  (error) => {
+    console.error("🔥 Firestore onSnapshot ERROR:", error);
+    document.getElementById("jobsList").innerHTML =
+      `<div class="error">Failed to load jobs: ${error.message}</div>`;
+  }
+);
 
-// 🔹 Render jobs
+// RENDER JOBS
 function renderJobs(filterText = '', filterTag = 'all') {
   const list = document.getElementById("jobsList");
-  list.innerHTML = '';
+  list.innerHTML = "";
 
   const filtered = jobs.filter(j => {
     const txt = (j.company + ' ' + j.role + ' ' + j.location + ' ' + j.skills).toLowerCase();
@@ -48,9 +58,11 @@ function renderJobs(filterText = '', filterTag = 'all') {
   filtered.forEach(job => {
     const li = el('li', 'job-item');
     const left = el('div', 'job-left');
-    const title = el('div', 'job-title'); title.textContent = job.role;
-    const meta = el('div', 'job-meta');
 
+    const title = el('div', 'job-title');
+    title.textContent = job.role;
+
+    const meta = el('div', 'job-meta');
     meta.innerHTML = `
       <span>${job.company}</span> • 
       <span>${job.location}</span> • 
@@ -61,23 +73,33 @@ function renderJobs(filterText = '', filterTag = 'all') {
     const badges = el('div', 'badges');
     const catBadge = el('span', 'badge ' + (job.category.toLowerCase().includes('dream') ? 'badge dream' : ''));
     catBadge.textContent = job.category;
+
     const statusBadge = el('span', 'badge ' + (job.status === 'open' ? 'badge open' : 'badge closed'));
     statusBadge.textContent = job.status === 'open' ? 'Open' : 'Closed';
+
     badges.appendChild(catBadge);
     badges.appendChild(statusBadge);
 
-    left.appendChild(title);
-    left.appendChild(meta);
-    left.appendChild(badges);
+    left.append(title, meta, badges);
 
+    // Actions
     const actions = el('div', 'job-actions');
     const viewBtn = el('button', 'icon-btn'); viewBtn.innerHTML = '👁️';
     viewBtn.onclick = () => openViewModal(job);
+
     const editBtn = el('button', 'icon-btn'); editBtn.innerHTML = '✏️';
     editBtn.onclick = () => openEditModal(job);
+
     const delBtn = el('button', 'icon-btn'); delBtn.innerHTML = '🗑️';
     delBtn.onclick = async () => {
-      if (confirm('Delete this job?')) await deleteDoc(doc(window.db, "jobs", job.id));
+      if (!confirm("Delete this job?")) return;
+
+      try {
+        await deleteDoc(doc(db, "jobs", job.id));
+      } catch (err) {
+        console.error("Delete failed:", err);
+        alert("Failed to delete job: " + err.message);
+      }
     };
 
     actions.append(viewBtn, editBtn, delBtn);
@@ -86,7 +108,7 @@ function renderJobs(filterText = '', filterTag = 'all') {
   });
 }
 
-// 🔹 Add Job
+// ADD JOB
 document.getElementById('openAddJob').addEventListener('click', () => {
   document.getElementById('addJobForm').reset();
   document.getElementById('roundsList').innerHTML = '';
@@ -98,6 +120,7 @@ document.getElementById('addRoundBtn').addEventListener('click', () => addRoundU
 document.getElementById('addJobForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target;
+
   const job = {
     company: f.company.value.trim(),
     role: f.role.value.trim(),
@@ -105,21 +128,27 @@ document.getElementById('addJobForm').addEventListener('submit', async (e) => {
     package: f.package.value.trim(),
     type: f.type.value,
     category: f.category.value,
-    deadline: f.deadline.value || '',
+    deadline: f.deadline.value,
     skills: f.skills.value,
     eligibility: f.eligibility.value,
     description: f.description.value,
     requirements: f.requirements.value,
     benefits: f.benefits.value,
-    status: 'open',
+    status: "open",
     rounds: collectRoundsFrom('roundsList'),
     createdAt: new Date().toISOString()
   };
-  await addDoc(jobsRef, job);
-  closeModal('addModal');
+
+  try {
+    await addDoc(jobsRef, job);
+    closeModal('addModal');
+  } catch (err) {
+    console.error("Add job failed:", err);
+    alert("Failed to add job: " + err.message);
+  }
 });
 
-// 🔹 Edit Modal
+// EDIT JOB
 function openEditModal(job) {
   const f = document.getElementById('editJobForm');
   f.jobId.value = job.id;
@@ -143,35 +172,41 @@ function openEditModal(job) {
   openModal('editModal');
 }
 
-const addRoundBtnEdit = document.getElementById('addRoundBtnEdit');
-if (addRoundBtnEdit) addRoundBtnEdit.addEventListener('click', () => addRoundUI('roundsListEdit'));
+document.getElementById('addRoundBtnEdit').addEventListener('click', () => addRoundUI('roundsListEdit'));
 
-const editJobForm = document.getElementById('editJobForm');
-if (editJobForm) editJobForm.addEventListener('submit', async (e) => {
+document.getElementById('editJobForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target;
-  const jobRef = doc(window.db, "jobs", f.jobId.value);
-  await updateDoc(jobRef, {
-    company: f.company.value.trim(),
-    role: f.role.value.trim(),
-    location: f.location.value.trim(),
-    package: f.package.value.trim(),
-    type: f.type.value,
-    category: f.category.value,
-    deadline: f.deadline.value || '',
-    skills: f.skills.value,
-    eligibility: f.eligibility.value,
-    description: f.description.value,
-    requirements: f.requirements.value,
-    benefits: f.benefits.value,
-    rounds: collectRoundsFrom('roundsListEdit'),
-  });
-  closeModal('editModal');
+
+  const jobRef = doc(db, "jobs", f.jobId.value);
+
+  try {
+    await updateDoc(jobRef, {
+      company: f.company.value.trim(),
+      role: f.role.value.trim(),
+      location: f.location.value.trim(),
+      package: f.package.value.trim(),
+      type: f.type.value,
+      category: f.category.value,
+      deadline: f.deadline.value,
+      skills: f.skills.value,
+      eligibility: f.eligibility.value,
+      description: f.description.value,
+      requirements: f.requirements.value,
+      benefits: f.benefits.value,
+      rounds: collectRoundsFrom('roundsListEdit')
+    });
+    closeModal('editModal');
+  } catch (err) {
+    console.error("Update failed:", err);
+    alert("Failed to update job: " + err.message);
+  }
 });
 
-// 🔹 View Modal
+// VIEW JOB
 function openViewModal(job) {
   const container = document.getElementById('jobDetails');
+
   container.innerHTML = `
     <h3>${job.role}</h3>
     <div class="job-detail-grid">
@@ -191,10 +226,11 @@ function openViewModal(job) {
     <div><strong>Requirements</strong><p>${job.requirements}</p></div>
     <div><strong>Benefits</strong><p>${job.benefits}</p></div>
   `;
+
   openModal('viewModal');
 }
 
-// 🔹 Rounds UI Helpers
+// ROUNDS UI HELPERS
 function addRoundUI(listId) {
   const list = document.getElementById(listId);
   const r = { id: id(), from: '', to: '', title: '', note: '' };
@@ -202,49 +238,82 @@ function addRoundUI(listId) {
 }
 
 function createRoundItem(listEl, round) {
-  const li = el('li', 'round-item');
-  const main = el('div', 'round-main');
-  const from = document.createElement('input'); from.type = 'date'; from.value = round.from || '';
-  const to = document.createElement('input'); to.type = 'date'; to.value = round.to || '';
-  const title = document.createElement('input'); title.placeholder = 'Round name'; title.value = round.title || '';
-  const note = document.createElement('input'); note.placeholder = 'Note'; note.value = round.note || '';
+  const li = el("li", "round-item");
+  const main = el("div", "round-main");
+
+  const from = document.createElement("input");
+  from.type = "date";
+  from.value = round.from || "";
+
+  const to = document.createElement("input");
+  to.type = "date";
+  to.value = round.to || "";
+
+  const title = document.createElement("input");
+  title.placeholder = "Round name";
+  title.value = round.title || "";
+
+  const note = document.createElement("input");
+  note.placeholder = "Note";
+  note.value = round.note || "";
+
   main.append(from, to, title, note);
   li.append(main);
-  const del = el('button', 'btn small'); del.textContent = 'Remove';
+
+  const del = el("button", "btn small");
+  del.textContent = "Remove";
   del.onclick = () => li.remove();
   li.append(del);
+
   listEl.append(li);
 }
 
 function collectRoundsFrom(listId) {
   const list = document.getElementById(listId);
   const out = [];
+
   if (!list) return out;
-  [...list.children].forEach(li => {
-    const inputs = li.querySelectorAll('input');
+
+  [...list.children].forEach((li) => {
+    const inputs = li.querySelectorAll("input");
     if (inputs.length >= 4) {
       const [from, to, title, note] = inputs;
-      out.push({ id: id(), from: from.value, to: to.value, title: title.value, note: note.value });
+      out.push({
+        id: id(),
+        from: from.value,
+        to: to.value,
+        title: title.value,
+        note: note.value,
+      });
     }
   });
   return out;
 }
 
-// 🔹 Filters
+// FILTERS
 let currentFilter = 'all';
-document.getElementById('filterInput').addEventListener('input', e => renderJobs(e.target.value, currentFilter));
+
+document.getElementById('filterInput')
+  .addEventListener('input', e => renderJobs(e.target.value, currentFilter));
+
 document.querySelectorAll('.filter-btn').forEach(b => {
   b.addEventListener('click', () => {
     currentFilter = b.dataset.filter || 'all';
     document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    renderJobs(document.getElementById('filterInput').value || '', currentFilter);
+    renderJobs(document.getElementById('filterInput').value, currentFilter);
   });
 });
 
-// 🔹 Modal control
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+// MODALS
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
 document.addEventListener('click', (e) => {
   const close = e.target.closest('[data-close]');
   if (close) closeModal(close.getAttribute('data-close'));

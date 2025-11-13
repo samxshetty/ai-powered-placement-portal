@@ -4,13 +4,85 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Job Details — PlacementHub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/job-details.css" />
   <link rel="stylesheet" href="css/styles.css" />
-<script type="module" src="js/jobs.js"></script>
+
+  <!-- Job loading -->
+  <script type="module" src="js/jobs.js"></script>
+
+  <!-- PDF.js (for resume parsing) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+  <style>
+    /* EXACT AI ASSISTANT STYLES FROM YOUR PREVIEW */
+    .assistant-card {
+        width: 100%;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        overflow: hidden;
+        margin-top: 20px;
+        font-family: "Inter", sans-serif;
+    }
+    .assistant-header {
+        background: #2563eb;
+        padding: 14px 18px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .assistant-chat {
+        padding: 18px;
+        height: 240px;
+        overflow-y: auto;
+        background: #ffffff;
+    }
+    .assistant-message {
+        background: #f1f5f9;
+        padding: 12px 14px;
+        border-radius: 14px;
+        font-size: 14px;
+        max-width: 90%;
+        margin-bottom: 10px;
+    }
+    .assistant-options {
+        padding: 14px;
+        background: #fff;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .assistant-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 18px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+    .assistant-btn:hover {
+        background: #1e40af;
+    }
+  </style>
 
 </head>
 <body>
+
 <!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
@@ -26,121 +98,118 @@
       <a href="profile.html" class="nav-link">Profile</a>
       <a href="calendar.html" class="nav-link">Calendar</a>
       <a href="alumni.html" class="nav-link">Alumni</a>
-<a href="news.html" class="nav-link">News</a>
+      <a href="news.html" class="nav-link">News</a>
       <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
     </div>
   </div>
 </nav>
 
 
-  <main class="container">
-    <a href="jobs.html" class="back-link">← Back to Jobs</a>
+<main class="container">
+  <a href="jobs.html" class="back-link">← Back to Jobs</a>
 
-    <div class="main-grid">
-      <!-- LEFT: Job content -->
-      <div class="col-left">
-        <!-- Job header card -->
-        <section class="card job-header-card">
-          <div class="job-top">
-            <div>
-              <h2 id="jobRole">Software Engineer</h2>
-              <p class="muted small" id="jobCompany"><span id="jobCompanyName">Google</span></p>
-            </div>
-            <div style="text-align:right">
-              <span class="pill tag" id="jobType">Full-time</span>
-            </div>
+  <div class="main-grid">
+    <!-- LEFT SIDE -->
+    <div class="col-left">
+
+      <section class="card job-header-card">
+        <div class="job-top">
+          <div>
+            <h2 id="jobRole">Software Engineer</h2>
+            <p class="muted small" id="jobCompany"><span id="jobCompanyName">Google</span></p>
           </div>
-
-          <div class="job-meta">
-            <div class="meta-item">📍 <span id="jobLocation">Bangalore, India</span></div>
-            <div class="meta-item">💰 <span id="jobSalary">20–25 LPA</span></div>
-            <div class="meta-item">🕒 <span id="jobDeadline">Apply by: 2024-11-30</span></div>
+          <div style="text-align:right">
+            <span class="pill tag" id="jobType">Full-time</span>
           </div>
+        </div>
 
-          <div id="jobStatusWrap" style="margin-top:12px">
-            <span id="jobStatus" class="status open">Open</span>
-            <div class="skills" id="jobSkills" style="margin-top:10px"></div>
-          </div>
-        </section>
+        <div class="job-meta">
+          <div class="meta-item">📍 <span id="jobLocation">Bangalore, India</span></div>
+          <div class="meta-item">💰 <span id="jobSalary">20–25 LPA</span></div>
+          <div class="meta-item">🕒 <span id="jobDeadline">Apply by: 2024-11-30</span></div>
+        </div>
 
-        <!-- Job Description -->
-        <section class="card">
-          <h3>Job Description</h3>
-          <p id="jobDescription">We are looking for talented software engineers to join our team. You will work on cutting-edge technologies and solve challenging problems at scale.</p>
-        </section>
+        <div id="jobStatusWrap" style="margin-top:12px">
+          <span id="jobStatus" class="status open">Open</span>
+          <div class="skills" id="jobSkills" style="margin-top:10px"></div>
+        </div>
+      </section>
 
-        <!-- Requirements -->
-        <section class="card">
-          <h3>Requirements</h3>
-          <ul id="jobRequirements" class="check-list">
-            <!-- filled by JS -->
-          </ul>
-        </section>
+      <section class="card">
+        <h3>Job Description</h3>
+        <p id="jobDescription">Loading...</p>
+      </section>
 
-        <!-- Responsibilities -->
-        <section class="card">
-          <h3>Responsibilities</h3>
-          <ul id="jobResponsibilities" class="check-list"></ul>
-        </section>
+      <section class="card">
+        <h3>Requirements</h3>
+        <ul id="jobRequirements" class="check-list"></ul>
+      </section>
 
-        <!-- Benefits -->
-        <section class="card">
-          <h3>Benefits</h3>
-          <ul id="jobBenefits" class="check-list"></ul>
-        </section>
-      </div>
+      <section class="card">
+        <h3>Responsibilities</h3>
+        <ul id="jobResponsibilities" class="check-list"></ul>
+      </section>
 
-      <!-- RIGHT: Apply + AI Panel -->
-      <aside class="col-right">
-        <section class="card">
-          <h3>Apply for this position</h3>
-          <p class="muted small" id="applyDeadline">Deadline: 2024-11-30</p>
-          <button id="applyBtn" class="view-btn">Submit Application</button>
-        </section>
+      <section class="card">
+        <h3>Benefits</h3>
+        <ul id="jobBenefits" class="check-list"></ul>
+      </section>
 
-        <!-- AI Assistant panel (frontend only placeholder) -->
-        <section class="card">
-          <h3>AI Assistant</h3>
-          <p class="muted small">Ask the AI for help tailoring your application (frontend-only). We'll hook backend later.</p>
-
-          <textarea id="aiInput" placeholder="Ask: 'How should I tailor my resume for this role?'" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef7;margin-top:8px;"></textarea>
-          <button id="askAiBtn" class="btn-secondary" style="width:100%;margin-top:10px">Ask AI</button>
-
-          <div id="aiResponse" class="ai-response" style="margin-top:12px;display:none">
-            <h4>AI Suggestions</h4>
-            <div id="aiResponseText" style="color:#1f2937"></div>
-            <div style="margin-top:10px;font-size:13px;color:var(--muted)">Note: This is a frontend demo. Connect backend to enable live AI responses.</div>
-          </div>
-        </section>
-
-        <!-- Placeholder for application tips (kept as backup) -->
-        <section class="card">
-          <h3>Application Tips</h3>
-          <ul class="simple-list">
-            <li>Ensure your resume is up to date</li>
-            <li>Highlight relevant skills and projects</li>
-            <li>Prepare for technical interviews</li>
-            <li>Research about the company</li>
-          </ul>
-        </section>
-      </aside>
     </div>
-  </main>
+
+    <!-- RIGHT SIDE -->
+    <aside class="col-right">
+
+      <section class="card">
+        <h3>Apply for this position</h3>
+        <p class="muted small" id="applyDeadline"></p>
+        <button id="applyBtn" class="view-btn">Submit Application</button>
+      </section>
+
+      <!-- ⭐ NEW AI ASSISTANT UI -->
+      <section class="assistant-card">
+
+        <div class="assistant-header">
+          📘 Placement Assistant
+        </div>
+
+        <div id="assistantChat" class="assistant-chat">
+          <div class="assistant-message">
+            👋 Hi! I'm your Placement Assistant. What would you like to do?
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="assistant-options">
+          <button class="assistant-btn" onclick="askAI('analyse')">📄 Analyse Job Profile</button>
+          <button class="assistant-btn" onclick="askAI('fit')">🎯 Do I Fit This Role?</button>
+          <button class="assistant-btn" onclick="askAI('lack')">⚙️ What Do I Lack?</button>
+          <button class="assistant-btn" onclick="askAI('plan')">📚 Preparation Plan</button>
+          <button class="assistant-btn" onclick="askAI('enhance')">🚀 Enhance My Profile</button>
+        </div>
+
+      </section>
+
+      <section class="card">
+        <h3>Application Tips</h3>
+        <ul class="simple-list">
+          <li>Ensure your resume is up to date</li>
+          <li>Highlight relevant skills and projects</li>
+          <li>Prepare for technical interviews</li>
+          <li>Research about the company</li>
+        </ul>
+      </section>
+
+    </aside>
+  </div>
+</main>
 
 <script type="module" src="./js/firebase-init.js"></script>
 <script type="module" src="./js/job-details.js"></script>
 
-<script>
-  // Highlight active link automatically
-  const currentPage = window.location.pathname.split("/").pop();
-  document.querySelectorAll(".nav-links a").forEach(link => {
-    if (link.getAttribute("href") === currentPage) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
-  });
-</script>
+<!-- assistant.js must load AFTER firebase-init.js -->
+<script type="module" src="js/assistant.js"></script>
 
 
 </body>

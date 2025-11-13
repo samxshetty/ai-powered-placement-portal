@@ -32,6 +32,7 @@ body {
   align-items: center;
   padding: 12px 0;
 }
+
 .logo {
   display: flex;
   align-items: center;
@@ -39,6 +40,7 @@ body {
   font-weight: 700;
   color: var(--primary-dark);
 }
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -53,6 +55,7 @@ body {
   color: var(--primary);
   font-weight: 700;
 }
+
 .logout-btn {
   background: #ef4444;
   color: #fff;
@@ -153,6 +156,13 @@ body {
   min-height: 80px;
 }
 
+/* Disabled fields BUT clickable */
+.profile-main input:disabled,
+.profile-main textarea:disabled {
+  background: #f1f5f9;
+  opacity: 0.8;
+}
+
 /* Section header */
 .section-header {
   display: flex;
@@ -185,6 +195,7 @@ body {
 .btn.primary:hover {
   background: var(--primary-dark);
 }
+
 .btn.ghost {
   background: transparent;
   border: 1px solid var(--primary);
@@ -197,5 +208,3 @@ body {
 .btn.ghost:hover {
   background: rgba(11, 99, 216, 0.05);
 }
-
-
