@@ -1,26 +1,28 @@
-
-# Environment files
+# --- ENV FILES ---
 .env
 .env.local
-.env.production
 .env.development
+.env.production
+.env.* 
+*.env
 
-# Sensitive init files
-.js/firebase-init.js
-.js/supabase-init.js
+# --- FIREBASE & SUPABASE INIT (SENSITIVE) ---
+js/firebase-init.js
+js/supabase-init.js
 
-# Node modules (future backend)
+# --- NODE MODULES (future backend) ---
 node_modules/
 
-# Logs
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+# --- LOG FILES ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# OS junk
+# --- BUILD / DIST (if you add later) ---
+dist/
+build/
+
+# --- OS / EDITOR JUNK ---
 .DS_Store
 Thumbs.db
-
-.env
-.env.*
-*.env
+.vscode/
