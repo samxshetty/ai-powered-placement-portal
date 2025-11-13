@@ -1,6 +1,4 @@
 // job-details.js — Student Job Details & Application via Firestore
-
-// ✅ Import initialized Firebase app instead of reinitializing it
 import { db } from "./firebase-init.js";
 import {
   doc,
@@ -20,12 +18,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const jobRef = doc(db, "jobs", jobId);
+
   let snap;
   try {
     snap = await getDoc(jobRef);
   } catch (err) {
-    console.error("Error fetching job details:", err);
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Failed to load job details.</h2>";
+    console.error("Error fetching job:", err);
     return;
   }
 
@@ -37,51 +35,54 @@ document.addEventListener("DOMContentLoaded", async () => {
   const job = snap.data();
   const el = (id) => document.getElementById(id);
 
-  // ✅ Check all required DOM elements before accessing
-  const ids = [
-    "jobRole",
-    "jobCompanyName",
-    "jobType",
-    "jobLocation",
-    "jobSalary",
-    "jobDeadline",
-    "jobDescription",
-    "jobSkills",
-    "applyBtn",
-  ];
-
-  for (const id of ids) {
-    if (!el(id)) {
-      console.error(`Element with ID "${id}" not found in HTML.`);
-      return;
-    }
-  }
-
-  // ✅ Populate job details
+  // Load main details
   el("jobRole").textContent = job.role || "Not specified";
   el("jobCompanyName").textContent = job.company || "Not specified";
   el("jobType").textContent = job.type || "Not specified";
   el("jobLocation").textContent = job.location || "Not specified";
-  el("jobSalary").textContent = job.package || "Not specified";
-  el("jobDeadline").textContent = "Apply by: " + (job.applyBy || "-");
-  el("jobDescription").textContent = job.jobDescription || "No description available.";
-  // ✅ Render skills safely (works with both array or comma-separated string)
-  let skillsArray = [];
+  el("jobSalary").textContent = job.package || "Not Revealed";
 
-  if (Array.isArray(job.skills)) {
-    skillsArray = job.skills; 
-  } else if (typeof job.skills === "string") {
-    skillsArray = job.skills.split(",").map((s) => s.trim());
+  // DEADLINE (your Firestore field is 'deadline')
+  el("jobDeadline").textContent = "Apply by: " + (job.deadline || "-");
+
+  // STATUS
+  if (job.status) {
+    el("jobStatus").textContent = job.status;
+    el("jobStatus").className = "status " + job.status.toLowerCase();
+  }
+
+  // DESCRIPTION (Firestore: description)
+  el("jobDescription").textContent = job.description || "No description available.";
+
+  // REQUIREMENTS (Firestore: requirements — big string → bullets)
+  el("jobRequirements").innerHTML = job.requirements
+    ? job.requirements.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
+    : "<li>No requirements listed.</li>";
+
+  // RESPONSIBILITIES (Firestore: eligibility)
+  el("jobResponsibilities").innerHTML = job.eligibility
+    ? job.eligibility.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
+    : "<li>No responsibilities listed.</li>";
+
+  // BENEFITS (Firestore: benefits)
+  el("jobBenefits").innerHTML = job.benefits
+    ? job.benefits.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
+    : "<li>No benefits provided.</li>";
+
+  // SKILLS (string OR array)
+  let skillsArray = [];
+  if (Array.isArray(job.skills)) skillsArray = job.skills;
+  else if (typeof job.skills === "string" && job.skills.trim() !== "") {
+    skillsArray = job.skills.split(",").map(s => s.trim());
   }
 
   el("jobSkills").innerHTML = skillsArray.length
-  ? skillsArray.map((s) => `<span class='skill'>${s}</span>`).join("")
-  : "<span>No skills specified.</span>";
+    ? skillsArray.map(s => `<span class="skill">${s}</span>`).join("")
+    : "<span>No skills listed.</span>";
 
-
+  // APPLY BUTTON
   const applyBtn = el("applyBtn");
 
-  // ✅ Get student info from localStorage (ensure proper format)
   const studentId = localStorage.getItem("activeUserId");
   const studentName = localStorage.getItem("activeUserName");
   const studentDept = localStorage.getItem("activeUserDept");
@@ -89,20 +90,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const studentEmail = localStorage.getItem("activeUser");
   const studentYear = localStorage.getItem("activeUserYear");
 
+  // If logged in
   if (!studentId || !studentName) {
-    applyBtn.textContent = "Profile Not Found";
+    applyBtn.textContent = "Login to Apply";
     applyBtn.disabled = true;
-    applyBtn.style.opacity = "0.6";
     return;
   }
 
-  // ✅ Handle Apply Button Click
   applyBtn.addEventListener("click", async () => {
     try {
-      // Add student to applicants list (if not already)
+      // Add student to applicants array
       await updateDoc(jobRef, { applicants: arrayUnion(studentId) });
 
-      // Create an application record
+      // Create application entry
       await setDoc(doc(db, "applications", `${studentId}_${jobId}`), {
         jobId,
         studentId,
@@ -117,14 +117,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         jobCompany: job.company,
       });
 
-      // ✅ Update UI
-      alert("✅ Application submitted successfully!");
+      alert("Application submitted!");
       applyBtn.textContent = "Applied";
       applyBtn.disabled = true;
-      applyBtn.style.opacity = "0.6";
     } catch (err) {
-      console.error("Error submitting application:", err);
-      alert("❌ Failed to apply. Please try again later.");
+      console.error(err);
+      alert("Could not apply!");
     }
   });
 });

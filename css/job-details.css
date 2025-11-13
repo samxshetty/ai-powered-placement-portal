@@ -137,3 +137,431 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* Make AI assistant full width on right column */
+/* ---------- Placement Assistant (Final Clean Version) ---------- */
+
+/* Entire assistant card */
+.assistant-card {
+    width: 520px !important;
+    height: 780px !important;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.assistant-header {
+    flex: 0 0 auto;
+    padding: 16px 20px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Chat area */
+#assistantChat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    background: #f8faff;
+    font-size: 15px;
+    line-height: 1.5;
+    max-height: none !important;
+}
+
+/* Message bubbles */
+.assistant-message {
+    background: #eef2ff;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+/* Tables inside AI responses */
+.assistant-message table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
+.assistant-message th {
+    background: #eef2ff;
+    border: 1px solid #d4d4d4;
+    padding: 8px;
+    font-weight: 600;
+}
+
+.assistant-message td {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    padding: 8px;
+}
+
+
+
+/* Increase chat height */
+#assistantChat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8faff;
+    font-size: 15px;
+    line-height: 1.5;
+    max-height: 850px !important;   /* 🔥 Increase chat visual height */
+}
+
+/* Increase chat height dramatically */
+#assistantChat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    background: #f8faff;
+    max-height: 680px !important;   /* BIGGER CHAT */
+    min-height: 500px !important;   /* prevents tiny chat */
+}
+
+
+
+/* Main assistant container */
+.assistant-card {
+    width: 100%;
+    height: 820px;                 /* BIGGER assistant container */
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    background: white;
+}
+
+/* Chat header */
+.assistant-header {
+    padding: 14px 18px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Chat area (MUCH BIGGER now) */
+#assistantChat {
+    flex: 1;
+    padding: 18px;
+    background: #f8faff;
+    overflow-y: auto;
+    max-height: 700px !important;    /* 🔥 Extended chat zone */
+    min-height: 550px !important;
+}
+
+/* Messages */
+.assistant-message {
+    background: #eef2ff;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+/* ======================= */
+/*   PREMIUM UI v2 DESIGN  */
+/* ======================= */
+
+/* Full assistant widget */
+.assistant-card {
+    width: 100%;
+    height: 820px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+/* Header */
+.assistant-header {
+    padding: 16px 20px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.2px;
+}
+
+/* Chat section */
+#assistantChat {
+    flex: 1;
+    padding: 20px;
+    background: #f3f6ff;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Chat bubble */
+.assistant-message {
+    background: #ffffff;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1e293b;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    white-space: pre-wrap;
+}
+
+/* Table formatting inside chat */
+.assistant-message table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+.assistant-message th {
+    background: #eef2ff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+    font-weight: 600;
+}
+.assistant-message td {
+    background: #ffffff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+}
+
+
+/* ======================= */
+/*   PREMIUM UI v2 DESIGN  */
+/* ======================= */
+
+/* Full assistant widget */
+.assistant-card {
+    width: 100%;
+    height: 820px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+/* Header */
+.assistant-header {
+    padding: 16px 20px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.2px;
+}
+
+/* Chat section */
+#assistantChat {
+    flex: 1;
+    padding: 20px;
+    background: #f3f6ff;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Chat bubble */
+.assistant-message {
+    background: #ffffff;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1e293b;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    white-space: pre-wrap;
+}
+
+/* Table formatting inside chat */
+.assistant-message table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+.assistant-message th {
+    background: #eef2ff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+    font-weight: 600;
+}
+.assistant-message td {
+    background: #ffffff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+}
+
+/* Button section - 2 per row */
+.assistant-options {
+    padding: 16px;
+    background: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Modern blue buttons */
+.assistant-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.assistant-btn:hover {
+    background: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Apply section alignment fix */
+.apply-card {
+    width: 100% !important;
+}
+
+.apply-card button {
+    width: 100%;
+}
+
+/* ============================== */
+/*   CLEAN FINAL ASSISTANT UI     */
+/* ============================== */
+
+/* Right-column assistant width */
+.assistant-card {
+    width: 520px;                     /* ⭐ increased width */
+    height: 830px;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e4e4e7;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+/* Header */
+.assistant-header {
+    padding: 16px 20px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Chat area — scrollbar inside */
+#assistantChat {
+    flex: 1;
+    padding: 20px;
+    background: #f3f6ff;
+    overflow-y: scroll;               /* ⭐ moved scroll inside */
+    scroll-behavior: smooth;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Messages */
+.assistant-message {
+    background: #ffffff;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1e293b;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    white-space: pre-wrap;
+}
+
+/* Table formatting inside chat */
+.assistant-message table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+.assistant-message th {
+    background: #eef2ff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+    font-weight: 600;
+}
+.assistant-message td {
+    background: #ffffff;
+    padding: 10px;
+    border: 1px solid #d4d4d8;
+}
+
+/* Buttons — 2 columns */
+.assistant-options {
+    padding: 16px;
+    background: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;     /* ⭐ TWO BUTTONS PER ROW */
+    gap: 12px;
+}
+
+/* Each button */
+.assistant-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s ease;
+}
+.assistant-btn:hover {
+    background: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Apply card alignment */
+.apply-card {
+    width: 520px !important;
+}
+.apply-card button {
+    width: 100%;
+}
