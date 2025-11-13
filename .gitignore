@@ -6,8 +6,8 @@
 .env.development
 
 # Sensitive init files
-js/firebase-init.js
-js/supabase-init.js
+.js/firebase-init.js
+.js/supabase-init.js
 
 # Node modules (future backend)
 node_modules/
