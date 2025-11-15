@@ -17,9 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.getElementById("openAddAlumni");
 
   let editId = null;
-  let currentAlumni = []; // Always holds latest snapshot data
+  let currentAlumni = [];
 
-  // 🟦 SINGLE Firestore listener
   onSnapshot(collection(db, "alumni"), (snapshot) => {
     console.log("🔥 Firestore snapshot received:", snapshot.size);
 
@@ -74,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🟦 EVENT DELEGATION — ZERO duplicated listeners
   alumniListEl.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".edit-btn");
     const deleteBtn = e.target.closest(".delete-btn");
@@ -124,10 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal();
   });
 
-  // 🟦 Add / Update alumni
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(form));
+    delete formData.id; 
 
     try {
       if (editId) {
