@@ -19,11 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let editId = null;
 
   onSnapshot(collection(db, "alumni"), (snapshot) => {
-    const alumni = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    renderAlumni(alumni);
-  });
-
-  onSnapshot(collection(db, "alumni"), (snapshot) => {
   console.log("🔥 Firestore snapshot received:", snapshot.size);
   snapshot.docs.forEach((d) => console.log("Doc data:", d.data()));
 
