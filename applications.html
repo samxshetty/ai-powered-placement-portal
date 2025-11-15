@@ -87,16 +87,23 @@
   });
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
-      });
-    }
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("activeUser");
+      window.location.href = "index.html";
+    });
+  }
+
+  // redirect if not logged in
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+});
 </script>
+
 <script>
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";

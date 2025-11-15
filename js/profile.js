@@ -13,8 +13,10 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
+// -----------------------------
 // SUPABASE
-const supabase = window.supabaseClient;
+// -----------------------------
+const sb = window.supabaseClient;
 const BUCKET_PICS = window.bucketProfilePics;
 const BUCKET_RESUMES = window.bucketResumes;
 
@@ -23,31 +25,40 @@ const BUCKET_RESUMES = window.bucketResumes;
 // -----------------------------
 async function uploadToSupabase(bucket, file, userUID) {
   try {
+    console.log("📤 Uploading to bucket:", bucket);
+
     const filePath = `${userUID}/${Date.now()}-${file.name}`;
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await sb.storage
       .from(bucket)
       .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false
+        upsert: true   // allow overwriting old files
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error("❌ Upload error:", error);
+      throw error;
+    }
 
-    const { data: publicData } = supabase.storage
+    console.log("📤 Upload success:", data);
+
+    // Get public URL
+    const { data: publicData } = sb.storage
       .from(bucket)
       .getPublicUrl(filePath);
+
+    console.log("🌐 Public URL:", publicData.publicUrl);
 
     return publicData.publicUrl;
 
   } catch (err) {
-    console.error("❌ Supabase upload failed:", err);
+    console.error("🔥 Supabase upload failed:", err);
     throw err;
   }
 }
 
 // -----------------------------
-// Main logic
+// MAIN LOGIC
 // -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -65,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const profilePic = document.getElementById("profilePic");
   const picUpload = document.getElementById("picUpload");
+  const viewPhotoBtn = document.getElementById("viewPhotoBtn");
 
   const sidebarName = document.getElementById("profileName");
   const sidebarEmail = document.getElementById("profileEmail");
@@ -77,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isEditing = false;
 
   // -----------------------------
-  // Enable/disable editing
+  // Editing toggle
   // -----------------------------
   function setEditingMode(state) {
     isEditing = state;
@@ -87,14 +99,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (el) el.disabled = !state;
     });
 
-    uploadBtn.disabled = !state;
     saveBtn.disabled = !state;
 
     editBtn.textContent = state ? "Cancel Edit" : "Edit Profile";
   }
 
   // -----------------------------
-  // Fill profile fields
+  // Fill profile UI
   // -----------------------------
   function fillFields() {
     fieldIds.forEach(id => {
@@ -108,7 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebarYear.textContent = "Year: " + (storedProfile.year || "1st Year");
     sidebarRoll.textContent = "Roll No: " + (storedProfile.rollNumber || "NU25XXX");
 
-    if (storedProfile.profilePicURL) profilePic.src = storedProfile.profilePicURL;
+    if (storedProfile.profilePicURL) {
+      profilePic.src = storedProfile.profilePicURL;
+    }
 
     if (storedProfile.resumeURL) {
       resumeStatus.innerHTML = `
@@ -122,21 +135,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -----------------------------
-  // ⛔ FIX: ADD THIS CLICK HANDLER
+  // Edit button
   // -----------------------------
   editBtn.addEventListener("click", () => {
-    console.log("Edit button clicked"); // debug
-
-    if (!isEditing) {
-      setEditingMode(true);
-    } else {
+    if (!isEditing) setEditingMode(true);
+    else {
       setEditingMode(false);
       fillFields();
     }
   });
 
   // -----------------------------
-  // Firebase Auth listener
+  // View photo button
+  // -----------------------------
+  viewPhotoBtn.addEventListener("click", () => {
+    if (storedProfile.profilePicURL) {
+      window.open(storedProfile.profilePicURL, "_blank");
+    } else {
+      alert("No profile photo uploaded.");
+    }
+  });
+
+  // -----------------------------
+  // Firebase Auth
   // -----------------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -167,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // SAVE PROFILE
+  // Save Profile
   // -----------------------------
   saveBtn.addEventListener("click", async () => {
     fieldIds.forEach(id => {
@@ -226,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("✅ Profile photo updated!");
 
     } catch (err) {
+      console.error("❌ Upload failed:", err);
       alert("❌ Failed to upload profile photo.");
     }
   });
@@ -256,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("✅ Resume uploaded!");
 
     } catch (err) {
+      console.error("❌ Upload failed:", err);
       alert("❌ Failed to upload resume.");
     }
   });

@@ -30,7 +30,8 @@
       <a href="alumni.html" class="nav-link">Alumni</a>
       <a href="news.html" class="nav-link active">News</a>
       <a href="admin/admin-login.html" class="hover:text-blue-500 font-semibold transition-all">Admin</a>
-      <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
+<a href="login.html" id="loginBtn" class="btn-primary">Login</a>
+<a href="#" id="logoutBtn" class="btn-primary" style="display:none;">Logout</a>
     </div>
   </div>
 </nav>
@@ -151,16 +152,28 @@
   });
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.querySelector(".logout-btn, #logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("activeUser");
-        window.location.href = "index.html"; // 👈 redirect to landing page
-      });
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("activeUser");
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (user) {
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+  } else {
+    loginBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+  }
+
+  // logout
+  logoutBtn.addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "index.html";
   });
+});
 </script>
+
+
 
 
 </body>

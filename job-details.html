@@ -201,6 +201,23 @@
 
 <!-- assistant.js must load AFTER firebase-init.js -->
 <script type="module" src="js/assistant.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("activeUser");
+      window.location.href = "index.html";
+    });
+  }
+
+  // redirect if not logged in
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+});
+</script>
 
 
 </body>

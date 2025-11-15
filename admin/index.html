@@ -5,12 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PlacementHub — Admin Dashboard</title>
 
-  <!-- Inter font (same as student site) -->
+  <!-- Inter Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Styles -->
   <link rel="stylesheet" href="base.css" />
 </head>
+
 <body>
+
+<!-- 🔐 SIMPLE ADMIN ACCESS CHECK -->
 <script>
   const isAdmin = localStorage.getItem("isAdmin");
   if (!isAdmin) {
@@ -18,109 +22,124 @@
   }
 </script>
 
+<div class="wrap">
 
-  <div class="wrap">
-    <!-- Sidebar -->
-<aside class="sidebar">
-  <div>
-    <div class="brand">
-      <div class="logo">PlacementHub</div>
-      <div class="tag">Admin Panel</div>
-    </div>
-
-    <nav class="nav">
-      <a href="index.html" class="nav-link active"><span class="icon">🏠</span> Dashboard</a>
-      <a href="admin-jobs.html" class="nav-link"><span class="icon">💼</span> Jobs</a>
-      <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
-      <a href="admin-events.html" class="nav-link"><span class="icon">📅</span> Events</a>
-      <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
-      <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
-    </nav>
-  </div>
-
-  <div class="profile">
-    <div class="avatar">AD</div>
-    <div class="pinfo">
-      <div class="name">Admin User</div>
-      <div class="email">admin@nmamit.in</div>
-    </div>
-  </div>
-</aside>
-
-<main class="main">
-  <header class="topbar">
-    <input type="text" class="search" placeholder="Search students, jobs, events..." />
-  </header>
-
-  <h1 class="page-title">Dashboard</h1>
-  <p class="subtitle">Welcome back — here’s what’s happening today.</p>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="card stat-card">
-      <div class="stat-head">
-        <span class="stat-title">Total Jobs</span>
-        <span class="stat-icon">💼</span>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="logo">PlacementHub</div>
+        <div class="tag">Admin Panel</div>
       </div>
-      <div class="stat-value" id="totalJobs">0</div>
-      <div class="stat-foot"><span id="jobChange">+0%</span> vs last month</div>
+
+      <nav class="nav">
+  <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
+  <a href="admin-jobs.html" class="nav-link"><span class="icon">💼</span> Jobs</a>
+  <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
+  <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
+  <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
+  <a href="../index.html" class="nav-link logout"><span class="icon">🚪</span> Logout</a>
+</nav>
+
     </div>
 
-    <div class="card stat-card">
-      <div class="stat-head">
-        <span class="stat-title">Active Students</span>
-        <span class="stat-icon">🎓</span>
+    <div class="profile">
+      <div class="avatar">AD</div>
+      <div class="pinfo">
+        <div class="name">Admin User</div>
+        <div class="email">admin@nmamit.in</div>
       </div>
-      <div class="stat-value" id="activeStudents">0</div>
-      <div class="stat-foot"><span id="studentChange">+0%</span> vs last month</div>
     </div>
+  </aside>
 
-    <div class="card stat-card">
-      <div class="stat-head">
-        <span class="stat-title">Upcoming Events</span>
-        <span class="stat-icon">📅</span>
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Top Search -->
+    <header class="topbar">
+      <input type="text" class="search" placeholder="Search students, jobs, events..." />
+    </header>
+
+    <h1 class="page-title">Dashboard</h1>
+    <p class="subtitle">Welcome back — here’s what’s happening today.</p>
+
+    <!-- STATS -->
+    <div class="stats">
+
+      <div class="card stat-card">
+        <div class="stat-head">
+          <span class="stat-title">Total Jobs</span>
+          <span class="stat-icon">💼</span>
+        </div>
+        <div class="stat-value" id="totalJobs">0</div>
+        <div class="stat-foot"><span id="jobChange">+0%</span> vs last month</div>
       </div>
-      <div class="stat-value" id="upcomingEvents">0</div>
-      <div class="stat-foot"><span id="eventChange">+0</span> new</div>
-    </div>
 
-    <div class="card stat-card">
-      <div class="stat-head">
-        <span class="stat-title">Placement Rate</span>
-        <span class="stat-icon">📈</span>
+      <div class="card stat-card">
+        <div class="stat-head">
+          <span class="stat-title">Active Students</span>
+          <span class="stat-icon">🎓</span>
+        </div>
+        <div class="stat-value" id="activeStudents">0</div>
+        <div class="stat-foot"><span id="studentChange">+0%</span> vs last month</div>
       </div>
-      <div class="stat-value" id="placementRate">0%</div>
-      <div class="stat-foot"><span id="placementChange">+0%</span> vs last month</div>
-    </div>
-  </div>
 
-  <!-- Dashboard Content -->
-  <div class="columns">
-    <div class="left-panel card">
-      <h2>Recent Activity</h2>
-      <ul class="activity-list" id="recentActivity"></ul>
+      <div class="card stat-card">
+        <div class="stat-head">
+          <span class="stat-title">Upcoming Events</span>
+          <span class="stat-icon">📅</span>
+        </div>
+        <div class="stat-value" id="upcomingEvents">0</div>
+        <div class="stat-foot"><span id="eventChange">+0</span> new</div>
+      </div>
+
+      <!-- placementRate card removed as requested -->
+
     </div>
 
-    <div class="right-panel">
-      <div class="card top-role-card">
-        <h2>Top Applied Role</h2>
-        <div class="role-highlight">
-          <div class="role-title" id="topRoleTitle">Data Analyst @ TCS</div>
-          <div class="role-meta"><span id="topRoleApps">32</span> active applications</div>
-          <div class="progress-wrap"><div class="progress-bar" id="roleProgress"></div></div>
-          <p class="role-desc">
-            Shows the role with the highest student engagement this month.
-          </p>
+    <!-- GRID -->
+    <div class="columns">
+
+      <!-- LEFT: Recent Activity -->
+      <div class="left-panel card">
+        <h2>Recent Activity</h2>
+        <ul class="activity-list" id="recentActivity"></ul>
+      </div>
+
+      <!-- RIGHT: Top Role -->
+      <div class="right-panel">
+        <div class="card top-role-card">
+          <h2>Top Applied Role</h2>
+
+          <div class="role-highlight">
+            <div class="role-title" id="topRoleTitle">Loading...</div>
+            <div class="role-meta">
+              <span id="topRoleApps">0</span> active applications
+            </div>
+
+            <div class="progress-wrap">
+              <div class="progress-bar" id="roleProgress"></div>
+            </div>
+
+            <p class="role-desc">
+              Shows the role with the highest engagement this month.
+            </p>
+          </div>
+
         </div>
       </div>
+
     </div>
-  </div>
-</main>
+
+  </main>
+
 </div>
 
-  <script src="admin-dash.js"></script>
-  <script>
-  // Highlight active nav link dynamically
+<!-- This is your real-time Firestore dashboard logic -->
+<script type="module" src="admin-dash.js"></script>
+
+<script>
+  // highlight correct nav
   document.querySelectorAll(".nav-link").forEach(link => {
     const current = window.location.pathname.split("/").pop();
     if (link.getAttribute("href") === current) {
@@ -128,5 +147,6 @@
     }
   });
 </script>
+
 </body>
 </html>

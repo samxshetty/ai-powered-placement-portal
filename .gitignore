@@ -6,9 +6,6 @@
 .env.* 
 *.env
 
-# --- FIREBASE & SUPABASE INIT (SENSITIVE) ---
-js/firebase-init.js
-js/supabase-init.js
 
 # --- NODE MODULES (future backend) ---
 node_modules/

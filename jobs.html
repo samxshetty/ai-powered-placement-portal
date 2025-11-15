@@ -60,27 +60,23 @@
 
   <!-- Auto Highlight Active Nav -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const currentPage = window.location.pathname.split("/").pop();
-      document.querySelectorAll(".nav-link").forEach((link) => {
-        link.classList.toggle("active", link.getAttribute("href") === currentPage);
-      });
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
 
-      // 🔹 Logout Button
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-          localStorage.clear();
-          window.location.href = "index.html";
-        });
-      }
-
-      // 🔹 Auth Check
-      if (!localStorage.getItem("activeUser")) {
-        window.location.href = "index.html";
-      }
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("activeUser");
+      window.location.href = "index.html";
     });
-  </script>
+  }
+
+  // redirect if not logged in
+  if (!localStorage.getItem("activeUser")) {
+    window.location.href = "index.html";
+  }
+});
+</script>
+
 
   <!-- Firebase & Jobs Logic -->
   <script type="module" src="./js/firebase-init.js"></script>
