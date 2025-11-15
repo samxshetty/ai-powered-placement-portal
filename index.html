@@ -13,7 +13,6 @@
 </head>
 <body>
 
- <!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <div class="nav-left">
@@ -30,15 +29,14 @@
       <a href="alumni.html" class="nav-link">Alumni</a>
       <a href="news.html" class="nav-link active">News</a>
       <a href="admin/admin-login.html" class="hover:text-blue-500 font-semibold transition-all">Admin</a>
-<a href="login.html" id="loginBtn" class="btn-primary">Login</a>
-<a href="#" id="logoutBtn" class="btn-primary" style="display:none;">Logout</a>
+      <a href="login.html" id="loginBtn" class="btn-primary">Login</a>
+      <a href="#" id="logoutBtn" class="btn-primary" style="display:none;">Logout</a>
     </div>
   </div>
 </nav>
 
 
 
-  <!-- HERO SECTION -->
   <section class="hero">
     <div class="container hero-content">
       <div class="hero-text">
@@ -52,7 +50,6 @@
     </div>
   </section>
 
-  <!-- STATS -->
   <section id="stats" class="stats-section">
     <div class="container stats-grid">
       <div class="stat-item"><h2>500+</h2><p>Partner Companies</p></div>
@@ -62,7 +59,6 @@
     </div>
   </section>
 
-  <!-- FEATURES -->
   <section id="features" class="features">
     <div class="container">
       <h2>Everything You Need to Succeed</h2>
@@ -103,7 +99,6 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer id="contact" class="footer">
     <div class="container footer-grid">
       <div>
@@ -141,7 +136,6 @@
 
   <script src="js/main.js"></script>
   <script>
-  // Highlight active link automatically
   const currentPage = window.location.pathname.split("/").pop();
   document.querySelectorAll(".nav-links a").forEach(link => {
     if (link.getAttribute("href") === currentPage) {
@@ -151,6 +145,7 @@
     }
   });
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const user = localStorage.getItem("activeUser");
@@ -165,16 +160,11 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.style.display = "none";
   }
 
-  // logout
   logoutBtn.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "index.html";
   });
 });
 </script>
-
-
-
-
 </body>
 </html>

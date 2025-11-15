@@ -10,7 +10,6 @@
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <div class="nav-left">
@@ -39,20 +38,16 @@
     </div>
 
     <div class="news-layout">
-      <!-- Left: News list -->
       <section class="news-list-col">
         <div class="controls">
           <div class="filters" id="filtersContainer">
-            <!-- Filter buttons inserted here -->
           </div>
         </div>
 
         <div id="newsFeed" class="news-feed">
-          <!-- dynamic news cards -->
         </div>
       </section>
 
-      <!-- Right: Sidebar -->
       <aside class="sidebar-col">
         <div class="card sidebar-card">
           <h3>Trending</h3>
@@ -62,7 +57,6 @@
         <div class="card sidebar-card">
           <h3>Quick Links</h3>
           <ul class="quick-links" id="quickLinks">
-            <!-- dynamic quick links (or static defaults) -->
           </ul>
         </div>
 
@@ -86,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }

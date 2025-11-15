@@ -5,16 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Job Opportunities — PlacementHub</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/jobs.css" />
 </head>
 
 <body>
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-inner">
       <div class="nav-left">
@@ -35,12 +32,10 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
   <main class="container">
     <h2 class="page-title">Job Opportunities</h2>
     <p class="subtext">Find your perfect placement match</p>
 
-    <!-- Search & Filter -->
     <div class="filter-bar">
       <input
         type="text"
@@ -54,11 +49,9 @@
       </select>
     </div>
 
-    <!-- ✅ Jobs Grid -->
     <section id="jobsGrid" class="jobs-grid"></section>
   </main>
 
-  <!-- Auto Highlight Active Nav -->
   <script>
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
@@ -70,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }
@@ -78,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-  <!-- Firebase & Jobs Logic -->
   <script type="module" src="./js/firebase-init.js"></script>
   <script type="module" src="./js/jobs.js"></script>
 </body>

@@ -5,21 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Job Details — PlacementHub</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
   <link rel="stylesheet" href="css/job-details.css" />
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Job loading -->
   <script type="module" src="js/jobs.js"></script>
 
   <!-- PDF.js (for resume parsing) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <style>
-    /* EXACT AI ASSISTANT STYLES FROM YOUR PREVIEW */
     .assistant-card {
         width: 100%;
         background: #fff;
@@ -83,7 +79,6 @@
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <div class="nav-left">
@@ -109,7 +104,6 @@
   <a href="jobs.html" class="back-link">← Back to Jobs</a>
 
   <div class="main-grid">
-    <!-- LEFT SIDE -->
     <div class="col-left">
 
       <section class="card job-header-card">
@@ -157,7 +151,6 @@
 
     </div>
 
-    <!-- RIGHT SIDE -->
     <aside class="col-right">
 
       <section class="card">
@@ -166,7 +159,6 @@
         <button id="applyBtn" class="view-btn">Submit Application</button>
       </section>
 
-      <!-- ⭐ NEW AI ASSISTANT UI -->
       <section class="assistant-card">
 
         <div class="assistant-header">
@@ -199,7 +191,6 @@
 <script type="module" src="./js/firebase-init.js"></script>
 <script type="module" src="./js/job-details.js"></script>
 
-<!-- assistant.js must load AFTER firebase-init.js -->
 <script type="module" src="js/assistant.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -212,7 +203,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }

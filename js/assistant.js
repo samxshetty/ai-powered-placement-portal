@@ -3,14 +3,15 @@ import {
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 // PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 
 // Gemini Models (Primary + Fallback)
-const PRIMARY_MODEL = "gemini-flash-latest";   // Most stable, fast, free
-const FALLBACK_MODEL = "gemini-pro-latest";    // Backup if flash fails
+const PRIMARY_MODEL = "gemini-flash-latest";
+const FALLBACK_MODEL = "gemini-pro-latest";
 
 const GEMINI_API_KEY = "AIzaSyCpvWjeqzQfwDm3PNgn7HF051pIfhul-_8";
 
@@ -78,7 +79,6 @@ function convertMarkdownTable(text) {
   return text;
 }
 
-
 function showTyping() {
   const chat = document.getElementById("assistantChat");
   const bubble = document.createElement("div");
@@ -109,7 +109,7 @@ async function loadJob() {
 // Load Profile
 async function loadProfile() {
   return new Promise((resolve) => {
-    auth.onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (!user) return resolve();
       const snap = await getDoc(doc(db, "profiles", user.uid));
       if (snap.exists()) userProfile = snap.data();

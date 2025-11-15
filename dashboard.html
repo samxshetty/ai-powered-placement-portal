@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — PlacementHub</title>
 
-  <!-- Fonts + CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
 
 </head>
 <body>
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <div class="nav-left">
@@ -37,13 +35,11 @@
 
 
   <main class="container">
-    <!-- Welcome -->
     <section class="welcome">
       <h2>Welcome back, <span id="userName">Student</span>!</h2>
       <p class="muted">Here’s what’s happening with your placement journey.</p>
     </section>
 
-    <!-- Stats cards -->
     <section class="stats-grid">
       <div class="stat-card" id="companiesCountCard">
         <h3 id="companiesCount">0</h3>
@@ -63,33 +59,26 @@
       </div>
     </section>
 
-    <!-- Two-column layout -->
     <div class="main-grid">
-      <!-- Left Column -->
       <div class="col-left">
-        <!-- Upcoming Events -->
         <section class="card">
           <h3>Upcoming Events</h3>
           <p class="muted">Your scheduled interviews and placement activities.</p>
           <div id="upcomingEvents" class="event-list" style="margin-top:12px">
-            <!-- injected -->
           </div>
 
           <button class="btn-outline full" id="viewCalendarBtn">View Full Calendar</button>
         </section>
 
-        <!-- Recent Applications -->
         <section class="card">
           <h3>Recent Applications</h3>
           <p class="muted">Track your application status.</p>
 
           <div id="recentApplications" style="margin-top:12px">
-            <!-- injected list -->
           </div>
         </section>
       </div>
 
-      <!-- Right Column -->
       <div class="col-right">
         <section class="card">
           <h3>Quick Actions</h3>
@@ -146,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }

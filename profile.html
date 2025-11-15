@@ -11,7 +11,6 @@
 </head>
 
 <body>
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-inner">
       <div class="nav-left">
@@ -38,7 +37,6 @@
 
     <div class="profile-layout">
 
-      <!-- Sidebar -->
       <aside class="profile-sidebar card">
         <div class="profile-avatar">
           <img src="images/icons/icon-placeholder.svg" alt="Profile" id="profilePic" title="Click to change photo">
@@ -54,10 +52,8 @@
         <p><strong id="profileRoll">Roll No: NU25XXX</strong></p>
       </aside>
 
-      <!-- Main Profile -->
       <section class="profile-main">
 
-        <!-- Personal Info -->
         <div class="card section">
           <div class="section-header">
             <h3>Personal Information</h3>
@@ -85,7 +81,6 @@
           </div>
         </div>
 
-        <!-- Academic Details -->
         <div class="card section">
           <h3>Academic Details</h3>
 
@@ -111,7 +106,6 @@
           <input type="text" id="twelfth" disabled>
         </div>
 
-        <!-- Skills -->
         <div class="card section">
           <h3>Skills & Interests</h3>
 
@@ -125,7 +119,6 @@
           <textarea id="achievements" disabled></textarea>
         </div>
 
-        <!-- Resume -->
         <div class="card section">
           <h3>Resume</h3>
           <div class="resume-box" id="resumeBox">
@@ -136,7 +129,6 @@
           </div>
         </div>
 
-        <!-- Save -->
         <div class="section" style="text-align:right;">
           <button id="saveBtn" class="btn primary">Save Changes</button>
         </div>
@@ -145,14 +137,11 @@
   </main>
 
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-init.js"></script>
 
-<!-- Firebase -->
 <script type="module" src="js/firebase-init.js"></script>
 
-<!-- Profile Logic (LAST) -->
 <script type="module" src="js/profile.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -165,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }
