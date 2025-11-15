@@ -1,5 +1,3 @@
-// admin-alumni.js — Firebase CRUD for Alumni Management
-
 import { db } from "../js/firebase-init.js";
 import {
   collection,
@@ -20,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editId = null;
 
-  // 🔹 Real-time Fetch Alumni from Firestore
   onSnapshot(collection(db, "alumni"), (snapshot) => {
     const alumni = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderAlumni(alumni);
@@ -34,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAlumni(alumni);
 });
 
-  // 🔹 Render Alumni Cards
   function renderAlumni(alumniList) {
     alumniListEl.innerHTML = "";
 
@@ -77,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
     attachDynamicEvents(alumniList);
   }
 
-  // 🔹 Attach Edit/Delete Listeners
   function attachDynamicEvents(alumniList) {
     document.querySelectorAll(".edit-btn").forEach((btn) =>
       btn.addEventListener("click", () => {
@@ -97,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // 🔹 Modal Controls
   function openModal(isEdit = false) {
     modal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
@@ -122,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal();
   });
 
-  // 🔹 Submit Add/Update
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(form));
@@ -142,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Edit Alumni Prefill
   function editAlumni(a) {
     form.name.value = a.name || "";
     form.batch.value = a.batch || "";

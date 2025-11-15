@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PlacementHub — Alumni Management</title>
 
-  <!-- Fonts & Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="base.css" />
   <link rel="stylesheet" href="admin-alumni.css" />
@@ -13,7 +12,6 @@
 <body>
 
 <div class="wrap">
-  <!-- Sidebar -->
   <aside class="sidebar">
   <div>
     <div class="brand">
@@ -42,7 +40,6 @@
 </aside>
 
 
-  <!-- Main Content -->
   <main class="main">
     <header class="topbar">
       <input id="alumniSearch" class="search" placeholder="Search alumni by name, company, or batch..." />
@@ -63,7 +60,6 @@
   </main>
 </div>
 
-<!-- Add/Edit Alumni Modal -->
 <div id="alumniModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-header">
@@ -104,7 +100,6 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script type="module" src="admin-alumni.js"></script>
 <script>
-  // Highlight active nav link dynamically
   document.querySelectorAll(".nav-link").forEach(link => {
     const current = window.location.pathname.split("/").pop();
     if (link.getAttribute("href") === current) {

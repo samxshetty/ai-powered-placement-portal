@@ -10,7 +10,6 @@
   --glass-border: rgba(226, 232, 240, 0.7);
 }
 
-/* RESET */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -33,7 +32,6 @@ body {
   min-height: 100vh;
 }
 
-/* ---------------- Sidebar ---------------- */
 .sidebar {
   width: 220px;
   padding: 28px 18px;
@@ -117,7 +115,6 @@ body {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* ---------------- Main Layout ---------------- */
 .main {
   flex: 1;
   padding: 24px 32px;
@@ -177,7 +174,6 @@ body {
   margin-bottom: 16px;
 }
 
-/* ---------------- Job Cards ---------------- */
 .card {
   background: var(--panel);
   border-radius: var(--radius);
@@ -327,7 +323,6 @@ body {
   text-align: center;
 }
 
-/* ---------------- Modals ---------------- */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -383,7 +378,6 @@ body {
   color: var(--muted);
 }
 
-/* ---------------- Form ---------------- */
 .job-form label {
   display: block;
   margin-bottom: 8px;
@@ -485,7 +479,6 @@ body {
   margin-top: 12px;
 }
 
-/* ---------------- Job View (Details Modal) ---------------- */
 .job-detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -527,7 +520,6 @@ body {
   font-weight: 700;
 }
 
-/* ---------------- Responsive ---------------- */
 @media (max-width: 1000px) {
   .sidebar {
     display: none;
@@ -550,11 +542,11 @@ body {
     width: 100%;
   }
 }
-/* ---------------- Improved Add/Edit Job Modal ---------------- */
+
 .modal {
   width: 100%;
   max-width: 900px;
-  max-height: 90vh; /* viewport height */
+  max-height: 90vh; 
   background: var(--panel);
   border-radius: 18px;
   border: 1px solid var(--glass-border);
@@ -567,12 +559,11 @@ body {
 .modal-body {
   flex: 1;
   padding: 24px;
-  overflow-y: auto; /* scrollbar */
+  overflow-y: auto; 
   scrollbar-width: thin;
   scrollbar-color: var(--blue) #f1f5f9;
 }
 
-/* Scrollbar styling */
 .modal-body::-webkit-scrollbar {
   width: 8px;
 }
@@ -656,7 +647,6 @@ body {
   flex: 1;
 }
 
-/* Buttons section */
 .modal-actions {
   padding: 16px 24px;
   border-top: 1px solid #f1f5f9;
@@ -700,7 +690,6 @@ body {
   background: #f9fafb;
 }
 
-/* Interview Rounds section refinement */
 .rounds-section {
   background: linear-gradient(180deg, #fff, #fbfdff);
   border: 1px dashed #e2e8f0;

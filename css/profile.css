@@ -17,7 +17,6 @@ body {
   color: #1e293b;
 }
 
-/* Navbar */
 .navbar {
   background: #fff;
   border-bottom: 1px solid var(--border);
@@ -66,7 +65,6 @@ body {
   font-weight: 600;
 }
 
-/* Layout */
 .container {
   width: 90%;
   max-width: 1100px;
@@ -104,7 +102,6 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* Sidebar */
 .profile-sidebar {
   text-align: center;
 }
@@ -140,7 +137,6 @@ body {
   border-color: #2563eb;
 }
 
-/* Form */
 .profile-main input,
 .profile-main textarea {
   width: 100%;
@@ -156,14 +152,12 @@ body {
   min-height: 80px;
 }
 
-/* Disabled fields BUT clickable */
 .profile-main input:disabled,
 .profile-main textarea:disabled {
   background: #f1f5f9;
   opacity: 0.8;
 }
 
-/* Section header */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -171,7 +165,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* Resume */
 .resume-box {
   display: flex;
   align-items: center;
@@ -182,7 +175,6 @@ body {
   background: #f9fafb;
 }
 
-/* Buttons */
 .btn.primary {
   background: var(--primary);
   color: #fff;

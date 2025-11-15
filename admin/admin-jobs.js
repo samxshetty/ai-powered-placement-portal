@@ -1,4 +1,4 @@
-import { db } from "../js/firebase-init.js"; // correct global import
+import { db } from "../js/firebase-init.js"; 
 
 import {
   collection,
@@ -10,16 +10,13 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// Firestore reference
 const jobsRef = collection(db, "jobs");
 
-// Helpers
 function id() { return 'j_' + Math.random().toString(36).slice(2, 9); }
 function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
 
 let jobs = [];
 
-// REAL-TIME LISTENER (with error handler)
 onSnapshot(
   jobsRef,
   (snapshot) => {
@@ -34,7 +31,6 @@ onSnapshot(
   }
 );
 
-// RENDER JOBS
 function renderJobs(filterText = '', filterTag = 'all') {
   const list = document.getElementById("jobsList");
   list.innerHTML = "";
@@ -82,7 +78,6 @@ function renderJobs(filterText = '', filterTag = 'all') {
 
     left.append(title, meta, badges);
 
-    // Actions
     const actions = el('div', 'job-actions');
     const viewBtn = el('button', 'icon-btn'); viewBtn.innerHTML = '👁️';
     viewBtn.onclick = () => openViewModal(job);
@@ -108,7 +103,6 @@ function renderJobs(filterText = '', filterTag = 'all') {
   });
 }
 
-// ADD JOB
 document.getElementById('openAddJob').addEventListener('click', () => {
   document.getElementById('addJobForm').reset();
   document.getElementById('roundsList').innerHTML = '';
@@ -148,7 +142,6 @@ document.getElementById('addJobForm').addEventListener('submit', async (e) => {
   }
 });
 
-// EDIT JOB
 function openEditModal(job) {
   const f = document.getElementById('editJobForm');
   f.jobId.value = job.id;
@@ -230,7 +223,6 @@ function openViewModal(job) {
   openModal('viewModal');
 }
 
-// ROUNDS UI HELPERS
 function addRoundUI(listId) {
   const list = document.getElementById(listId);
   const r = { id: id(), from: '', to: '', title: '', note: '' };
@@ -290,7 +282,6 @@ function collectRoundsFrom(listId) {
   return out;
 }
 
-// FILTERS
 let currentFilter = 'all';
 
 document.getElementById('filterInput')
@@ -305,7 +296,6 @@ document.querySelectorAll('.filter-btn').forEach(b => {
   });
 });
 
-// MODALS
 function openModal(id) {
   document.getElementById(id).classList.remove('hidden');
 }

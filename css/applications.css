@@ -89,7 +89,6 @@
     align-self: flex-start;
   }
 }
-/* ---------- ACTION BUTTONS ---------- */
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -125,7 +124,6 @@
   background: #b91c1c;
 }
 
-/* ---------- MODAL ---------- */
 .modal {
   display: none;
   position: fixed;
@@ -179,7 +177,6 @@
   margin-top: 20px;
 }
 
-/* ---------- Global Navbar ---------- */
 .navbar {
   background: #fff;
   border-bottom: 1px solid #e2e8f0;

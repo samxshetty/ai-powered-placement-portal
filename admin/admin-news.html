@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PlacementHub — News & Announcements</title>
 
-  <!-- Fonts + Core Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="admin-news.css">
@@ -13,7 +12,6 @@
 <body>
 
 <div class="wrap">
-  <!-- Sidebar -->
   <aside class="sidebar">
   <div>
     <div class="brand">
@@ -42,7 +40,6 @@
 </aside>
 
 
-  <!-- Main -->
   <main class="main">
     <header class="topbar">
       <input id="newsSearch" class="search" placeholder="Search news by title or category..." />
@@ -63,12 +60,10 @@
   </main>
 </div>
 
-<!-- Add/Edit Modal -->
 <div id="newsModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-header">
       <h3 id="modalTitle">Add News Article</h3>
-      <!-- Removed ❌ close button -->
     </div>
     <div class="modal-body">
       <form id="newsForm" class="news-form">
@@ -106,7 +101,6 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script type="module" src="admin-news.js"></script>
 <script>
-  // Highlight active nav link dynamically
   document.querySelectorAll(".nav-link").forEach(link => {
     const current = window.location.pathname.split("/").pop();
     if (link.getAttribute("href") === current) {

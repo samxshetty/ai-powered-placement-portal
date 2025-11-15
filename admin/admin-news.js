@@ -1,5 +1,3 @@
-// admin-news.js — Firebase CRUD for News & Announcements
-
 import { db } from "../js/firebase-init.js";
 import {
   collection,
@@ -20,13 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let editingId = null;
 
-  // 🔹 Real-time listener for News
   onSnapshot(collection(db, "news"), (snapshot) => {
     const allNews = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderNews(allNews);
   });
 
-  // 🔹 Render all news cards
   function renderNews(list) {
     newsList.innerHTML = "";
 
@@ -35,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Sort newest first
     list.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     list.forEach((n) => {
@@ -62,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     attachEvents(list);
   }
 
-  // 🔹 Edit/Delete listeners
   function attachEvents(list) {
     newsList.querySelectorAll(".edit").forEach((btn) =>
       btn.addEventListener("click", () => {
@@ -82,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // 🔹 Modal control
   function openModal(isEdit = false) {
     newsModal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
@@ -100,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", closeModal)
   );
 
-  // 🔹 Add button click
   openAddNews.addEventListener("click", () => {
     newsForm.reset();
     editingId = null;
@@ -108,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal();
   });
 
-  // 🔹 Submit (Add / Update)
   newsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(newsForm).entries());
@@ -128,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Edit news
   function editNews(item) {
     Object.keys(item).forEach((key) => {
       if (newsForm.elements[key]) newsForm.elements[key].value = item[key];

@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PlacementHub — Admin Dashboard</title>
 
-  <!-- Inter Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="base.css" />
 </head>
 
 <body>
 
-<!-- 🔐 SIMPLE ADMIN ACCESS CHECK -->
 <script>
   const isAdmin = localStorage.getItem("isAdmin");
   if (!isAdmin) {
@@ -24,7 +20,6 @@
 
 <div class="wrap">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div>
       <div class="brand">
@@ -52,10 +47,8 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
 
-    <!-- Top Search -->
     <header class="topbar">
       <input type="text" class="search" placeholder="Search students, jobs, events..." />
     </header>
@@ -63,7 +56,6 @@
     <h1 class="page-title">Dashboard</h1>
     <p class="subtitle">Welcome back — here’s what’s happening today.</p>
 
-    <!-- STATS -->
     <div class="stats">
 
       <div class="card stat-card">
@@ -93,20 +85,16 @@
         <div class="stat-foot"><span id="eventChange">+0</span> new</div>
       </div>
 
-      <!-- placementRate card removed as requested -->
 
     </div>
 
-    <!-- GRID -->
     <div class="columns">
 
-      <!-- LEFT: Recent Activity -->
       <div class="left-panel card">
         <h2>Recent Activity</h2>
         <ul class="activity-list" id="recentActivity"></ul>
       </div>
 
-      <!-- RIGHT: Top Role -->
       <div class="right-panel">
         <div class="card top-role-card">
           <h2>Top Applied Role</h2>
@@ -135,11 +123,9 @@
 
 </div>
 
-<!-- This is your real-time Firestore dashboard logic -->
 <script type="module" src="admin-dash.js"></script>
 
 <script>
-  // highlight correct nav
   document.querySelectorAll(".nav-link").forEach(link => {
     const current = window.location.pathname.split("/").pop();
     if (link.getAttribute("href") === current) {

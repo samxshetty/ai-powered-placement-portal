@@ -1,4 +1,3 @@
-// student.js — Firebase-powered Student Management
 import { db } from "../js/firebase-init.js";
 import {
   collection,
@@ -25,14 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let students = [];
 
-  // 🔹 Real-time sync from Firestore
   onSnapshot(collection(db, "students"), (snapshot) => {
     students = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderTable(students);
     updateStats(students);
   });
 
-  // 🔹 Render Table
   function renderTable(list) {
     tbody.innerHTML = "";
     if (!list.length) {
@@ -61,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Update Stats
   function updateStats(data) {
     const total = data.length;
     const placed = data.filter((s) => s.status === "Placed").length;
@@ -74,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cgpaEl.textContent = avgCgpa.toFixed(2);
   }
 
-  // 🔹 Search + Filter
   function applyFilters() {
     const term = searchInput.value.toLowerCase();
     const branch = branchFilter.value;
@@ -94,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
   branchFilter.addEventListener("change", applyFilters);
   statusFilter.addEventListener("change", applyFilters);
 
-  // 🔹 Table Button Handlers
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -110,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Show Profile Modal
   function showProfile(s) {
     const initials = s.name
       .split(" ")
@@ -161,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "hidden";
   }
 
-  // 🔹 Delete Student
   async function deleteStudent(id) {
     if (confirm("Are you sure you want to delete this student record?")) {
       await deleteDoc(doc(db, "students", id));
@@ -169,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🔹 Close Modal
   closeBtn.addEventListener("click", () => {
     studentModal.classList.add("hidden");
     studentModal.style.display = "none";

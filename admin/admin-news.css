@@ -1,4 +1,3 @@
-/* News list card + action buttons styling (improved) */
 .news-wrap {
   padding: 20px;
   border-radius: var(--radius);
@@ -75,7 +74,6 @@
   font-style: italic;
 }
 
-/* Actions row */
 .actions {
   margin-top: 10px;
   display: flex;
@@ -84,7 +82,6 @@
   align-items: center;
 }
 
-/* Generic action button */
 button.action-btn {
   display: inline-flex;
   align-items: center;
@@ -100,25 +97,21 @@ button.action-btn {
   transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
 }
 
-/* small icon-only variant */
 button.action-btn.icon-only {
   padding: 8px;
   width: 40px;
   justify-content: center;
 }
 
-/* hover */
 button.action-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(37,99,235,0.08);
 }
 
-/* specific colors */
 button.action-btn.view { background: #e6f2ff; color: #075985; border-color: rgba(3,105,161,0.08); }
 button.action-btn.edit { background: #fff7ed; color: #92400e; border-color: rgba(234,88,12,0.06); }
 button.action-btn.delete { background: #fff1f2; color: #9f1239; border-color: rgba(244,63,94,0.06); }
 
-/* Modal styling re-affirmation */
 .modal {
   background: #fff;
   border-radius: 14px;
@@ -130,7 +123,6 @@ button.action-btn.delete { background: #fff1f2; color: #9f1239; border-color: rg
   box-shadow: 0 10px 40px rgba(0,0,0,0.15);
 }
 
-/* Form controls (same look as your other pages) */
 .news-form { display:flex; flex-direction:column; gap:16px; }
 .news-form .row { display:flex; gap:14px; }
 .news-form label { display:flex; flex-direction:column; flex:1; font-size:14px; color:#334155; font-weight:500; }
@@ -141,7 +133,6 @@ button.action-btn.delete { background: #fff1f2; color: #9f1239; border-color: rg
   border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
 }
 
-/* Small responsive tweaks */
 @media (max-width:600px) {
   .news-form .row { flex-direction:column; }
   button.action-btn { font-size:13px; padding:8px 10px; }

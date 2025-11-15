@@ -12,7 +12,6 @@
 <body>
 <div class="wrap">
 
-  <!-- Sidebar -->
 <aside class="sidebar">
   <div>
     <div class="brand">
@@ -41,7 +40,6 @@
 </aside>
 
 
-  <!-- Main -->
   <main class="main">
     <header class="topbar">
       <h1 class="page-title">Student Management</h1>
@@ -50,7 +48,6 @@
 
     <p class="subtitle">View and manage student records</p>
 
-    <!-- Stats -->
     <div class="stats">
       <div class="card stat">
         <div class="stat-head">
@@ -75,7 +72,6 @@
       </div>
     </div>
 
-    <!-- Search + Filters -->
     <div class="filter-bar">
       <input type="text" id="studentSearch" placeholder="Search by name or USN..." />
       <select id="branchFilter">
@@ -93,7 +89,6 @@
       </select>
     </div>
 
-    <!-- Table -->
     <div class="card table-wrap">
       <table class="student-table">
         <thead>
@@ -116,7 +111,6 @@
   </main>
 </div>
 
-<!-- Student Profile Modal -->
 <div id="studentModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-body" id="studentDetails"></div>
@@ -129,7 +123,6 @@
 
 <script type="module" src="student.js"></script>
 <script>
-  // Highlight active nav link dynamically
   document.querySelectorAll(".nav-link").forEach(link => {
     const current = window.location.pathname.split("/").pop();
     if (link.getAttribute("href") === current) {

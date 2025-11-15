@@ -1,4 +1,3 @@
-/* ---------- ADMIN PAGE STYLES ---------- */
 .table th, .table td {
   padding:10px 8px;
   border-bottom:1px solid #e2e8f0;
@@ -22,7 +21,6 @@
 }
 .table button:hover {opacity:0.9}
 
-/* Modal */
 .modal {
   display:none;
   position:fixed;
@@ -62,7 +60,7 @@
   border-bottom:1px solid #f1f5f9;
   padding-bottom:4px;
 }
-/* ---------- AUTH PAGE ---------- */
+
 .auth-body {
   background:#f8fafc;
   font-family:'Inter',sans-serif;
@@ -163,7 +161,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ✅ NEW NAVBAR STYLING (matches screenshot) */
 .navbar {
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
@@ -260,7 +257,6 @@ body {
   }
 }
 
-/* HERO */
 .hero {
   background: linear-gradient(90deg, #0b63d8 0%, #0b4fa8 100%);
   color: white;
@@ -325,7 +321,6 @@ body {
   background: rgba(255,255,255,0.15);
 }
 
-/* STATS */
 .stats-section {
   background: #fff;
   padding: 40px 20px;
@@ -351,7 +346,6 @@ body {
   margin-top: 6px;
 }
 
-/* FEATURES */
 .features {
   padding: 60px 20px;
   text-align: center;
@@ -404,7 +398,6 @@ body {
   font-size: 15px;
 }
 
-/* FOOTER */
 .footer {
   background: #f9fafb;
   padding: 60px 20px 20px;
@@ -439,11 +432,6 @@ body {
   margin-bottom: 14px;
 }
 
-/* styles.css — global visual system + typography
-   Replace your existing global CSS with this file or merge the typography parts.
-   Key: Headings use Poppins, body uses Inter.
-*/
-
 :root{
   --primary: #0b63d8;
   --primary-dark: #0b4fa8;
@@ -464,10 +452,6 @@ body {
   --line-height: 1.6;
 }
 
-/* Font stack
-   - Headings: Poppins (modern rounded) — heavier visual weight
-   - Body: Inter (neutral, excellent legibility)
-*/
 html,body{
   height:100%;
   background:var(--bg);
@@ -481,7 +465,6 @@ html,body{
   line-height: var(--line-height);
 }
 
-/* Headings use Poppins */
 h1,h2,h3,h4,h5 {
   font-family: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   margin: 0 0 10px 0;
@@ -489,30 +472,24 @@ h1,h2,h3,h4,h5 {
   letter-spacing: -0.01em;
 }
 
-/* Specific sizes to match screenshot */
 h1 { font-size: var(--h1-size); font-weight: 700; line-height:1.08; }
 h2 { font-size: var(--h2-size); font-weight: 700; }
 h3 { font-size: var(--h3-size); font-weight: 600; }
 h4 { font-size: var(--h4-size); font-weight: 600; }
 
-/* Headline variants used across pages */
 .page-title { font-size: var(--h2-size); color: var(--primary); font-weight:700; margin: 10px 0 6px; }
 .welcome h2 { font-size: 24px; font-weight:700; margin: 8px 0; }
 
-/* Muted / metadata text */
 .muted { color: var(--muted); font-size: 14px; }
 
-/* Links */
 a { color: var(--primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* Buttons (shared) */
 .btn, .btn-primary, .btn { font-weight:700; font-family: "Inter", system-ui; }
 .btn { display:inline-block; padding:8px 12px; border-radius:8px; border:none; cursor:pointer; }
 .btn.ghost { background:transparent; color:var(--primary); border:1px solid var(--border); }
 .btn.primary { background:var(--primary); color:#fff; padding:10px 14px; border-radius:10px; }
 
-/* Card system */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -521,7 +498,6 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow-sm);
 }
 
-/* Stat cards grid (used in dashboard) */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -537,7 +513,6 @@ a:hover { text-decoration: underline; }
 .stat-card h3 { font-size: 22px; margin: 0 0 6px; color: var(--primary); }
 .stat-card p { margin:0; color:var(--muted); font-size:13px; }
 
-/* Responsive basics */
 .container {
   width: 92%;
   max-width: 1100px;
@@ -545,7 +520,6 @@ a:hover { text-decoration: underline; }
   padding-bottom: 40px;
 }
 
-/* Navbar (small improvements for typographic consistency) */
 .navbar { background:#fff; border-bottom:1px solid var(--border); box-shadow: var(--shadow-sm); }
 .nav-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; width:90%; max-width:1100px; margin:0 auto; padding:12px 0; }
 .logo { display:flex; align-items:center; gap:8px; font-weight:700; color:var(--primary); font-family:"Poppins", "Inter"; }
@@ -554,11 +528,9 @@ a:hover { text-decoration: underline; }
 .nav-links a { color: #475569; font-weight:500; font-size:14px; text-decoration:none; padding:6px 4px; }
 .nav-links a.active { color:var(--primary); font-weight:700; }
 
-/* small helpers */
 .small { font-size:13px; color:var(--muted); }
 .back-link { color:var(--muted); font-size:14px; display:inline-block; margin-top:12px; }
 
-/* Utility: fitting passport image */
 .avatar-passport {
   width: 88px;
   height: 88px;
@@ -567,16 +539,15 @@ a:hover { text-decoration: underline; }
   border:1px solid var(--border);
 }
 
-/* Mobile adjustments */
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap:12px; }
   h1 { font-size: 28px; }
 }
 @media (max-width: 520px) {
   .stats-grid { grid-template-columns: 1fr; }
-  .nav-links { display:none; } /* switch to your mobile nav or burger */
+  .nav-links { display:none; } 
 }
-/* ---------- Global Navbar ---------- */
+
 .navbar {
   background: #fff;
   border-bottom: 1px solid #e2e8f0;

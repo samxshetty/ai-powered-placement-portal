@@ -20,54 +20,44 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
 .col-left{min-width:0}
 .col-right{min-width:0}
 
-/* cards */
 .card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
 .card h3{margin:0 0 10px 0;color:#0b4fa8;font-size:16px;font-weight:700}
 .muted{color:var(--muted)}
 .small{font-size:13px}
 
-/* job header card specifics */
 .job-header-card .job-top{display:flex;justify-content:space-between;align-items:flex-start}
 .job-top h2{margin:0;font-size:20px;color:#0b263b}
 .job-top .muted{margin:6px 0 0 0}
 .pill.tag{background:#0b63d8;color:#fff;padding:6px 10px;border-radius:8px;font-weight:700}
 
-/* meta row */
 .job-meta{display:flex;gap:24px;margin-top:12px;color:#475569;font-size:14px}
 .meta-item{display:flex;align-items:center;gap:8px}
 
-/* status pill */
 .status{display:inline-block;padding:6px 10px;border-radius:8px;font-weight:700;margin-right:8px}
 .status.open{background:#dcfce7;color:#15803d}
 .status.upcoming{background:#fef9c3;color:#ca8a04}
 .status.closed{background:#fee2e2;color:#b91c1c}
 
-/* skills */
 .skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .skill{background:#ecfdf5;color:#047857;padding:6px 10px;border-radius:8px;font-weight:700;font-size:13px}
 
-/* check list */
 .check-list{list-style:none;padding-left:0;margin:0}
 .check-list li{padding:8px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;color:#475569}
 .check-list li:last-child{border-bottom:none}
 .check-icon{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#ecfdf5;color:#047857;font-weight:700;font-size:12px}
 
-/* AI assistant */
 .btn-secondary{background:var(--primary);color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700}
 .ai-response{background:#fff;border:1px solid #e6eef7;padding:12px;border-radius:8px;box-shadow:var(--shadow-sm)}
 
-/* application button */
 .view-btn{width:100%;background:var(--primary);color:#fff;border:none;padding:10px;border-radius:8px;font-weight:700;cursor:pointer}
 .view-btn:hover{background:var(--primary-dark)}
 
-/* responsive */
 @media (max-width:900px){
   .main-grid{grid-template-columns:1fr}
   .col-right{order:2}
   .col-left{order:1}
 }
 
-/* ---------- Global Navbar ---------- */
 .navbar {
   background: #fff;
   border-bottom: 1px solid #e2e8f0;
@@ -138,10 +128,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Make AI assistant full width on right column */
-/* ---------- Placement Assistant (Final Clean Version) ---------- */
-
-/* Entire assistant card */
 .assistant-card {
     width: 520px !important;
     height: 780px !important;
@@ -154,7 +140,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-/* Header */
 .assistant-header {
     flex: 0 0 auto;
     padding: 16px 20px;
@@ -164,7 +149,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     font-weight: 600;
 }
 
-/* Chat area */
 #assistantChat {
     flex: 1;
     overflow-y: auto;
@@ -175,7 +159,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     max-height: none !important;
 }
 
-/* Message bubbles */
 .assistant-message {
     background: #eef2ff;
     padding: 14px 16px;
@@ -186,7 +169,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     line-height: 1.45;
 }
 
-/* Tables inside AI responses */
 .assistant-message table {
     width: 100%;
     border-collapse: collapse;
@@ -207,9 +189,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     padding: 8px;
 }
 
-
-
-/* Increase chat height */
 #assistantChat {
     flex: 1;
     overflow-y: auto;
@@ -217,10 +196,9 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     background: #f8faff;
     font-size: 15px;
     line-height: 1.5;
-    max-height: 850px !important;   /* 🔥 Increase chat visual height */
+    max-height: 850px !important;  
 }
 
-/* Increase chat height dramatically */
 #assistantChat {
     flex: 1;
     overflow-y: auto;
@@ -232,10 +210,9 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
 
 
 
-/* Main assistant container */
 .assistant-card {
     width: 100%;
-    height: 820px;                 /* BIGGER assistant container */
+    height: 820px;                 
     display: flex;
     flex-direction: column;
     border-radius: 14px;
@@ -244,7 +221,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     background: white;
 }
 
-/* Chat header */
 .assistant-header {
     padding: 14px 18px;
     background: #2563eb;
@@ -253,17 +229,15 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     font-weight: 600;
 }
 
-/* Chat area (MUCH BIGGER now) */
 #assistantChat {
     flex: 1;
     padding: 18px;
     background: #f8faff;
     overflow-y: auto;
-    max-height: 700px !important;    /* 🔥 Extended chat zone */
+    max-height: 700px !important;   
     min-height: 550px !important;
 }
 
-/* Messages */
 .assistant-message {
     background: #eef2ff;
     padding: 14px;
@@ -273,11 +247,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     white-space: pre-wrap;
     line-height: 1.45;
 }
-/* ======================= */
-/*   PREMIUM UI v2 DESIGN  */
-/* ======================= */
-
-/* Full assistant widget */
 .assistant-card {
     width: 100%;
     height: 820px;
@@ -290,7 +259,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     overflow: hidden;
 }
 
-/* Header */
 .assistant-header {
     padding: 16px 20px;
     background: #2563eb;
@@ -303,7 +271,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     letter-spacing: 0.2px;
 }
 
-/* Chat section */
 #assistantChat {
     flex: 1;
     padding: 20px;
@@ -313,7 +280,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Chat bubble */
 .assistant-message {
     background: #ffffff;
     padding: 14px 16px;
@@ -326,7 +292,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     white-space: pre-wrap;
 }
 
-/* Table formatting inside chat */
 .assistant-message table {
     width: 100%;
     border-collapse: collapse;
@@ -345,11 +310,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
 }
 
 
-/* ======================= */
-/*   PREMIUM UI v2 DESIGN  */
-/* ======================= */
-
-/* Full assistant widget */
 .assistant-card {
     width: 100%;
     height: 820px;
@@ -362,7 +322,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     overflow: hidden;
 }
 
-/* Header */
 .assistant-header {
     padding: 16px 20px;
     background: #2563eb;
@@ -375,7 +334,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     letter-spacing: 0.2px;
 }
 
-/* Chat section */
 #assistantChat {
     flex: 1;
     padding: 20px;
@@ -385,7 +343,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Chat bubble */
 .assistant-message {
     background: #ffffff;
     padding: 14px 16px;
@@ -398,7 +355,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     white-space: pre-wrap;
 }
 
-/* Table formatting inside chat */
 .assistant-message table {
     width: 100%;
     border-collapse: collapse;
@@ -416,7 +372,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     border: 1px solid #d4d4d8;
 }
 
-/* Button section - 2 per row */
 .assistant-options {
     padding: 16px;
     background: white;
@@ -425,7 +380,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     gap: 12px;
 }
 
-/* Modern blue buttons */
 .assistant-btn {
     background: #2563eb;
     color: #fff;
@@ -449,7 +403,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* Apply section alignment fix */
 .apply-card {
     width: 100% !important;
 }
@@ -458,13 +411,8 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     width: 100%;
 }
 
-/* ============================== */
-/*   CLEAN FINAL ASSISTANT UI     */
-/* ============================== */
-
-/* Right-column assistant width */
 .assistant-card {
-    width: 520px;                     /* ⭐ increased width */
+    width: 520px;                    
     height: 830px;
     display: flex;
     flex-direction: column;
@@ -475,7 +423,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     overflow: hidden;
 }
 
-/* Header */
 .assistant-header {
     padding: 16px 20px;
     background: #2563eb;
@@ -487,17 +434,15 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     gap: 10px;
 }
 
-/* Chat area — scrollbar inside */
 #assistantChat {
     flex: 1;
     padding: 20px;
     background: #f3f6ff;
-    overflow-y: scroll;               /* ⭐ moved scroll inside */
+    overflow-y: scroll;               
     scroll-behavior: smooth;
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Messages */
 .assistant-message {
     background: #ffffff;
     padding: 14px 16px;
@@ -510,7 +455,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     white-space: pre-wrap;
 }
 
-/* Table formatting inside chat */
 .assistant-message table {
     width: 100%;
     border-collapse: collapse;
@@ -528,16 +472,14 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     border: 1px solid #d4d4d8;
 }
 
-/* Buttons — 2 columns */
 .assistant-options {
     padding: 16px;
     background: white;
     display: grid;
-    grid-template-columns: 1fr 1fr;     /* ⭐ TWO BUTTONS PER ROW */
+    grid-template-columns: 1fr 1fr;    
     gap: 12px;
 }
 
-/* Each button */
 .assistant-btn {
     background: #2563eb;
     color: #fff;
@@ -558,7 +500,6 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* Apply card alignment */
 .apply-card {
     width: 520px !important;
 }
