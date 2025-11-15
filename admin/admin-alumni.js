@@ -63,11 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="alumni-advice">"${a.advice || ""}"</div>
 
         <div class="alumni-actions">
-          ${
-            a.linkedin
-              ? `<button class="linkedin-btn" data-link="${a.linkedin}">🔗 LinkedIn</button>`
-              : ""
-          }
+          {${a.linkedin ? `<button class="linkedin-btn" data-link="${a.linkedin}">🔗 LinkedIn</button>` : ""}
           <div>
             <button class="icon-btn edit-btn" data-id="${a.id}" title="Edit">✏️</button>
             <button class="icon-btn delete-btn" data-id="${a.id}" title="Delete">🗑️</button>
