@@ -1,31 +1,33 @@
 import { db, auth } from "./firebase-init.js";
-import {
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 // PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 
-// Gemini Models (Primary + Fallback)
+// Models + (FRONTEND) API KEY
 const PRIMARY_MODEL = "gemini-flash-latest";
 const FALLBACK_MODEL = "gemini-pro-latest";
-
 const GEMINI_API_KEY = "AIzaSyCpvWjeqzQfwDm3PNgn7HF051pIfhul-_8";
 
-let jobData = {};
-let userProfile = {};
+let jobData = null;
+let userProfile = null;
 let resumeText = "";
+let pageLoaded = false;  
+let aiBusy = false;      
 
-// Chat UI Helpers
-function appendMessage(msg) {
+// -------------------- UI Helpers --------------------
+function appendMessage(msg, { isError = false } = {}) {
   const chat = document.getElementById("assistantChat");
+  if (!chat) {
+    console.warn("No #assistantChat element found to append message.");
+    return;
+  }
   const bubble = document.createElement("div");
-  bubble.className = "assistant-message";
+  bubble.className = isError ? "assistant-message error" : "assistant-message";
 
-  let html = msg;
+  let html = String(msg);
 
   html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
   html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
@@ -81,6 +83,7 @@ function convertMarkdownTable(text) {
 
 function showTyping() {
   const chat = document.getElementById("assistantChat");
+  if (!chat) return;
   const bubble = document.createElement("div");
   bubble.className = "assistant-message";
   bubble.id = "typingBubble";
@@ -94,42 +97,57 @@ function hideTyping() {
   if (el) el.remove();
 }
 
-// Load Job
+// -------------------- Data Loading --------------------
 async function loadJob() {
+  if (jobData) return;
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get("id");
   if (!jobId) return;
-
-  const snap = await getDoc(doc(db, "jobs", jobId));
-  if (snap.exists()) {
-    jobData = snap.data();
+  try {
+    const snap = await getDoc(doc(db, "jobs", jobId));
+    if (snap.exists()) jobData = snap.data();
+    else jobData = null;
+  } catch (err) {
+    console.warn("Error loading job:", err);
+    jobData = null;
   }
 }
 
-// Load Profile
-async function loadProfile() {
+function loadProfile() {
+  if (userProfile !== null) return Promise.resolve(); 
   return new Promise((resolve) => {
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return resolve();
-      const snap = await getDoc(doc(db, "profiles", user.uid));
-      if (snap.exists()) userProfile = snap.data();
-      resolve();
+      if (!user) {
+        userProfile = null;
+        return resolve();
+      }
+      try {
+        const snap = await getDoc(doc(db, "profiles", user.uid));
+        if (snap.exists()) userProfile = snap.data();
+        else userProfile = null;
+        resolve();
+      } catch (err) {
+        console.warn("Error loading profile:", err);
+        userProfile = null;
+        resolve();
+      }
     });
   });
 }
 
-// Resume Extraction
+// -------------------- Resume Extraction --------------------
 async function extractPDF(url) {
+  if (!url) return "No resume URL provided.";
   try {
     const pdf = await pdfjsLib.getDocument(url).promise;
     let finalText = "";
-
-    for (let i = 1; i <= pdf.numPages; i++) {
+    const maxPages = Math.min(pdf.numPages, 10);
+    for (let i = 1; i <= maxPages; i++) {
       const page = await pdf.getPage(i);
       const text = await page.getTextContent();
       finalText += text.items.map((a) => a.str).join(" ") + "\n\n";
+      await new Promise((r) => setTimeout(r, 10));
     }
-
     return finalText;
   } catch (err) {
     console.warn("⚠️ Error extracting resume:", err);
@@ -137,7 +155,31 @@ async function extractPDF(url) {
   }
 }
 
-// Build HIGH QUALITY PROMPT
+// -------------------- Prompt / Size Helpers --------------------
+function shallowSummarize(obj, maxChars = 1000) {
+  if (!obj) return null;
+  try {
+    const out = {};
+    for (const k of Object.keys(obj)) {
+      const v = obj[k];
+      if (typeof v === "string") out[k] = v.slice(0, 250);
+      else if (typeof v === "number" || typeof v === "boolean") out[k] = v;
+      else if (Array.isArray(v)) out[k] = v.slice(0, 5).map((x) => (typeof x === "string" ? x.slice(0, 120) : x));
+      else if (typeof v === "object" && v !== null) {
+        out[k] = Object.fromEntries(
+          Object.entries(v).slice(0, 5).map(([ik, iv]) => [ik, typeof iv === "string" ? iv.slice(0, 120) : iv])
+        );
+      } else {
+        out[k] = null;
+      }
+    }
+    const str = JSON.stringify(out);
+    return str.length > maxChars ? str.slice(0, maxChars) + "..." : str;
+  } catch (err) {
+    return null;
+  }
+}
+
 function buildPrompt(action) {
   const taskMap = {
     analyse: `
@@ -183,93 +225,160 @@ Improve student's profile:
     `
   };
 
+  const jobSummary = shallowSummarize(jobData, 1200) || "No job data available.";
+  const profileSummary = shallowSummarize(userProfile, 1200) || "No profile data available.";
+
+  const resumeSnippet = (resumeText || "").replace(/\s+/g, " ").trim().slice(0, 1200);
+
   return `
 You are a world-class Placement Assistant. Keep the output crisp, structured, and actionable. Avoid fluff.
 
-### JOB DATA:
-${JSON.stringify(jobData, null, 2)}
+### JOB SUMMARY:
+${jobSummary}
 
-### STUDENT PROFILE:
-${JSON.stringify(userProfile, null, 2)}
+### STUDENT PROFILE SUMMARY:
+${profileSummary}
 
-### RESUME TEXT:
-${resumeText.substring(0, 3500)}
+### RESUME SNIPPET:
+${resumeSnippet}
 
 ### TASK:
 ${taskMap[action]}
   `;
 }
 
-// Gemini API Request with Retry + Fallback
-async function callGemini(prompt, model = PRIMARY_MODEL, retries = 3) {
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function backoffDelay(attempt, base = 500) {
+  const exp = Math.pow(2, attempt) * base;
+  const jitter = Math.floor(Math.random() * (exp * 0.5));
+  return exp + jitter;
+}
+
+//callGemini - improved fetch with handling for 429 / 503 and fallback model
+
+async function callGemini(prompt, model = PRIMARY_MODEL, maxAttempts = 5) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
+  let attempt = 0;
+  let lastErr = null;
 
-    if (res.status === 503 && retries > 0) {
-      console.warn(`⚠️ Gemini overloaded → retrying (${retries})`);
-      await new Promise((r) => setTimeout(r, 1000));
-      return callGemini(prompt, model, retries - 1);
+  while (attempt < maxAttempts) {
+    try {
+      if (attempt > 0) {
+        const d = backoffDelay(attempt - 1, 500);
+        console.warn(`Retry attempt #${attempt} after ${d}ms (model=${model})`);
+        await sleep(d);
+      }
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        return json;
+      }
+
+      if (res.status === 429) {
+        lastErr = new Error("429 Too Many Requests");
+        console.warn("Received 429 from Gemini API — backing off and retrying.");
+        attempt++;
+        continue;
+      }
+
+      if (res.status === 503) {
+        lastErr = new Error("503 Service Unavailable");
+        console.warn("Received 503 from Gemini API — backing off and retrying.");
+        attempt++;
+        continue;
+      }
+
+      const bodyText = await res.text();
+      lastErr = new Error(`HTTP ${res.status}: ${bodyText}`);
+      console.error("Gemini returned non-OK:", res.status, bodyText);
+
+      if (res.status >= 400 && res.status < 500 && res.status !== 429) break;
+
+      attempt++;
+    } catch (err) {
+      lastErr = err;
+      console.warn("Network error calling Gemini:", err);
+      attempt++;
     }
-
-    if (res.status === 503) {
-      console.warn("⚠️ Switching to fallback model (gemini-pro-latest)");
-      return callGemini(prompt, FALLBACK_MODEL, 2);
-    }
-
-    return await res.json();
-
-  } catch (err) {
-    if (retries > 0) {
-      console.warn(`⚠️ Network error → retrying (${retries})`);
-      await new Promise((r) => setTimeout(r, 800));
-      return callGemini(prompt, model, retries - 1);
-    }
-
-    console.error("❌ Gemini failed:", err);
-    throw err;
   }
+
+  if (model !== FALLBACK_MODEL) {
+    console.warn("Falling back to fallback model:", FALLBACK_MODEL);
+    return callGemini(prompt, FALLBACK_MODEL, Math.max(1, Math.floor(maxAttempts / 2)));
+  }
+
+  throw lastErr || new Error("Gemini request failed after retries.");
 }
 
 async function askAI(action) {
+  if (aiBusy) {
+    appendMessage("⚠️ Please wait — AI is still processing the previous request.");
+    return;
+  }
+  aiBusy = true;
   showTyping();
 
   try {
-    await loadJob();
-    await loadProfile();
+    if (!pageLoaded) {
+      await loadJob();
+      await loadProfile();
+      pageLoaded = true;
+    }
 
-    if (!resumeText && userProfile.resumeURL) {
+    if (!resumeText && userProfile?.resumeURL) {
+      appendMessage("🔎 Extracting resume (first 10 pages, trimmed)...");
       resumeText = await extractPDF(userProfile.resumeURL);
     }
 
     const prompt = buildPrompt(action);
-    const data = await callGemini(prompt);
+
+    // Call Gemini with improved retry/handling
+    const data = await callGemini(prompt, PRIMARY_MODEL, 6);
 
     hideTyping();
+    aiBusy = false;
 
     const output =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "⚠️ AI could not generate a response.";
 
     appendMessage(output);
-
+    return output;
   } catch (err) {
     hideTyping();
-    appendMessage("❌ Something went wrong.");
-    console.error(err);
+    aiBusy = false;
+
+    console.error("askAI error:", err);
+    appendMessage("❌ Something went wrong while contacting the AI. Try again later.", { isError: true });
+    if (err && /429|Too Many Requests/i.test(String(err))) {
+      appendMessage("⚠️ Rate limit reached. Consider migrating Gemini calls to a backend or reducing frequency.", { isError: true });
+    }
+    return null;
   }
 }
 
-window.addEventListener("load", async () => {
-  await loadJob();
-  await loadProfile();
-});
-
 window.askAI = askAI;
+
+// Ensure job/profile loaded on page load once
+window.addEventListener("load", async () => {
+  try {
+    await loadJob();
+    await loadProfile();
+  } catch (err) {
+    console.warn("Initial load error:", err);
+  } finally {
+    pageLoaded = true;
+  }
+});
