@@ -506,3 +506,61 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
 .apply-card button {
     width: 100%;
 }
+
+.rounds-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.round-item {
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: 0.2s ease;
+}
+
+.round-item:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+
+.round-left h4 {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.round-left p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.round-status {
+  text-transform: capitalize;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.round-status.upcoming {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.round-status.ongoing {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.round-status.past {
+  background: #fee2e2;
+  color: #991b1b;
+}

@@ -12,7 +12,6 @@
 
   <script type="module" src="js/jobs.js"></script>
 
-  <!-- PDF.js (for resume parsing) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
   <style>
@@ -74,6 +73,33 @@
     .assistant-btn:hover {
         background: #1e40af;
     }
+
+    .round-item {
+      margin-bottom: 12px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .round-item h4 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      color: #0f172a;
+    }
+    .round-status {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .round-status.upcoming { background: #dbebff; color: #1d4ed8; }
+    .round-status.ongoing { background: #dcfce7; color: #166534; }
+    .round-status.past { background: #fee2e2; color: #991b1b; }
+
   </style>
 
 </head>
@@ -104,6 +130,7 @@
   <a href="jobs.html" class="back-link">← Back to Jobs</a>
 
   <div class="main-grid">
+    
     <div class="col-left">
 
       <section class="card job-header-card">
@@ -149,6 +176,13 @@
         <ul id="jobBenefits" class="check-list"></ul>
       </section>
 
+      <section class="card">
+        <h3>Interview Rounds</h3>
+        <div id="jobRounds" class="rounds-container">
+          <p class="muted small">Loading...</p>
+        </div>
+      </section>
+
     </div>
 
     <aside class="col-right">
@@ -160,14 +194,11 @@
       </section>
 
       <section class="assistant-card">
-
-        <div class="assistant-header">
-          📘 Placement Assistant
-        </div>
+        <div class="assistant-header">📘 Placement Assistant</div>
 
         <div id="assistantChat" class="assistant-chat">
           <div class="assistant-message">
-            👋 Hi! I'm your Placement Assistant. What would you like to do?
+Hi! I'm your Placement Assistant. What would you like to do?
           </div>
         </div>
 
@@ -183,15 +214,14 @@
 
       </section>
 
-
     </aside>
   </div>
 </main>
 
 <script type="module" src="./js/firebase-init.js"></script>
 <script type="module" src="./js/job-details.js"></script>
-
 <script type="module" src="js/assistant.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
@@ -208,7 +238,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
 
 </body>
 </html>

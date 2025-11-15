@@ -19,13 +19,13 @@
       </div>
 
       <nav class="nav">
-  <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
-  <a href="admin-jobs.html" class="nav-link active"><span class="icon">💼</span> Jobs</a>
-  <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
-  <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
-  <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
-  <a href="../index.html" class="nav-link logout"><span class="icon">🚪</span> Logout</a>
-</nav>
+        <a href="index.html" class="nav-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="admin-jobs.html" class="nav-link active"><span class="icon">💼</span> Jobs</a>
+        <a href="admin-alumni.html" class="nav-link"><span class="icon">👥</span> Alumni</a>
+        <a href="admin-news.html" class="nav-link"><span class="icon">📰</span> News</a>
+        <a href="student.html" class="nav-link"><span class="icon">🎓</span> Students</a>
+        <a href="../index.html" class="nav-link logout"><span class="icon">🚪</span> Logout</a>
+      </nav>
 
     </div>
 
@@ -68,14 +68,18 @@
   </main>
 </div>
 
+
+<!-- ADD JOB MODAL -->
 <div id="addModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-header">
       <h3>Add Job</h3>
       <button class="close" data-close="addModal">✕</button>
     </div>
+
     <div class="modal-body">
       <form id="addJobForm" class="job-form">
+
         <div class="row">
           <label>Company Name<input name="company" required></label>
           <label>Role / Position<input name="role" required></label>
@@ -89,19 +93,24 @@
         <div class="row">
           <label>Job Type
             <select name="type">
-              <option>Full-time</option><option>Internship</option><option>PPO</option>
+              <option>Full-time</option>
+              <option>Internship</option>
+              <option>PPO</option>
             </select>
           </label>
+
           <label>Category
             <select name="category">
-              <option>Regular</option><option>Dream</option><option>Super Dream</option>
+              <option>Regular</option>
+              <option>Dream</option>
+              <option>Super Dream</option>
             </select>
           </label>
         </div>
 
         <div class="row">
           <label>Deadline<input type="date" name="deadline"></label>
-          <label>Job Link<input type="url" name="link" placeholder="https://company.com/apply"></label>
+          <label>Job Link<input type="url" name="link"></label>
         </div>
 
         <label>Required Skills<input name="skills"></label>
@@ -113,44 +122,69 @@
           <label>Benefits<textarea name="benefits"></textarea></label>
         </div>
 
+
+        <!-- CLEAN ROUNDS UI -->
         <div class="rounds-section">
           <div class="rounds-head">
             <strong>Interview Rounds</strong>
-            <button type="button" id="addRoundBtn" class="btn small">+ Add Round</button>
+            <button type="button" id="addRoundBtn" class="btn small round-add-btn">+ Add Round</button>
           </div>
-          <ul id="roundsList" class="rounds-list"></ul>
+
+          <ul id="roundsList" class="clean-rounds"></ul>
         </div>
+
 
         <div class="modal-actions">
           <button type="button" class="btn btn-ghost" data-close="addModal">Cancel</button>
           <button class="btn btn-gradient" type="submit">Create Job</button>
         </div>
+
       </form>
     </div>
   </div>
 </div>
 
+
+<!-- EDIT JOB MODAL -->
 <div id="editModal" class="modal-backdrop hidden">
   <div class="modal">
     <div class="modal-header">
       <h3>Edit Job</h3>
       <button class="close" data-close="editModal">✕</button>
     </div>
+
     <div class="modal-body">
       <form id="editJobForm" class="job-form">
         <input type="hidden" name="jobId" />
+
         <div class="row">
           <label>Company<input name="company"></label>
           <label>Role<input name="role"></label>
         </div>
+
         <div class="row">
           <label>Location<input name="location"></label>
           <label>Package<input name="package"></label>
         </div>
+
         <div class="row">
-          <label>Type<select name="type"><option>Full-time</option><option>Internship</option><option>PPO</option></select></label>
-          <label>Category<select name="category"><option>Regular</option><option>Dream</option><option>Super Dream</option></select></label>
+          <label>Type
+            <select name="type">
+              <option>Full-time</option>
+              <option>Internship</option>
+              <option>PPO</option>
+            </select>
+          </label>
+
+          <label>Category
+            <select name="category">
+              <option>Regular</option>
+              <option>Dream</option>
+              <option>Super Dream</option>
+            </select>
+          </label>
         </div>
+
         <label>Deadline<input type="date" name="deadline"></label>
         <label>Skills<input name="skills"></label>
         <label>Eligibility<textarea name="eligibility"></textarea></label>
@@ -158,23 +192,32 @@
         <label>Requirements<textarea name="requirements"></textarea></label>
         <label>Benefits<textarea name="benefits"></textarea></label>
 
+
+        <!-- CLEAN ROUNDS UI -->
         <div class="rounds-section">
           <div class="rounds-head">
             <strong>Interview Rounds</strong>
-            <button type="button" id="addRoundBtnEdit" class="btn small">+ Add Round</button>
+            <button type="button" id="addRoundBtnEdit" class="btn small round-add-btn">
+              + Add Round
+            </button>
           </div>
-          <ul id="roundsListEdit" class="rounds-list"></ul>
+
+          <ul id="roundsListEdit" class="clean-rounds"></ul>
         </div>
+
 
         <div class="modal-actions">
           <button type="button" class="btn btn-ghost" data-close="editModal">Cancel</button>
           <button class="btn btn-gradient" type="submit">Save</button>
         </div>
+
       </form>
     </div>
   </div>
 </div>
 
+
+<!-- VIEW JOB MODAL -->
 <div id="viewModal" class="modal-backdrop hidden">
   <div class="modal wide">
     <div class="modal-header">
@@ -189,13 +232,12 @@
 
 <script type="module" src="./admin-jobs.js"></script>
 
-
-
 <script>
 document.querySelectorAll(".nav-link").forEach(link => {
   const current = window.location.pathname.split("/").pop();
   if (link.getAttribute("href") === current) link.classList.add("active");
 });
 </script>
+
 </body>
 </html>

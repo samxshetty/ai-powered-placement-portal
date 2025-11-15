@@ -1,5 +1,6 @@
-import { db } from "../js/firebase-init.js"; 
+// admin-jobs.js — FULL UPDATED VERSION (with round.mode support)
 
+import { db } from "../js/firebase-init.js"; 
 import {
   collection,
   addDoc,
@@ -17,6 +18,9 @@ function el(tag, cls) { const e = document.createElement(tag); if (cls) e.classN
 
 let jobs = [];
 
+/* ==========================
+   REALTIME JOB FETCH
+========================== */
 onSnapshot(
   jobsRef,
   (snapshot) => {
@@ -31,6 +35,10 @@ onSnapshot(
   }
 );
 
+
+/* ==========================
+   RENDER JOB LIST
+========================== */
 function renderJobs(filterText = '', filterTag = 'all') {
   const list = document.getElementById("jobsList");
   list.innerHTML = "";
@@ -79,22 +87,21 @@ function renderJobs(filterText = '', filterTag = 'all') {
     left.append(title, meta, badges);
 
     const actions = el('div', 'job-actions');
-    const viewBtn = el('button', 'icon-btn'); viewBtn.innerHTML = '👁️';
+    
+    const viewBtn = el('button', 'icon-btn'); 
+    viewBtn.innerHTML = '👁️';
     viewBtn.onclick = () => openViewModal(job);
 
-    const editBtn = el('button', 'icon-btn'); editBtn.innerHTML = '✏️';
+    const editBtn = el('button', 'icon-btn'); 
+    editBtn.innerHTML = '✏️';
     editBtn.onclick = () => openEditModal(job);
 
-    const delBtn = el('button', 'icon-btn'); delBtn.innerHTML = '🗑️';
+    const delBtn = el('button', 'icon-btn'); 
+    delBtn.innerHTML = '🗑️';
     delBtn.onclick = async () => {
       if (!confirm("Delete this job?")) return;
-
-      try {
-        await deleteDoc(doc(db, "jobs", job.id));
-      } catch (err) {
-        console.error("Delete failed:", err);
-        alert("Failed to delete job: " + err.message);
-      }
+      try { await deleteDoc(doc(db, "jobs", job.id)); }
+      catch (err) { alert("Failed to delete: " + err.message); }
     };
 
     actions.append(viewBtn, editBtn, delBtn);
@@ -103,13 +110,19 @@ function renderJobs(filterText = '', filterTag = 'all') {
   });
 }
 
+
+/* ==========================
+   ADD JOB
+========================== */
 document.getElementById('openAddJob').addEventListener('click', () => {
   document.getElementById('addJobForm').reset();
   document.getElementById('roundsList').innerHTML = '';
   openModal('addModal');
 });
 
-document.getElementById('addRoundBtn').addEventListener('click', () => addRoundUI('roundsList'));
+document.getElementById('addRoundBtn').addEventListener('click', () =>
+  addRoundUI('roundsList')
+);
 
 document.getElementById('addJobForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -123,6 +136,7 @@ document.getElementById('addJobForm').addEventListener('submit', async (e) => {
     type: f.type.value,
     category: f.category.value,
     deadline: f.deadline.value,
+    link: f.link.value,
     skills: f.skills.value,
     eligibility: f.eligibility.value,
     description: f.description.value,
@@ -137,13 +151,17 @@ document.getElementById('addJobForm').addEventListener('submit', async (e) => {
     await addDoc(jobsRef, job);
     closeModal('addModal');
   } catch (err) {
-    console.error("Add job failed:", err);
     alert("Failed to add job: " + err.message);
   }
 });
 
+
+/* ==========================
+   EDIT JOB
+========================== */
 function openEditModal(job) {
   const f = document.getElementById('editJobForm');
+
   f.jobId.value = job.id;
   f.company.value = job.company;
   f.role.value = job.role;
@@ -165,7 +183,9 @@ function openEditModal(job) {
   openModal('editModal');
 }
 
-document.getElementById('addRoundBtnEdit').addEventListener('click', () => addRoundUI('roundsListEdit'));
+document.getElementById('addRoundBtnEdit').addEventListener('click', () =>
+  addRoundUI('roundsListEdit')
+);
 
 document.getElementById('editJobForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -189,17 +209,19 @@ document.getElementById('editJobForm').addEventListener('submit', async (e) => {
       benefits: f.benefits.value,
       rounds: collectRoundsFrom('roundsListEdit')
     });
+
     closeModal('editModal');
   } catch (err) {
-    console.error("Update failed:", err);
-    alert("Failed to update job: " + err.message);
+    alert("Update failed: " + err.message);
   }
 });
 
-// VIEW JOB
+
+/* ==========================
+   VIEW JOB
+========================== */
 function openViewModal(job) {
   const container = document.getElementById('jobDetails');
-
   container.innerHTML = `
     <h3>${job.role}</h3>
     <div class="job-detail-grid">
@@ -219,13 +241,16 @@ function openViewModal(job) {
     <div><strong>Requirements</strong><p>${job.requirements}</p></div>
     <div><strong>Benefits</strong><p>${job.benefits}</p></div>
   `;
-
   openModal('viewModal');
 }
 
+
+/* ==========================
+   ROUNDS UI + MODE SUPPORT
+========================== */
 function addRoundUI(listId) {
   const list = document.getElementById(listId);
-  const r = { id: id(), from: '', to: '', title: '', note: '' };
+  const r = { id: id(), from: '', to: '', title: '', mode: 'tbd', note: '' };
   createRoundItem(list, r);
 }
 
@@ -245,11 +270,21 @@ function createRoundItem(listEl, round) {
   title.placeholder = "Round name";
   title.value = round.title || "";
 
+  const mode = document.createElement("select");
+  mode.innerHTML = `
+    <option value="online">Online</option>
+    <option value="offline">Offline</option>
+    <option value="in-college">In-College</option>
+    <option value="hybrid">Hybrid</option>
+    <option value="tbd">TBD</option>
+  `;
+  mode.value = round.mode || "tbd";
+
   const note = document.createElement("input");
   note.placeholder = "Note";
   note.value = round.note || "";
 
-  main.append(from, to, title, note);
+  main.append(from, to, title, mode, note);
   li.append(main);
 
   const del = el("button", "btn small");
@@ -267,21 +302,45 @@ function collectRoundsFrom(listId) {
   if (!list) return out;
 
   [...list.children].forEach((li) => {
-    const inputs = li.querySelectorAll("input");
-    if (inputs.length >= 4) {
-      const [from, to, title, note] = inputs;
+    const inputs = li.querySelectorAll("input, select");
+    if (inputs.length >= 5) {
+      const [from, to, title, mode, note] = inputs;
+
       out.push({
         id: id(),
         from: from.value,
         to: to.value,
         title: title.value,
+        mode: mode.value,
         note: note.value,
       });
     }
   });
+
   return out;
 }
 
+
+/* ==========================
+   MODAL UTILITIES
+========================== */
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+document.addEventListener('click', (e) => {
+  const close = e.target.closest('[data-close]');
+  if (close) closeModal(close.getAttribute('data-close'));
+});
+
+
+/* ==========================
+   FILTERS
+========================== */
 let currentFilter = 'all';
 
 document.getElementById('filterInput')
@@ -294,17 +353,4 @@ document.querySelectorAll('.filter-btn').forEach(b => {
     b.classList.add('active');
     renderJobs(document.getElementById('filterInput').value, currentFilter);
   });
-});
-
-function openModal(id) {
-  document.getElementById(id).classList.remove('hidden');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.add('hidden');
-}
-
-document.addEventListener('click', (e) => {
-  const close = e.target.closest('[data-close]');
-  if (close) closeModal(close.getAttribute('data-close'));
 });

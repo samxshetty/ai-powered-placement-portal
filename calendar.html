@@ -4,14 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Placement Calendar — PlacementHub</title>
+
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/calendar.css">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+
 <nav class="navbar">
   <div class="nav-inner">
+
     <div class="nav-left">
       <img src="Job.png" alt="Logo" class="logo-icon">
       <span class="brand">PlacementHub</span>
@@ -27,27 +31,39 @@
       <a href="news.html" class="nav-link">News</a>
       <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
     </div>
+
   </div>
 </nav>
 
+
 <main class="container calendar-page">
+
   <div class="page-header">
     <h2>Placement Calendar</h2>
     <p class="muted">Stay updated with all your placement activities</p>
   </div>
 
   <div class="calendar-layout">
+
     <section class="events-section card">
       <div class="section-header">
-        <h3>Upcoming Events</h3>
-        <div class="filter-bar">
-          <button id="filterAll" class="filter-btn active">All Events</button>
-          <button id="filterMine" class="filter-btn">My Events</button>
-        </div>
-      </div>
+  <h3>Upcoming Events</h3>
+
+  <div class="calendar-controls">
+    <input id="searchInput" type="text" class="search-box"
+             placeholder="Search company, role, or round...">
+
+    <select id="sortSelect" class="sort-box">
+      <option value="earliest">Sort by Earliest Round</option>
+      <option value="latest">Sort by Latest Round</option>
+      <option value="recentlyApplied">Sort by Recently Applied</option>
+    </select>
+  </div>
+</div>
 
       <div id="eventList" class="event-list"></div>
     </section>
+
 
     <aside class="sidebar">
       <div class="card">
@@ -60,8 +76,11 @@
         </ul>
       </div>
     </aside>
+
   </div>
+
 </main>
+
 
 <script type="module" src="../js/firebase-init.js"></script>
 <script type="module" src="js/calendar.js"></script>
@@ -82,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
 
 </body>
 </html>
