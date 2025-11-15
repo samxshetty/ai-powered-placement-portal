@@ -1,4 +1,3 @@
-// ✅ login.js — Restricted Login (Only @nmamit.in emails)
 import { db, auth } from "./firebase-init.js";
 import {
   signInWithEmailAndPassword,
@@ -27,19 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ✅ Restrict login to nmamit.in emails only
+    // Restrict login to nmamit.in emails only
     if (!email.endsWith("@nmamit.in")) {
       alert("❌ Only NMAMIT email addresses (@nmamit.in) can log in.");
       return;
     }
 
     try {
-      // 🔹 Firebase Auth sign-in
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("✅ User logged in:", user.uid);
 
-      // 🔹 Fetch user details from Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userData = userDoc.exists() ? userDoc.data() : {};
 
@@ -47,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("⚠️ Account found but no profile data exists in Firestore. Please contact admin.");
       }
 
-      // 🔹 Save session locally
       localStorage.setItem("activeUser", email);
       localStorage.setItem("activeUserId", user.uid);
       localStorage.setItem("activeUserName", userData.full_name || "");

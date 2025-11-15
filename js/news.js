@@ -1,4 +1,3 @@
-// news.js — Live Firestore Integration for Student News
 import { db } from "../js/firebase-init.js";
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
@@ -11,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let NEWS = [];
 
-  // 🔹 Fetch live news
   onSnapshot(collection(db, "news"), (snapshot) => {
     NEWS = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderAll();

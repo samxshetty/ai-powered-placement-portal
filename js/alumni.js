@@ -1,4 +1,3 @@
-// alumni.js — Live Alumni Fetch for Students
 import { db } from "../js/firebase-init.js";
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
@@ -9,13 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let alumniList = [];
 
-  // 🔹 Fetch Alumni (real-time)
   onSnapshot(collection(db, "alumni"), (snapshot) => {
     alumniList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderAlumni(alumniList);
   });
 
-  // 🔹 Render
   function renderAlumni(list) {
     alumniGrid.innerHTML = "";
 
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Search Filters
   function applyFilters() {
     const cText = searchCompany.value.toLowerCase();
     const rText = searchRole.value.toLowerCase();

@@ -1,4 +1,3 @@
-// calendar.js — Live Placement Calendar (Firestore + Student filter)
 import { db } from "../js/firebase-init.js";
 import {
   collection,
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   let allEvents = [];
   let myEventIds = [];
 
-  // 🔹 Fetch events from Firestore
   async function fetchEvents() {
     const snap = await getDocs(collection(db, "events"));
     return snap.docs.map((doc) => ({
@@ -31,7 +29,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }));
   }
 
-  // 🔹 Fetch student's applications (for filtering "My Events")
   async function fetchMyApplications() {
     const appsSnap = await getDocs(
       query(collection(db, "applications"), where("studentId", "==", studentId))
@@ -40,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     myEventIds = apps.map((a) => a.eventId).filter((id) => !!id);
   }
 
-  // 🔹 Render events
   function renderEvents(events) {
     eventList.innerHTML = "";
     if (!events || events.length === 0) {
@@ -75,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 🔹 Filter buttons
   filterAll.addEventListener("click", () => {
     filterAll.classList.add("active");
     filterMine.classList.remove("active");
@@ -89,13 +84,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderEvents(myEvents);
   });
 
-  // 🔹 Logout
   logoutBtn?.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "index.html";
   });
 
-  // 🔹 Load events + applications
   try {
     const [events] = await Promise.all([fetchEvents(), fetchMyApplications()]);
     allEvents = events;

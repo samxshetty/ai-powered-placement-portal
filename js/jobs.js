@@ -1,5 +1,3 @@
-// jobs.js — Student Job Listing with Firestore Sync (LIVE + Applied Status)
-
 import { db } from "./firebase-init.js";
 import {
   collection,
@@ -18,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // 🔹 Render Jobs
   function renderJobs(jobs, filter = "", status = "all") {
     grid.innerHTML = "";
 
@@ -71,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
       grid.appendChild(card);
     });
 
-    // Add event listeners for "View Details"
     document.querySelectorAll(".view-btn.btn-primary").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const id = e.target.getAttribute("data-id");
@@ -80,11 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Real-time listener for jobs
   onSnapshot(collection(db, "jobs"), async (snapshot) => {
     let jobs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    // Fetch student's applied jobs
     let appliedIds = [];
     if (studentId) {
       const appSnap = await getDocs(collection(db, "applications"));
@@ -93,16 +87,13 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((d) => d.data().jobId);
     }
 
-    // Mark applied jobs
     jobs = jobs.map((j) => ({
       ...j,
       alreadyApplied: appliedIds.includes(j.id)
     }));
 
-    // Render jobs
     renderJobs(jobs);
 
-    // Attach search & filter listeners (once)
     if (!window._jobListenersAttached) {
       window._jobListenersAttached = true;
 

@@ -1,4 +1,3 @@
-// ✅ signup.js — NMAMIT Restricted Signup (redirects to profile.html)
 import { db, auth } from "./firebase-init.js";
 import {
   createUserWithEmailAndPassword,
@@ -27,20 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("signupEmail").value.trim().toLowerCase();
     const password = document.getElementById("signupPassword").value.trim();
 
-    // ✅ Basic validation
     if (!name || !roll || !department || !year || !email || !password) {
       alert("⚠️ Please fill in all fields before proceeding.");
       return;
     }
 
-    // ✅ Restrict signup to nmamit.in emails only
     if (!email.endsWith("@nmamit.in")) {
       alert("❌ Only NMAMIT email addresses (@nmamit.in) are allowed to sign up.");
       return;
     }
 
     try {
-      // 🔍 Step 1: Check if email already registered
       const existingMethods = await fetchSignInMethodsForEmail(auth, email);
       if (existingMethods.length > 0) {
         alert("⚠️ This email is already registered. Please log in instead.");
@@ -48,12 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // 🔹 Step 2: Create Auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("✅ Auth user created:", user.uid);
 
-      // 🔹 Step 3: Add user data to Firestore
       await setDoc(doc(db, "users", user.uid), {
         full_name: name,
         roll_no: roll,
@@ -61,11 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
         year,
         email,
         createdAt: new Date().toISOString(),
-        profileCompleted: false, // ✅ flag to track profile setup
+        profileCompleted: false, //flag to track profile setup
       });
       console.log("✅ Firestore profile created successfully.");
 
-      // 🔹 Step 4: Save session locally
       localStorage.setItem("activeUser", email);
       localStorage.setItem("activeUserId", user.uid);
       localStorage.setItem("activeUserName", name);
@@ -73,9 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("activeUserYear", year);
       localStorage.setItem("activeUserRoll", roll);
 
-      // 🔹 Step 5: Redirect to profile setup page
       alert("✅ Account created successfully! Please complete your profile next.");
-      window.location.href = "profile.html"; // 👈 redirect here
+      window.location.href = "profile.html"; 
     } catch (error) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {

@@ -10,7 +10,6 @@
 </head>
 
 <body>
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <div class="nav-left">
@@ -25,27 +24,24 @@
       <a href="profile.html" class="nav-link">Profile</a>
       <a href="calendar.html" class="nav-link">Calendar</a>
       <a href="alumni.html" class="nav-link">Alumni</a>
-<a href="news.html" class="nav-link">News</a>
+      <a href="news.html" class="nav-link">News</a>
       <a href="#" id="logoutBtn" class="btn-primary">Logout</a>
     </div>
   </div>
 </nav>
 
 
-  <!-- Main Content -->
   <main class="container alumni-page">
     <div class="page-header">
       <h2>Alumni Network</h2>
       <p class="muted">Explore insights, experiences, and guidance shared by placed alumni.</p>
     </div>
 
-    <!-- Filter/Search Bar -->
     <div class="filter-bar">
       <input type="text" id="searchCompany" placeholder="🔍 Search by company...">
       <input type="text" id="searchRole" placeholder="🔍 Search by role...">
     </div>
 
-    <!-- Alumni Cards -->
     <section id="alumniGrid" class="alumni-grid"></section>
   </main>
 
@@ -61,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // redirect if not logged in
   if (!localStorage.getItem("activeUser")) {
     window.location.href = "index.html";
   }

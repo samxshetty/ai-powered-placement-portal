@@ -1,5 +1,3 @@
-// applications.js — Live Applications Dashboard (Firestore-connected)
-
 import { db } from "../js/firebase-init.js";
 import {
   collection,
@@ -33,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentFilter = "All";
   let selectedApp = null;
 
-  // 🔹 Render applications to UI
   function renderApplications(list) {
     appList.innerHTML = "";
     if (list.length === 0) {
@@ -78,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Filter function
   function filterApplications(type) {
     currentFilter = type;
     let filtered = [];
@@ -103,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderApplications(filtered);
   }
 
-  // 🔹 Firestore Realtime Listener
   const q = query(collection(db, "applications"), where("studentId", "==", studentId));
 
   onSnapshot(q, (snapshot) => {
@@ -114,11 +109,9 @@ document.addEventListener("DOMContentLoaded", () => {
     filterApplications(currentFilter);
   });
 
-  // 🔹 Click events
   appList.addEventListener("click", async (e) => {
     const target = e.target;
 
-    // VIEW job details
     if (target.classList.contains("view-btn")) {
       const jobId = target.dataset.id;
       if (jobId) {
@@ -126,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // WITHDRAW application
     if (target.classList.contains("withdraw-btn")) {
       const appId = target.dataset.id;
       selectedApp = allApplications.find((a) => a.id === appId);
@@ -137,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🔹 Withdraw confirm
   confirmWithdraw.addEventListener("click", async () => {
     if (!selectedApp) return;
 
@@ -158,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   );
 
-  // 🔹 Filter Buttons
   filterAll.addEventListener("click", () => filterApplications("All"));
   filterActive.addEventListener("click", () => filterApplications("Active"));
   filterClosed.addEventListener("click", () => filterApplications("Closed"));

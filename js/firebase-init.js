@@ -1,5 +1,3 @@
-// firebase-init.js — Browser SDK (v10.13.0)
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -17,15 +15,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Initialize Services
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// ⭐ MAKE THEM GLOBAL FOR NON-MODULE FILES
 window.db = db;
 window.auth = auth;
 window.storage = storage;
 
-// Export for module scripts
 export { app, db, auth, storage };

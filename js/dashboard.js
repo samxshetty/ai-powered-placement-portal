@@ -1,4 +1,3 @@
-// dashboard.js — Live Firebase Dashboard (Firestore + Auth + Real-time Stats)
 import { db, auth } from "../js/firebase-init.js";
 import {
   collection,
@@ -9,7 +8,6 @@ import {
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM elements
   const userNameEl = document.getElementById("userName");
   const companiesCountEl = document.getElementById("companiesCount");
   const appliedCountEl = document.getElementById("appliedCount");
@@ -19,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const recentApplicationsEl = document.getElementById("recentApplications");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Auth listener
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "index.html";
@@ -30,15 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const studentEmail = user.email || "student";
     userNameEl.textContent = studentEmail.split("@")[0];
 
-    // store locally for other pages
     localStorage.setItem("activeUser", studentEmail);
     localStorage.setItem("activeUserId", studentId);
 
-    // render dashboard
     await renderDashboard(studentId);
   });
 
-  // Logout
   logoutBtn?.addEventListener("click", async () => {
     try {
       await signOut(auth);
@@ -49,16 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Main renderer
   async function renderDashboard(studentId) {
     const today = new Date();
 
     try {
-      // Fetch jobs
       const jobsSnap = await getDocs(collection(db, "jobs"));
       const jobs = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      // counts
       const openJobs = jobs.filter(j => (j.status || "").toLowerCase() === "open").length;
       const closedJobs = jobs.filter(j => (j.status || "").toLowerCase() === "closed").length;
       const upcomingJobs = jobs.filter(j => {
@@ -74,14 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
       openCountEl.textContent = openJobs;
       closedCountEl.textContent = expiredJobs;
 
-      // Fetch student's applications
       const appsQ = query(collection(db, "applications"), where("studentId", "==", studentId));
       const appsSnap = await getDocs(appsQ);
       const applications = appsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
       appliedCountEl.textContent = applications.length;
 
-      // Recent Applications (top 5 newest)
       recentApplicationsEl.innerHTML = "";
       if (applications.length === 0) {
         recentApplicationsEl.innerHTML = `
@@ -99,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const div = document.createElement("div");
           div.className = "app-box";
           const appliedOn = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "-";
-          // create elements safely (avoid nested template pitfalls)
           const left = document.createElement("div");
           left.innerHTML = `<h4>${escapeHtml(app.jobCompany || "Unknown Company")}</h4>
                             <p class="muted">${escapeHtml(app.jobRole || "N/A")}</p>
@@ -121,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Upcoming Events (top 3)
       if (upcomingEventsEl) {
         upcomingEventsEl.innerHTML = "";
         const eventsSnap = await getDocs(collection(db, "events"));
@@ -161,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // small helper to avoid HTML injection in innerHTML usage
   function escapeHtml(str) {
     if (!str && str !== 0) return "";
     return String(str)

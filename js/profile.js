@@ -1,7 +1,6 @@
 const db = window.db;
 const auth = window.auth;
 
-// Firestore modular functions
 import {
   doc,
   getDoc,
@@ -13,16 +12,10 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-// -----------------------------
-// SUPABASE
-// -----------------------------
 const sb = window.supabaseClient;
 const BUCKET_PICS = window.bucketProfilePics;
 const BUCKET_RESUMES = window.bucketResumes;
 
-// -----------------------------
-// Upload file to Supabase
-// -----------------------------
 async function uploadToSupabase(bucket, file, userUID) {
   try {
     console.log("📤 Uploading to bucket:", bucket);
@@ -32,7 +25,7 @@ async function uploadToSupabase(bucket, file, userUID) {
     const { data, error } = await sb.storage
       .from(bucket)
       .upload(filePath, file, {
-        upsert: true   // allow overwriting old files
+        upsert: true   
       });
 
     if (error) {
@@ -42,7 +35,6 @@ async function uploadToSupabase(bucket, file, userUID) {
 
     console.log("📤 Upload success:", data);
 
-    // Get public URL
     const { data: publicData } = sb.storage
       .from(bucket)
       .getPublicUrl(filePath);
@@ -57,9 +49,6 @@ async function uploadToSupabase(bucket, file, userUID) {
   }
 }
 
-// -----------------------------
-// MAIN LOGIC
-// -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
 
   const fieldIds = [
@@ -88,9 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let storedProfile = {};
   let isEditing = false;
 
-  // -----------------------------
-  // Editing toggle
-  // -----------------------------
   function setEditingMode(state) {
     isEditing = state;
 
@@ -104,9 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
     editBtn.textContent = state ? "Cancel Edit" : "Edit Profile";
   }
 
-  // -----------------------------
-  // Fill profile UI
-  // -----------------------------
   function fillFields() {
     fieldIds.forEach(id => {
       const el = document.getElementById(id);
@@ -134,9 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // -----------------------------
-  // Edit button
-  // -----------------------------
   editBtn.addEventListener("click", () => {
     if (!isEditing) setEditingMode(true);
     else {
@@ -145,9 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // View photo button
-  // -----------------------------
   viewPhotoBtn.addEventListener("click", () => {
     if (storedProfile.profilePicURL) {
       window.open(storedProfile.profilePicURL, "_blank");
@@ -156,9 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // Firebase Auth
-  // -----------------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       alert("Please log in again");
@@ -187,9 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // Save Profile
-  // -----------------------------
   saveBtn.addEventListener("click", async () => {
     fieldIds.forEach(id => {
       const el = document.getElementById(id);
@@ -226,9 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // Upload Profile Picture
-  // -----------------------------
   profilePic.addEventListener("click", () => picUpload.click());
 
   picUpload.addEventListener("change", async e => {
@@ -252,9 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // Upload Resume
-  // -----------------------------
   uploadBtn.addEventListener("click", () => resumeUpload.click());
 
   resumeUpload.addEventListener("change", async e => {
@@ -283,9 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // -----------------------------
-  // Logout
-  // -----------------------------
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
     localStorage.clear();

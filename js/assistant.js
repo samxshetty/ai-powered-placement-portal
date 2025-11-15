@@ -1,7 +1,3 @@
-// =====================================================
-//  Placement Assistant — Version C (Robust, Stable)
-// =====================================================
-
 import { db, auth } from "./firebase-init.js";
 import {
   doc,
@@ -12,9 +8,7 @@ import {
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 
-// ---------------------------------------
 // Gemini Models (Primary + Fallback)
-// ---------------------------------------
 const PRIMARY_MODEL = "gemini-flash-latest";   // Most stable, fast, free
 const FALLBACK_MODEL = "gemini-pro-latest";    // Backup if flash fails
 
@@ -24,9 +18,7 @@ let jobData = {};
 let userProfile = {};
 let resumeText = "";
 
-// ------------------------------------------------------
 // Chat UI Helpers
-// ------------------------------------------------------
 function appendMessage(msg) {
   const chat = document.getElementById("assistantChat");
   const bubble = document.createElement("div");
@@ -34,26 +26,16 @@ function appendMessage(msg) {
 
   let html = msg;
 
-  // Headings
   html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
   html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
   html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
-
-  // Bold text
   html = html.replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>");
-
-  // Bullet points
   html = html.replace(/^- (.*)$/gim, "<li>$1</li>");
   html = html.replace(/(<li>.*<\/li>)/gim, "<ul>$1</ul>");
-
-  // Convert tables
   if (html.includes("|")) {
     html = convertMarkdownTable(html);
   }
-
-  // Line breaks
   html = html.replace(/\n/g, "<br>");
-
   bubble.innerHTML = html;
   chat.appendChild(bubble);
   chat.scrollTop = chat.scrollHeight;
@@ -68,7 +50,6 @@ function convertMarkdownTable(text) {
   tables.forEach((table) => {
     let rows = table.trim().split("\n").filter(r => r.includes("|"));
 
-    // Remove second row separator
     if (rows.length > 1 && rows[1].includes("---")) {
       rows.splice(1, 1);
     }
@@ -113,9 +94,7 @@ function hideTyping() {
   if (el) el.remove();
 }
 
-// ------------------------------------------------------
 // Load Job
-// ------------------------------------------------------
 async function loadJob() {
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get("id");
@@ -127,9 +106,7 @@ async function loadJob() {
   }
 }
 
-// ------------------------------------------------------
 // Load Profile
-// ------------------------------------------------------
 async function loadProfile() {
   return new Promise((resolve) => {
     auth.onAuthStateChanged(async (user) => {
@@ -141,9 +118,7 @@ async function loadProfile() {
   });
 }
 
-// ------------------------------------------------------
 // Resume Extraction
-// ------------------------------------------------------
 async function extractPDF(url) {
   try {
     const pdf = await pdfjsLib.getDocument(url).promise;
@@ -162,9 +137,7 @@ async function extractPDF(url) {
   }
 }
 
-// ------------------------------------------------------
 // Build HIGH QUALITY PROMPT
-// ------------------------------------------------------
 function buildPrompt(action) {
   const taskMap = {
     analyse: `
@@ -227,9 +200,7 @@ ${taskMap[action]}
   `;
 }
 
-// ------------------------------------------------------
 // Gemini API Request with Retry + Fallback
-// ------------------------------------------------------
 async function callGemini(prompt, model = PRIMARY_MODEL, retries = 3) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -242,14 +213,12 @@ async function callGemini(prompt, model = PRIMARY_MODEL, retries = 3) {
       })
     });
 
-    // If overloaded → retry
     if (res.status === 503 && retries > 0) {
       console.warn(`⚠️ Gemini overloaded → retrying (${retries})`);
       await new Promise((r) => setTimeout(r, 1000));
       return callGemini(prompt, model, retries - 1);
     }
 
-    // If still 503 → Use fallback model
     if (res.status === 503) {
       console.warn("⚠️ Switching to fallback model (gemini-pro-latest)");
       return callGemini(prompt, FALLBACK_MODEL, 2);
@@ -269,9 +238,6 @@ async function callGemini(prompt, model = PRIMARY_MODEL, retries = 3) {
   }
 }
 
-// ------------------------------------------------------
-// ASK AI (Main Function)
-// ------------------------------------------------------
 async function askAI(action) {
   showTyping();
 
@@ -301,9 +267,6 @@ async function askAI(action) {
   }
 }
 
-// ------------------------------------------------------
-// Autoload data
-// ------------------------------------------------------
 window.addEventListener("load", async () => {
   await loadJob();
   await loadProfile();

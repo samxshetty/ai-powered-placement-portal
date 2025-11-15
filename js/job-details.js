@@ -1,4 +1,3 @@
-// job-details.js — Student Job Details & Application via Firestore
 import { db } from "./firebase-init.js";
 import {
   doc,
@@ -35,41 +34,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   const job = snap.data();
   const el = (id) => document.getElementById(id);
 
-  // Load main details
   el("jobRole").textContent = job.role || "Not specified";
   el("jobCompanyName").textContent = job.company || "Not specified";
   el("jobType").textContent = job.type || "Not specified";
   el("jobLocation").textContent = job.location || "Not specified";
   el("jobSalary").textContent = job.package || "Not Revealed";
 
-  // DEADLINE (your Firestore field is 'deadline')
   el("jobDeadline").textContent = "Apply by: " + (job.deadline || "-");
 
-  // STATUS
   if (job.status) {
     el("jobStatus").textContent = job.status;
     el("jobStatus").className = "status " + job.status.toLowerCase();
   }
 
-  // DESCRIPTION (Firestore: description)
   el("jobDescription").textContent = job.description || "No description available.";
 
-  // REQUIREMENTS (Firestore: requirements — big string → bullets)
   el("jobRequirements").innerHTML = job.requirements
     ? job.requirements.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
     : "<li>No requirements listed.</li>";
 
-  // RESPONSIBILITIES (Firestore: eligibility)
   el("jobResponsibilities").innerHTML = job.eligibility
     ? job.eligibility.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
     : "<li>No responsibilities listed.</li>";
 
-  // BENEFITS (Firestore: benefits)
   el("jobBenefits").innerHTML = job.benefits
     ? job.benefits.split(".").map(p => p.trim()).filter(p=>p).map(p => `<li>${p}</li>`).join("")
     : "<li>No benefits provided.</li>";
 
-  // SKILLS (string OR array)
   let skillsArray = [];
   if (Array.isArray(job.skills)) skillsArray = job.skills;
   else if (typeof job.skills === "string" && job.skills.trim() !== "") {
@@ -80,7 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     ? skillsArray.map(s => `<span class="skill">${s}</span>`).join("")
     : "<span>No skills listed.</span>";
 
-  // APPLY BUTTON
   const applyBtn = el("applyBtn");
 
   const studentId = localStorage.getItem("activeUserId");
@@ -90,7 +80,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const studentEmail = localStorage.getItem("activeUser");
   const studentYear = localStorage.getItem("activeUserYear");
 
-  // If logged in
   if (!studentId || !studentName) {
     applyBtn.textContent = "Login to Apply";
     applyBtn.disabled = true;
@@ -99,10 +88,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   applyBtn.addEventListener("click", async () => {
     try {
-      // Add student to applicants array
       await updateDoc(jobRef, { applicants: arrayUnion(studentId) });
 
-      // Create application entry
       await setDoc(doc(db, "applications", `${studentId}_${jobId}`), {
         jobId,
         studentId,
