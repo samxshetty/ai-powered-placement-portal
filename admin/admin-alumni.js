@@ -17,14 +17,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.getElementById("openAddAlumni");
 
   let editId = null;
+  let currentAlumni = []; // Always holds latest snapshot data
 
+  // 🟦 SINGLE Firestore listener
   onSnapshot(collection(db, "alumni"), (snapshot) => {
-  console.log("🔥 Firestore snapshot received:", snapshot.size);
-  snapshot.docs.forEach((d) => console.log("Doc data:", d.data()));
+    console.log("🔥 Firestore snapshot received:", snapshot.size);
 
-  const alumni = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  renderAlumni(alumni);
-});
+    currentAlumni = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
+
+    renderAlumni(currentAlumni);
+  });
 
   function renderAlumni(alumniList) {
     alumniListEl.innerHTML = "";
@@ -42,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="alumni-avatar">
             ${a.photo
               ? `<img src="${a.photo}" alt="${a.name}" />`
-              : `${a.name[0]}${a.name.split(" ")[1]?.[0] || ""}`}
+              : `${a.name?.[0] || ""}${a.name?.split(" ")[1]?.[0] || ""}`}
           </div>
           <div class="alumni-info">
             <h3>${a.name}</h3>
@@ -50,12 +55,19 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        <div class="alumni-company">${a.role}</div>
-        <div class="alumni-meta">${a.company}<br>CGPA: ${a.cgpa || "-"} • ${a.exp || 0} yrs exp</div>
+        <div class="alumni-company">${a.role || ""}</div>
+        <div class="alumni-meta">
+          ${a.company || ""}<br>
+          CGPA: ${a.cgpa || "-"} • ${a.exp || 0} yrs exp
+        </div>
         <div class="alumni-advice">"${a.advice || ""}"</div>
 
         <div class="alumni-actions">
-          ${a.linkedin ? `<button class="linkedin-btn" onclick="window.open('${a.linkedin}','_blank')">🔗 LinkedIn</button>` : ""}
+          ${
+            a.linkedin
+              ? `<button class="linkedin-btn" data-link="${a.linkedin}">🔗 LinkedIn</button>`
+              : ""
+          }
           <div>
             <button class="icon-btn edit-btn" data-id="${a.id}" title="Edit">✏️</button>
             <button class="icon-btn delete-btn" data-id="${a.id}" title="Delete">🗑️</button>
@@ -64,28 +76,33 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       alumniListEl.appendChild(card);
     });
-
-    attachDynamicEvents(alumniList);
   }
 
-  function attachDynamicEvents(alumniList) {
-    document.querySelectorAll(".edit-btn").forEach((btn) =>
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.id;
-        const alum = alumniList.find((x) => x.id === id);
-        if (alum) editAlumni(alum);
-      })
-    );
+  // 🟦 EVENT DELEGATION — ZERO duplicated listeners
+  alumniListEl.addEventListener("click", async (e) => {
+    const editBtn = e.target.closest(".edit-btn");
+    const deleteBtn = e.target.closest(".delete-btn");
+    const linkedinBtn = e.target.closest(".linkedin-btn");
 
-    document.querySelectorAll(".delete-btn").forEach((btn) =>
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-        if (confirm("Delete this alumni?")) {
-          await deleteDoc(doc(db, "alumni", id));
-        }
-      })
-    );
-  }
+    if (editBtn) {
+      const id = editBtn.dataset.id;
+      const alum = currentAlumni.find((x) => x.id === id);
+      if (alum) editAlumni(alum);
+      return;
+    }
+
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.id;
+      if (confirm("Delete this alumni?")) {
+        await deleteDoc(doc(db, "alumni", id));
+      }
+      return;
+    }
+
+    if (linkedinBtn) {
+      window.open(linkedinBtn.dataset.link, "_blank");
+    }
+  });
 
   function openModal(isEdit = false) {
     modal.classList.remove("hidden");
@@ -100,9 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
     editId = null;
   }
 
-  document.querySelectorAll("[data-close='alumniModal']").forEach((b) =>
-    b.addEventListener("click", closeModal)
-  );
+  document
+    .querySelectorAll("[data-close='alumniModal']")
+    .forEach((btn) => btn.addEventListener("click", closeModal));
 
   addBtn.addEventListener("click", () => {
     saveBtn.textContent = "Add Alumni";
@@ -111,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal();
   });
 
+  // 🟦 Add / Update alumni
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(form));
