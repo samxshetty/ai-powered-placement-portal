@@ -4,13 +4,12 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-aut
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDSnqOceW18iAhuHmWl31M3Gk38cdiWlHE",
-  authDomain: "ai-powered-placement-portal.firebaseapp.com",
-  projectId: "ai-powered-placement-portal",
-  storageBucket: "ai-powered-placement-portal.appspot.com",
-  messagingSenderId: "814349983103",
-  appId: "1:814349983103:web:56cd2a5c5356019223ce4a",
-  measurementId: "G-RG8P2P71H7",
+  apiKey: "AIzaSyDGpuBp7gt2fvMwLJJWLO8cqDE1egSoIKQ",
+  authDomain: "placementportal-aipowered.firebaseapp.com",
+  projectId: "placementportal-aipowered",
+  storageBucket: "placementportal-aipowered.firebasestorage.app",
+  messagingSenderId: "975982127798",
+  appId: "1:975982127798:web:84799ef7db78ed5a7e5417",
 };
 
 const app = initializeApp(firebaseConfig);
