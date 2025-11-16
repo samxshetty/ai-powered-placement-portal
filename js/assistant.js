@@ -9,7 +9,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 // Models + (FRONTEND) API KEY
 const PRIMARY_MODEL = "gemini-flash-latest";
 const FALLBACK_MODEL = "gemini-pro-latest";
-const GEMINI_API_KEY = "AIzaSyCpvWjeqzQfwDm3PNgn7HF051pIfhul-_8";
+const GEMINI_API_KEY = "AIzaSyAjGfxPfkCziraDPhyw-fivVDXhG2XZM6U";
 
 let jobData = null;
 let userProfile = null;
