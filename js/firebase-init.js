@@ -4,7 +4,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-aut
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: window.VITE_FIREBASE_API_KEY,
+apiKey: "AIzaSyDGpuBp7gt2fvMwLJJWLO8cqDE1egSoIKQ",
   authDomain: "placementportal-aipowered.firebaseapp.com",
   projectId: "placementportal-aipowered",
   storageBucket: "placementportal-aipowered.firebasestorage.app",
