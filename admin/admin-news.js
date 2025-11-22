@@ -102,7 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   newsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(newsForm).entries());
+    const formData = new FormData(newsForm);
+    formData.delete("id");
+
+
+    const data = Object.fromEntries(formData.entries());
 
     try {
       if (editingId) {

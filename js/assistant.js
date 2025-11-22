@@ -9,7 +9,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 // Models + (FRONTEND) API KEY
 const PRIMARY_MODEL = "gemini-flash-latest";
 const FALLBACK_MODEL = "gemini-pro-latest";
-const GEMINI_API_KEY = "AIzaSyAjGfxPfkCziraDPhyw-fivVDXhG2XZM6U";
+const GEMINI_API_KEY = "";
 
 let jobData = null;
 let userProfile = null;
@@ -338,7 +338,7 @@ async function askAI(action) {
     }
 
     if (!resumeText && userProfile?.resumeURL) {
-      appendMessage("🔎 Extracting resume (first 10 pages, trimmed)...");
+      appendMessage("🔎Analysing Full Profile, Resume & Job Details");
       resumeText = await extractPDF(userProfile.resumeURL);
     }
 

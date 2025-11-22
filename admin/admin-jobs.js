@@ -1,6 +1,4 @@
-// admin-jobs.js — FULL UPDATED VERSION (with round.mode support)
-
-import { db } from "../js/firebase-init.js"; 
+import { db } from "/js/firebase-init.js";
 import {
   collection,
   addDoc,
@@ -18,9 +16,6 @@ function el(tag, cls) { const e = document.createElement(tag); if (cls) e.classN
 
 let jobs = [];
 
-/* ==========================
-   REALTIME JOB FETCH
-========================== */
 onSnapshot(
   jobsRef,
   (snapshot) => {
@@ -36,9 +31,6 @@ onSnapshot(
 );
 
 
-/* ==========================
-   RENDER JOB LIST
-========================== */
 function renderJobs(filterText = '', filterTag = 'all') {
   const list = document.getElementById("jobsList");
   list.innerHTML = "";
@@ -110,10 +102,6 @@ function renderJobs(filterText = '', filterTag = 'all') {
   });
 }
 
-
-/* ==========================
-   ADD JOB
-========================== */
 document.getElementById('openAddJob').addEventListener('click', () => {
   document.getElementById('addJobForm').reset();
   document.getElementById('roundsList').innerHTML = '';
@@ -156,9 +144,6 @@ document.getElementById('addJobForm').addEventListener('submit', async (e) => {
 });
 
 
-/* ==========================
-   EDIT JOB
-========================== */
 function openEditModal(job) {
   const f = document.getElementById('editJobForm');
 
@@ -217,9 +202,6 @@ document.getElementById('editJobForm').addEventListener('submit', async (e) => {
 });
 
 
-/* ==========================
-   VIEW JOB
-========================== */
 function openViewModal(job) {
   const container = document.getElementById('jobDetails');
   container.innerHTML = `
@@ -245,9 +227,6 @@ function openViewModal(job) {
 }
 
 
-/* ==========================
-   ROUNDS UI + MODE SUPPORT
-========================== */
 function addRoundUI(listId) {
   const list = document.getElementById(listId);
   const r = { id: id(), from: '', to: '', title: '', mode: 'tbd', note: '' };
@@ -321,9 +300,6 @@ function collectRoundsFrom(listId) {
 }
 
 
-/* ==========================
-   MODAL UTILITIES
-========================== */
 function openModal(id) {
   document.getElementById(id).classList.remove('hidden');
 }
@@ -337,10 +313,6 @@ document.addEventListener('click', (e) => {
   if (close) closeModal(close.getAttribute('data-close'));
 });
 
-
-/* ==========================
-   FILTERS
-========================== */
 let currentFilter = 'all';
 
 document.getElementById('filterInput')
