@@ -2,11 +2,11 @@ import { db, auth } from "./firebase-init.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-// PDF.js worker
+// PDF.js worker url
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 
-// Models +  API KEY - intentionally empty for security (insert at build time)
+// MODELS & API KEY
 const PRIMARY_MODEL = "gemini-flash-latest";
 const FALLBACK_MODEL = "gemini-pro-latest";
 const GEMINI_API_KEY = "";
@@ -22,6 +22,13 @@ function backoffDelay(attempt, base = 500) {
   const exp = Math.pow(2, attempt) * base;
   const jitter = Math.floor(Math.random() * (exp * 0.5));
   return exp + jitter;
+}
+function escapeHtml(unsafe) {
+  if (unsafe == null) return "";
+  return String(unsafe)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 async function loadJob() {
@@ -61,7 +68,7 @@ function loadProfile() {
   });
 }
 
-// -------------------- Resume Extraction --------------------
+// ---------- Resume extraction ----------
 async function extractPDF(url) {
   if (!url) return "No resume URL provided.";
   try {
@@ -81,7 +88,7 @@ async function extractPDF(url) {
   }
 }
 
-// -------------------- Prompt helpers --------------------
+// ---------- Prompt building ----------
 function shallowSummarize(obj, maxChars = 1000) {
   if (!obj) return null;
   try {
@@ -107,6 +114,15 @@ function shallowSummarize(obj, maxChars = 1000) {
 }
 
 function buildPrompt(action) {
+  const nonATSRules = `
+Rules (NON-ATS outputs):
+- DO NOT use markdown tables, pipes (|) or ':---' aligners.
+- DO NOT use complex markdown table syntaxes.
+- Provide short sections using headings and simple bullet lists (use '-' for bullets).
+- Avoid long paragraphs; keep outputs concise and structured.
+- Keep outputs plain (no HTML).
+`;
+
   const taskMap = {
     analyse: `
 Give a structured analysis:
@@ -150,47 +166,31 @@ Improve student's profile:
 - Skills to add
     `,
     ats: `
-Generate ATS-optimized resume keywords specifically for THIS job role.
+Generate ATS-optimized resume keywords that are PERSONALIZED to the student's resume and this job.
 
-Return sections EXACTLY like this:
+Procedure:
+1. Extract meaningful technical and soft keywords FROM THE RESUME.
+2. Extract required skills FROM THE JOB DESCRIPTION.
+3. Compare and produce 3 exact comma-separated lists:
 
-Hard Skills:
-<comma-separated list>
+Present in Resume:
+<comma-separated keywords>
 
-Tools:
-<comma-separated list>
+Missing but Required:
+<comma-separated keywords>
 
-Soft Skills:
-<comma-separated list>
+Recommended Additions:
+<comma-separated keywords>
 
 Rules:
-- No bullet points.
-- No explanations.
-- ONLY comma-separated keywords.
-- Tailored to job description, responsibilities, and hidden expectations.
+- NO bullet lists, no paragraphs; ONLY the 3 labeled lines above.
+- Personalization is mandatory (reflect the resume).
 `
   };
 
   const jobSummary = shallowSummarize(jobData, 1200) || "No job data available.";
   const profileSummary = shallowSummarize(userProfile, 1200) || "No profile data available.";
   const resumeSnippet = (resumeText || "").replace(/\s+/g, " ").trim().slice(0, 1200);
-
-  const responseFormat = `
-### RESPONSE FORMAT (MANDATORY FOR ATS):
-If the requested task is ATS generation,
-respond ONLY using:
-
-Hard Skills:
-skill1, skill2, skill3...
-
-Tools:
-tool1, tool2, tool3...
-
-Soft Skills:
-skill1, skill2, skill3...
-
-Do NOT add any paragraph explanation.
-`;
 
   return `
 You are a world-class Placement Assistant. Keep the output crisp, structured, and actionable. Avoid fluff.
@@ -207,127 +207,181 @@ ${resumeSnippet}
 ### TASK:
 ${taskMap[action]}
 
-${action === "ats" ? responseFormat : ""}
+${action === "ats" ? "" : nonATSRules}
   `;
 }
 
-
 function convertMarkdownTable(text) {
-  const tableRegex = /\|(.+\|)+/g;
-  const tables = text.match(tableRegex);
+  const lines = String(text).split("\n");
 
-  if (!tables) return text;
-
-  tables.forEach((table) => {
-    let rows = table.trim().split("\n").filter(r => r.includes("|"));
-
-    if (rows.length > 1 && rows[1].includes("---")) {
-      rows.splice(1, 1);
-    }
-
-    let htmlTable = "<table>";
-
-    rows.forEach((row, index) => {
-      const cols = row.split("|").filter(Boolean);
-      htmlTable += "<tr>";
-
-      cols.forEach((col) => {
-        if (index === 0)
-          htmlTable += `<th>${col.trim()}</th>`;
-        else
-          htmlTable += `<td>${col.trim()}</td>`;
-      });
-
-      htmlTable += "</tr>";
+  if (
+    lines.length >= 2 &&
+    /^\s*\|(.+)\|\s*$/.test(lines[0]) &&
+    /^\s*\|(\s*:?-+:?\s*\|)+\s*$/.test(lines[1])
+  ) {
+    const header = lines[0].split("|").filter(x => x.trim());
+    const body = lines.slice(2);
+    let html = "<div class='table-wrap'><table class='ai-table'><thead><tr>";
+    header.forEach(col => html += `<th>${escapeHtml(col.trim())}</th>`);
+    html += "</tr></thead><tbody>";
+    body.forEach(row => {
+      if (!row.includes("|")) return;
+      const cols = row.split("|").filter(x => x.trim());
+      html += "<tr>";
+      cols.forEach(col => html += `<td>${escapeHtml(col.trim())}</td>`);
+      html += "</tr>";
     });
+    html += "</tbody></table></div>";
+    return html;
+  }
 
-    htmlTable += "</table>";
-
-    text = text.replace(table, htmlTable);
-  });
-
-  return text;
+  return String(text).replace(/\|/g, " ");
 }
 
 function mdToHtml(txt) {
-  let html = String(txt)
+  const raw = String(txt || "");
+  let safe = raw.replace(/\r\n/g, "\n");
+
+  safe = safe.replace(/^\s*[\*\u2022]\s+/gim, "- ");
+
+  let html = safe
     .replace(/^### (.*$)/gim, "<h3>$1</h3>")
     .replace(/^## (.*$)/gim, "<h2>$1</h2>")
     .replace(/^# (.*$)/gim, "<h1>$1</h1>")
     .replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/gim, "<code>$1</code>")
     .replace(/^- (.*)$/gim, "<li>$1</li>")
-    .replace(/(<li>.*<\/li>)/gim, "<ul>$1</ul>")
-    .replace(/\n/g, "<br>");
-  if (html.includes("|")) html = convertMarkdownTable(html);
+    .replace(/(<li>[\s\S]*?<\/li>)/gim, "<ul>$1</ul>");
+
+  if (html.includes("|") && !raw.includes("<table")) {
+    html = convertMarkdownTable(html);
+  }
+
+  html = html.replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>");
   return html;
 }
 
-function renderATS(output) {
-  if (!output || typeof output !== "string") return null;
-  const lower = output.toLowerCase();
-  if (!lower.includes("hard skills") && !lower.includes("hard skills:")) return null;
+// ---------- Resume keyword extraction ----------
+function extractResumeKeywords(text) {
+  if (!text) return [];
+  const t = String(text).toLowerCase();
+  const stop = new Set(["and","with","in","on","the","a","an","of","for","to","by","using","experience","project","projects","work","internship","responsible","degree","education","btech","be","mtech","msc","expected","year"]);
+  const tokenCandidates = t.match(/[a-z0-9\+\#\.\/\-\_]{2,}/g) || [];
+  const counts = {};
+  for (let tok of tokenCandidates) {
+    tok = tok.replace(/^[^\w\+#\.]+|[^\w\+#\.]+$/g, "");
+    if (!tok || tok.length < 2) continue;
+    if (stop.has(tok)) continue;
+    if (/^\d+$/.test(tok)) continue;
+    counts[tok] = (counts[tok] || 0) + 1;
+  }
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
+  return Array.from(new Set(sorted)).slice(0, 400);
+}
 
+function parsePersonalizedATS(text) {
+  const output = { present: [], missing: [], recommended: [] };
+  if (!text) return output;
+  const cleaned = String(text).replace(/\r\n/g, "\n").trim();
+  function extract(label) {
+    const re = new RegExp(label + "\\s*:\\s*([\\s\\S]*?)(\\n\\n|$)", "i");
+    const m = cleaned.match(re);
+    if (!m) return [];
+    return m[1].split(/,|\n/).map(x => x.trim()).filter(Boolean);
+  }
+  output.present = extract("Present in Resume");
+  output.missing = extract("Missing but Required");
+  output.recommended = extract("Recommended Additions");
+  return output;
+}
+
+function keywordInResume(keyword, resumeKeywords) {
+  if (!keyword) return false;
+  const k = String(keyword).toLowerCase().trim();
+  for (const rk of (resumeKeywords||[])) {
+    const r = String(rk).toLowerCase();
+    if (r === k) return true;
+    if (r.includes(k) || k.includes(r)) return true;
+  }
+  return false;
+}
+
+function renderPersonalizedATS(outputText, resumeKeywords) {
+  const parsed = parsePersonalizedATS(outputText);
   const container = document.createElement("div");
   container.style.display = "flex";
   container.style.flexDirection = "column";
   container.style.gap = "12px";
 
-  function makeChipBlock(title, items) {
+  function makeChipBlock(title, items, type) {
+    if (!items || !items.length) return null;
     const wrap = document.createElement("div");
     wrap.className = "ai-card";
     const heading = document.createElement("h4");
     heading.textContent = title;
     heading.style.margin = "0 0 8px 0";
     wrap.appendChild(heading);
-
     const chipBox = document.createElement("div");
     chipBox.style.display = "flex";
     chipBox.style.flexWrap = "wrap";
     chipBox.style.gap = "8px";
-
-    items.forEach((k) => {
+    items.forEach((raw) => {
+      const item = String(raw).trim();
+      if (!item) return;
       const chip = document.createElement("span");
       chip.className = "ai-chip";
-      chip.textContent = k.trim();
-      chip.title = k.trim();
+      const present = keywordInResume(item, resumeKeywords || []);
+      chip.textContent = item;
+      chip.title = present ? "Present in resume" : "Not found in resume";
+      if (present) {
+        chip.style.background = "#ecfdf5";
+        chip.style.color = "#065f46";
+        chip.style.border = "1px solid #bbf7d0";
+      } else {
+        chip.style.background = "#fff7ed";
+        chip.style.color = "#92400e";
+        chip.style.border = "1px solid #ffd8a8";
+      }
+      chip.style.padding = "6px 10px";
+      chip.style.borderRadius = "999px";
+      chip.style.fontSize = "13px";
+      chip.style.display = "inline-block";
       chipBox.appendChild(chip);
     });
-
     wrap.appendChild(chipBox);
     return wrap;
   }
 
-  function extractBlock(label) {
-    const regex = new RegExp(`${label}:([\\s\\S]*?)(\\n\\n|$)`, "i");
-    const match = output.match(regex);
-    if (!match) return [];
-    return match[1]
-      .split(",")
-      .map((x) => x.trim())
-      .filter((x) => x.length > 0);
-  }
+  const presentBlock = makeChipBlock("Present in Resume", parsed.present, "present");
+  const missingBlock = makeChipBlock("Missing but Required", parsed.missing, "missing");
+  const recBlock = makeChipBlock("Recommended Additions", parsed.recommended, "recommended");
 
-  const hardSkills = extractBlock("Hard Skills");
-  const tools = extractBlock("Tools");
-  const softSkills = extractBlock("Soft Skills");
+  const summary = document.createElement("div");
+  summary.style.fontSize = "13px";
+  summary.style.color = "#475569";
+  const presentCount = (parsed.present || []).length;
+  const missingCount = (parsed.missing || []).length;
+  const recCount = (parsed.recommended || []).length;
+  summary.textContent = `Present: ${presentCount} • Missing (required): ${missingCount} • Recommended: ${recCount}`;
+  container.appendChild(summary);
 
-  if (hardSkills.length) container.appendChild(makeChipBlock("Hard Skills", hardSkills));
-  if (tools.length) container.appendChild(makeChipBlock("Tools", tools));
-  if (softSkills.length) container.appendChild(makeChipBlock("Soft Skills", softSkills));
+  if (presentBlock) container.appendChild(presentBlock);
+  if (missingBlock) container.appendChild(missingBlock);
+  if (recBlock) container.appendChild(recBlock);
 
   return container;
 }
 
-function renderAIOutput(text) {
+function renderAIOutputSupplement(text) {
   if (!text || typeof text !== "string") return null;
   const lower = text.toLowerCase();
-
   const hasTools = /tools used|tools:|technologies:|tech stack/i.test(lower);
   const hasCommonQ = /common questions|frequent questions|interview questions/i.test(lower);
   const hasHiring = /hiring pattern|hiring process|rounds|interview rounds/i.test(lower);
   const hasPackage = /package|salary|lpa|ctc|compensation/i.test(lower);
 
   if (!(hasTools || hasCommonQ || hasHiring || hasPackage)) return null;
+  if (text.includes("<table")) return null;
 
   const container = document.createElement("div");
   container.style.display = "flex";
@@ -335,11 +389,11 @@ function renderAIOutput(text) {
   container.style.gap = "10px";
 
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-
   let current = null;
   const toolLines = [], questionLines = [], hiringLines = [], packageLines = [];
 
-  for (const line of lines) {
+  for (let raw of lines) {
+    let line = raw.replace(/^[\*\-\u2022\•\s]+/, "").trim();
     const lowerLine = line.toLowerCase();
     if (/^(tools|technologies|tech stack)[:\-\s]/i.test(lowerLine)) { current = "tools"; continue; }
     if (/^(common questions|frequent questions|interview questions|questions)[:\-\s]/i.test(lowerLine)) { current = "questions"; continue; }
@@ -370,7 +424,7 @@ function renderAIOutput(text) {
   if (toolLines.length) {
     const tools = toolLines.join(" ").split(/,|\||;| and /i).map(s => s.trim()).filter(Boolean);
     const chips = document.createElement("div"); chips.style.display = "flex"; chips.style.flexWrap = "wrap"; chips.style.gap = "8px";
-    tools.slice(0, 20).forEach(t => { const sp = document.createElement("span"); sp.className = "ai-chip"; sp.textContent = t; chips.appendChild(sp); });
+    tools.slice(0, 20).forEach(t => { const sp = document.createElement("span"); sp.className = "ai-chip"; sp.textContent = t; sp.style.padding="6px 10px"; sp.style.borderRadius="999px"; sp.style.background="#eef2ff"; sp.style.color="#0b63d8"; chips.appendChild(sp); });
     container.appendChild(makeCard("Tools & Technologies", chips));
   }
 
@@ -392,10 +446,10 @@ function renderAIOutput(text) {
     const tbody = document.createElement("tbody");
     packageLines.slice(0,7).forEach(line => {
       const tr = document.createElement("tr");
-      const parts = line.split(/:|-/).map(s => s.trim());
+      const parts = line.split(/:|-\u2014|—|-/).map(s => s.trim());
       const key = parts[0] || "Info";
       const val = parts.slice(1).join(" - ") || "";
-      tr.innerHTML = `<td>${key}</td><td>${val}</td>`;
+      tr.innerHTML = `<td>${escapeHtml(key)}</td><td>${escapeHtml(val)}</td>`;
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -405,7 +459,6 @@ function renderAIOutput(text) {
   return container;
 }
 
-
 function showTyping() {
   const chat = document.getElementById("assistantChat");
   if (!chat) return;
@@ -413,18 +466,14 @@ function showTyping() {
   const bubble = document.createElement("div");
   bubble.className = "assistant-message";
   bubble.id = "typingBubble";
+  bubble.style.maxWidth = "100%";
   bubble.innerHTML = `<span class="typing"><span class="dots"><span></span><span></span><span></span></span>  Generating...</span>`;
   chat.appendChild(bubble);
   chat.scrollTop = chat.scrollHeight;
 }
-function hideTyping() {
-  const el = document.getElementById("typingBubble");
-  if (el) el.remove();
-}
+function hideTyping() { const el = document.getElementById("typingBubble"); if (el) el.remove(); }
 
-
-
-function appendMessage(msg, { isError = false } = {}) {
+function appendMessage(msg, { isError = false, action = null } = {}) {
   const chat = document.getElementById("assistantChat");
   if (!chat) {
     console.warn("No #assistantChat element found to append message.");
@@ -433,6 +482,11 @@ function appendMessage(msg, { isError = false } = {}) {
 
   const wrapper = document.createElement("div");
   wrapper.className = "assistant-message";
+  wrapper.style.maxWidth = "100%";
+  wrapper.style.boxSizing = "border-box";
+  wrapper.style.wordBreak = "break-word";
+  wrapper.style.whiteSpace = "normal";
+  wrapper.style.overflowWrap = "break-word";
 
   if (isError) {
     wrapper.style.background = "#fee2e2";
@@ -443,30 +497,47 @@ function appendMessage(msg, { isError = false } = {}) {
     return;
   }
 
-  const atsRendered = renderATS(String(msg));
-  if (atsRendered) {
-    wrapper.innerHTML = "";
-    wrapper.appendChild(atsRendered);
+  const msgStr = String(msg || "");
+
+  if (action === "ats") {
+    const resumePlain = resumeText || (userProfile && userProfile.resumeText) || "";
+    const resumeKeywords = extractResumeKeywords(resumePlain);
+    const atsUI = renderPersonalizedATS(msgStr, resumeKeywords);
+    wrapper.appendChild(atsUI);
     chat.appendChild(wrapper);
-    setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 50);
+    setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 40);
     return;
   }
 
-  const visual = renderAIOutput(String(msg));
-  if (visual) {
-    wrapper.innerHTML = "";
-    wrapper.appendChild(visual);
+  if (msgStr.includes("<table")) {
+    wrapper.innerHTML = msgStr;
     chat.appendChild(wrapper);
-    setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 50);
+    setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 40);
     return;
   }
 
-  const html = mdToHtml(String(msg));
-  wrapper.innerHTML = html;
+  const mainHtml = mdToHtml(msgStr);
+  const mainDiv = document.createElement("div");
+  mainDiv.style.width = "100%";
+  mainDiv.style.marginBottom = "8px";
+  mainDiv.innerHTML = mainHtml;
+  wrapper.appendChild(mainDiv);
+
+  const supplement = renderAIOutputSupplement(msgStr);
+  if (supplement) {
+    const hr = document.createElement("div");
+    hr.style.height = "1px";
+    hr.style.background = "#eef2ff";
+    hr.style.margin = "8px 0";
+    wrapper.appendChild(hr);
+    wrapper.appendChild(supplement);
+  }
+
   chat.appendChild(wrapper);
-  setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 40);
+  setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 50);
 }
 
+// ---------- callGemini (retry/backoff + fallback model) ----------
 async function callGemini(prompt, model = PRIMARY_MODEL, maxAttempts = 5) {
   if (!GEMINI_API_KEY) throw new Error("Gemini API key missing. Set GEMINI_API_KEY in assistant.js or use backend proxy.");
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
@@ -485,9 +556,7 @@ async function callGemini(prompt, model = PRIMARY_MODEL, maxAttempts = 5) {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
       });
 
       if (res.ok) {
@@ -514,7 +583,6 @@ async function callGemini(prompt, model = PRIMARY_MODEL, maxAttempts = 5) {
       console.error("Gemini returned non-OK:", res.status, bodyText);
 
       if (res.status >= 400 && res.status < 500 && res.status !== 429) break;
-
       attempt++;
     } catch (err) {
       lastErr = err;
@@ -552,7 +620,6 @@ async function askAI(action, options = {}) {
     }
 
     const userQuery = options.userQuery ? `\n\nUSER QUERY: ${options.userQuery}` : "";
-
     const prompt = buildPrompt(action) + userQuery;
 
     const data = await callGemini(prompt, PRIMARY_MODEL, 6);
@@ -560,9 +627,26 @@ async function askAI(action, options = {}) {
     hideTyping();
     aiBusy = false;
 
-    const output = data?.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ AI could not generate a response.";
+    const output = (data && data.candidates && data.candidates[0] && data.candidates[0].content &&
+      data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text)
+      ? data.candidates[0].content.parts[0].text
+      : "⚠️ AI could not generate a response.";
 
-    appendMessage(output);
+    if (action === "ats") {
+      const resumePlain = resumeText || (userProfile && userProfile.resumeText) || "";
+      const resumeKeywords = extractResumeKeywords(resumePlain);
+      const chat = document.getElementById("assistantChat");
+      const wrapper = document.createElement("div");
+      wrapper.className = "assistant-message";
+      wrapper.style.maxWidth = "100%";
+      const atsUI = renderPersonalizedATS(output, resumeKeywords);
+      wrapper.appendChild(atsUI);
+      chat.appendChild(wrapper);
+      setTimeout(() => chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" }), 50);
+      return output;
+    }
+
+    appendMessage(output, { action });
     return output;
   } catch (err) {
     hideTyping();
