@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
       users.push(user);
       localStorage.setItem("users", JSON.stringify(users));
       localStorage.setItem("activeUser", JSON.stringify(user));
-      // redirect to profile setup on first time:
       window.location.href = "profile.html";
     });
   }

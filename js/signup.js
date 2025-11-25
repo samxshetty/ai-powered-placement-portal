@@ -55,8 +55,32 @@ document.addEventListener("DOMContentLoaded", () => {
         year,
         email,
         createdAt: new Date().toISOString(),
-        profileCompleted: false, //flag to track profile setup
+        profileCompleted: false,
       });
+      console.log("✅ Firestore users doc created");
+
+      await setDoc(doc(db, "profiles", user.uid), {
+        fullName: name,
+        rollNumber: roll,
+        department: department,
+        year: year,
+        email: email,
+        phone: "",
+        linkedin: "",
+        github: "",
+        portfolio: "",
+        cgpa: "",
+        backlogs: "",
+        tenth: "",
+        twelfth: "",
+        skills: "",
+        interests: "",
+        achievements: "",
+        profilePicURL: "",
+        resumeURL: "",
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+
       console.log("✅ Firestore profile created successfully.");
 
       localStorage.setItem("activeUser", email);
@@ -67,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("activeUserRoll", roll);
 
       alert("✅ Account created successfully! Please complete your profile next.");
-      window.location.href = "profile.html"; 
+      window.location.href = "profile.html";
+
     } catch (error) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {

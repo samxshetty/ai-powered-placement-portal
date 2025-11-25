@@ -204,8 +204,8 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
     overflow-y: auto;
     padding: 18px;
     background: #f8faff;
-    max-height: 680px !important;   /* BIGGER CHAT */
-    min-height: 500px !important;   /* prevents tiny chat */
+    max-height: 680px !important;   
+    min-height: 500px !important;  
 }
 
 
@@ -563,4 +563,27 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; background:var(-
 .round-status.past {
   background: #fee2e2;
   color: #991b1b;
+}
+.ai-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ai-chip {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #eef2ff;
+    color: #1e3a8a;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.ai-chip:hover {
+    transform: scale(1.06);
+    background: #e0e7ff;
 }

@@ -14,94 +14,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
-  <style>
-    .assistant-card {
-        width: 100%;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-        overflow: hidden;
-        margin-top: 20px;
-        font-family: "Inter", sans-serif;
-    }
-    .assistant-header {
-        background: #2563eb;
-        padding: 14px 18px;
-        color: #fff;
-        font-size: 17px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .assistant-chat {
-        padding: 18px;
-        height: 240px;
-        overflow-y: auto;
-        background: #ffffff;
-    }
-    .assistant-message {
-        background: #f1f5f9;
-        padding: 12px 14px;
-        border-radius: 14px;
-        font-size: 14px;
-        max-width: 90%;
-        margin-bottom: 10px;
-    }
-    .assistant-options {
-        padding: 14px;
-        background: #fff;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
-    .assistant-btn {
-        background: #2563eb;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 10px 18px;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: 0.2s;
-        white-space: nowrap;
-    }
-    .assistant-btn:hover {
-        background: #1e40af;
-    }
-
-    .round-item {
-      margin-bottom: 12px;
-      padding: 14px;
-      border-radius: 10px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .round-item h4 {
-      margin: 0 0 6px;
-      font-size: 16px;
-      color: #0f172a;
-    }
-    .round-status {
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-    .round-status.upcoming { background: #dbebff; color: #1d4ed8; }
-    .round-status.ongoing { background: #dcfce7; color: #166534; }
-    .round-status.past { background: #fee2e2; color: #991b1b; }
-
-  </style>
-
 </head>
 <body>
 
@@ -130,14 +42,16 @@
   <a href="jobs.html" class="back-link">← Back to Jobs</a>
 
   <div class="main-grid">
-    
+
     <div class="col-left">
 
       <section class="card job-header-card">
         <div class="job-top">
           <div>
             <h2 id="jobRole">Software Engineer</h2>
-            <p class="muted small" id="jobCompany"><span id="jobCompanyName">Google</span></p>
+            <p class="muted small" id="jobCompany">
+              <span id="jobCompanyName">Google</span>
+            </p>
           </div>
           <div style="text-align:right">
             <span class="pill tag" id="jobType">Full-time</span>
@@ -187,36 +101,40 @@
 
     <aside class="col-right">
 
-      <section class="card">
+      <section class="card apply-card">
         <h3>Apply for this position</h3>
         <p class="muted small" id="applyDeadline"></p>
         <button id="applyBtn" class="view-btn">Submit Application</button>
       </section>
 
       <section class="assistant-card">
+
         <div class="assistant-header">📘 Placement Assistant</div>
 
         <div id="assistantChat" class="assistant-chat">
           <div class="assistant-message">
-Hi! I'm your Placement Assistant. What would you like to do?
+👋 Hi! I'm your Placement Assistant. How can I help today?
           </div>
         </div>
 
         <hr>
 
         <div class="assistant-options">
-          <button class="assistant-btn" onclick="askAI('analyse')">📄 Analyse Job Profile</button>
-          <button class="assistant-btn" onclick="askAI('fit')">🎯 Do I Fit This Role?</button>
-          <button class="assistant-btn" onclick="askAI('lack')">⚙️ What Do I Lack?</button>
-          <button class="assistant-btn" onclick="askAI('plan')">📚 Preparation Plan</button>
-          <button class="assistant-btn" onclick="askAI('enhance')">🚀 Enhance My Profile</button>
+          <button class="assistant-btn" onclick="askAI('analyse')">📄 Analyse Job</button>
+          <button class="assistant-btn" onclick="askAI('fit')">🎯 Fit Score</button>
+          <button class="assistant-btn" onclick="askAI('lack')">⚙️ Missing Skills</button>
+          <button class="assistant-btn" onclick="askAI('plan')">📚 Prep Plan</button>
+          <button class="assistant-btn" onclick="askAI('enhance')">🚀 Improve Profile</button>
+          <button class="assistant-btn" onclick="askAI('ats')">💼 ATS Keywords</button>
         </div>
 
       </section>
 
     </aside>
+
   </div>
 </main>
+
 
 <script type="module" src="./js/firebase-init.js"></script>
 <script type="module" src="./js/job-details.js"></script>

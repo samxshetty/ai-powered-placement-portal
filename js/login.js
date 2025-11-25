@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Restrict login to nmamit.in emails only
     if (!email.endsWith("@nmamit.in")) {
       alert("❌ Only NMAMIT email addresses (@nmamit.in) can log in.");
       return;

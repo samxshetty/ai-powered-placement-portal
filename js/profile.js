@@ -3,8 +3,8 @@ const auth = window.auth;
 
 import {
   doc,
-  getDoc,
-  setDoc
+  setDoc,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 import {
@@ -24,22 +24,13 @@ async function uploadToSupabase(bucket, file, userUID) {
 
     const { data, error } = await sb.storage
       .from(bucket)
-      .upload(filePath, file, {
-        upsert: true   
-      });
+      .upload(filePath, file, { upsert: true });
 
-    if (error) {
-      console.error("❌ Upload error:", error);
-      throw error;
-    }
-
-    console.log("📤 Upload success:", data);
+    if (error) throw error;
 
     const { data: publicData } = sb.storage
       .from(bucket)
       .getPublicUrl(filePath);
-
-    console.log("🌐 Public URL:", publicData.publicUrl);
 
     return publicData.publicUrl;
 
@@ -86,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     saveBtn.disabled = !state;
-
     editBtn.textContent = state ? "Cancel Edit" : "Edit Profile";
   }
 
@@ -141,24 +131,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     userUID = user.uid;
+    const ref = doc(db, "profiles", userUID);
 
-    try {
-      const ref = doc(db, "profiles", userUID);
-      const snap = await getDoc(ref);
-
+    onSnapshot(ref, async (snap) => {
       if (snap.exists()) {
         storedProfile = snap.data();
       } else {
         storedProfile = { email: user.email };
-        await setDoc(ref, storedProfile);
+        await setDoc(ref, storedProfile, { merge: true });
       }
 
       fillFields();
       setEditingMode(false);
-
-    } catch (err) {
-      console.error("❌ Firestore fetch error:", err);
-    }
+    });
   });
 
   saveBtn.addEventListener("click", async () => {
